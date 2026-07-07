@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alethiometer</title>
+  <meta name="description" content="A working alethiometer: frame your question with three symbols and read the needle's answer.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🧭</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>The Alethiometer</h1>
+    <p class="subtitle">Frame your question with three symbols, and the needle will answer.</p>
+  </header>
+
+  <main>
+    <section class="question-row" aria-label="Your question">
+      <input id="question" type="text" maxlength="300" autocomplete="off"
+             placeholder="Ask what you truly wish to know…">
+      <button id="mic" type="button" title="Speak your question" aria-label="Speak your question">🎙</button>
+      <button id="ask" type="button">Ask</button>
+    </section>
+
+    <section class="hands-row" aria-label="The three hands">
+      <div id="hand-chips" class="hand-chips"></div>
+    </section>
+
+    <section class="dial-wrap" aria-label="The alethiometer dial">
+      <svg id="dial" role="img" aria-label="Alethiometer dial with thirty-six symbols"></svg>
+    </section>
+
+    <p id="legend" class="legend"></p>
+    <p id="status" class="status" role="status"></p>
+
+    <section id="reading" class="reading" aria-label="The reading">
+      <h2>The Reading</h2>
+      <ul id="reading-stops" class="reading-stops"></ul>
+      <p id="reading-text" class="reading-text"></p>
+      <p id="reading-sources" class="reading-sources"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>After the instrument in Philip Pullman's <em>His Dark Materials</em>.
+       Interpretations are offered by a scholar of symbols reached across the aether.</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
