@@ -1,0 +1,48 @@
+part,kind,qty,spec
+dial_sticker,bought,1,hardware/dial/dial_print_letter.pdf
+arbor_I,stock,1,"K&S 3/32"" brass rod, 17.6 mm"
+arbor_II,stock,1,"K&S 1/8"" brass tube, 11.1 mm"
+arbor_III,stock,1,"K&S 5/32"" brass tube, 7.7 mm"
+arbor_needle,stock,1,"K&S 3/16"" brass tube, 4.4 mm"
+cannon,stock,1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
+shaft_sensor_I,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+shaft_knob_I,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+sleeve_sensor_I,stock,1,"K&S 5/32"" tube, 0.50 mm"
+sleeve_knob_I,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
+magnet_I,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
+shaft_sensor_II,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+shaft_knob_II,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+sleeve_sensor_II,stock,1,"K&S 5/32"" tube, 2.50 mm"
+sleeve_knob_II,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
+magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
+shaft_sensor_III,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+shaft_knob_III,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
+sleeve_sensor_III,stock,1,"K&S 5/32"" tube, 4.50 mm"
+sleeve_knob_III,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
+magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
+standoff_bay,bought,4,M2×8 F-F brass hex standoff
+standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
+standoff_hand,bought,4,M2×6+3 M-F brass hex standoff
+screw_floor,bought,4,M2×4 brass slotted cheese head screw
+screw_top,bought,4,M2×5 brass slotted cheese head screw
+mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3)
+battery,bought,1,LiPo 1S 402535 (~350 mAh)
+driver_DRV8833,bought,1,Adafruit DRV8833 #3297
+amp_MAX98357A,bought,1,Adafruit MAX98357A #3006
+sensor_AS5600_I,bought,1,AS5600 magnetic encoder board (≤23×23 mm)
+sensor_AS5600_II,bought,1,AS5600 magnetic encoder board (≤23×23 mm)
+sensor_AS5600_III,bought,1,AS5600 magnetic encoder board (≤23×23 mm)
+motor_X27_168,bought,1,Juken/Switec X27.168 gauge stepper
+speaker,bought,1,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
+mic_INMP441,bought,1,INMP441 I2S MEMS mic module
+reed_switch,bought,1,"Glass reed switch, NO, ~2×14 mm"
+usb_c_breakout,bought,1,USB-C power breakout (e.g. Adafruit #4090)
+crown_switch,bought,1,4.5×4.5 mm tactile switch on a perfboard tab glued to P1
+crown_plunger,stock,1,"K&S 3/32"" brass rod, 10.5 mm"
+crown_collar,stock,1,"K&S 5/32"" tube, 2 mm, soldered on the plunger inside the wall"
+magnet_body,bought,1,Ø5×4 mm N52 magnet
+magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
+magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet
+hinge_knuckle_body,stock,3,"K&S 3/16"" tube, 11.6 mm"
+hinge_knuckle_lid,stock,2,"K&S 3/16"" tube, 11.6 mm"
+hinge_pin,stock,1,"K&S 5/32"" brass rod, 60 mm"
