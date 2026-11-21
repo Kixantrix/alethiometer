@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brass alethiometer: design viewer</title>
+  <link rel="icon" href="data:,">
+  <style>html, body { background: #17130f; }</style>
+  <script>
+    // python -m http.server sends no cache headers; bust them so edits and re-exports always show.
+    window.VIEWER_V = Date.now();
+    document.write('<link rel="stylesheet" href="style.css?v=' + window.VIEWER_V + '">');
+  </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <aside id="sidebar">
+    <header>
+      <h1>Brass alethiometer</h1>
+      <button id="collapse" title="Hide panel">&#x2039;</button>
+    </header>
+
+    <section class="controls">
+      <div class="row">
+        <label for="explode">Explode</label>
+        <input id="explode" type="range" min="0" max="1" step="0.01" value="0">
+      </div>
+      <div class="row">
+        <label for="lid">Lid</label>
+        <input id="lid" type="range" min="0" max="180" step="1" value="180">
+        <button id="lidToggle" class="small">Close</button>
+      </div>
+      <div class="row">
+        <label><input id="section" type="checkbox"> Section cut</label>
+        <input id="sectionPos" type="range" min="-60" max="60" step="0.5" value="0" disabled>
+      </div>
+      <div class="row views">
+        <span>View</span>
+        <button data-view="iso">Iso</button>
+        <button data-view="top">Top / dial</button>
+        <button data-view="side">Side</button>
+        <button data-view="under">Under</button>
+      </div>
+    </section>
+
+    <section class="layers">
+      <div class="layers-head">
+        <h2>Layers</h2>
+        <span>
+          <button id="showAll" class="small">All</button>
+          <button id="hideAll" class="small">None</button>
+        </span>
+      </div>
+      <ul id="groups"></ul>
+    </section>
+
+    <footer>
+      Drag to orbit &middot; right-drag to pan &middot; scroll to zoom &middot; click a part for details &middot;
+      <kbd>Esc</kbd> clears.
+      <div id="stats"></div>
+    </footer>
+  </aside>
+
+  <button id="expand" title="Show panel">&#x203A;</button>
+  <main id="stage">
+    <div id="status">Loading model&hellip;</div>
+    <div id="info" hidden>
+      <button id="infoClose" title="Close">&times;</button>
+      <h3 id="infoName"></h3>
+      <dl id="infoBody"></dl>
+      <div class="info-actions">
+        <button id="isolate" class="small">Isolate</button>
+        <button id="hidePart" class="small">Hide</button>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">import(`./viewer.js?v=${window.VIEWER_V}`);</script>
+</body>
+</html>
