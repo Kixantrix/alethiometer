@@ -1,8 +1,40 @@
 # Alethiometer dial-face sticker
 
 Printable, 1:1 dial face for the physical brass alethiometer: an ivory ring
-with dark sepia silhouette symbols, fine gilt rules and dark tick separators,
-in the style of the film prop.
+with dark sepia symbols, fine gilt rules and dark tick separators, in the
+style of the film prop.
+
+## Recommended: Myth Made's hand-drawn symbols
+
+The dial is designed to use the hand-drawn, film-style symbols from
+[Myth Made's free alethiometer files](https://mythmade.gumroad.com/l/trhgos)
+(`Alethiometer Symbols.svg`). That art isn't ours to redistribute, so this
+repo doesn't include it. Download it yourself, then run:
+
+```powershell
+pip install fonttools pymupdf pillow numpy
+python hardware/dial/make_dial.py --art "$env:USERPROFILE\Downloads\Alethiometer Symbols.svg"
+```
+
+This writes the same files listed below into the git-ignored `hardware/dial/local/` folder.
+Print `local/dial_print_letter.pdf`, or upload `local/dial_1200dpi.png`.
+[`mythmade_art.py`](mythmade_art.py) does the conversion:
+
+- reads the 36 tile outlines and the small raster symbol embedded in each;
+- turns each symbol upright relative to its tile, so its top faces away from the dial centre;
+- converts it to a sepia ink layer with a transparent ground, upsampled with Lanczos for print.
+  At native size the sources are about 340 dpi. They stay rasters, because vector tracing
+  loses the hatching;
+- maps each one to the website's symbol names and order (`MYTHMADE_NAMES`), and scales them all
+  by one factor so they keep the drawings' relative sizes.
+
+Their set is the BBC prop's. It has a **Salamander** where the books have a Garland, so the
+website, API and firmware use "Salamander" too.
+
+## Fallback: Noto Emoji (committed)
+
+Without `--art`, the generator draws the website's emoji glyphs from the open-licensed
+Noto Emoji font. That's the version committed here:
 
 ![preview](dial_preview.png)
 
@@ -99,10 +131,12 @@ substitutions were needed**. Note that the website's emoji choices are kept
 as-is for consistency, so a few symbols are emoji stand-ins: Marionette is
 🪆 (nesting dolls), Lute is 🪕 (banjo), Compasses is 📐 (set square),
 Cornucopia is 🧺 (basket), Griffin is 🦅 (eagle), Walled Garden is ⛲
-(fountain), Cauldron is ⚗️ (alembic), Garland is 🏵️ (rosette).
+(fountain), Cauldron is ⚗️ (alembic), Salamander is 🔥 (fire).
 
 ## Licences / attribution
 
+* Symbol art used with `--art` belongs to Myth Made, and its drawings follow the BBC/HBO prop.
+  It's read from your own download and never committed. Please support Myth Made if you use it.
 * Noto Emoji — Copyright 2013 Google LLC, SIL Open Font License 1.1
   (`fonts/OFL-NotoEmoji.txt`), from
   [google/fonts `ofl/notoemoji`](https://github.com/google/fonts/tree/main/ofl/notoemoji).

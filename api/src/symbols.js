@@ -24,7 +24,7 @@ export const SYMBOL_MEANINGS = Object.freeze({
   'Compasses': ['measurement', 'mathematics', 'science'],
   'Dolphin': ['water', 'swiftness', 'rescue'],
   'Elephant': ['memory', 'sovereignty', 'restraint'],
-  'Garland': ['victory', 'fame', 'transience'],
+  'Salamander': ['endurance', 'trial by fire', 'renewal'],
   'Globe': ['the world', 'politics', 'far places'],
   'Griffin': ['treasure', 'watchfulness', 'twinned natures'],
   'Horse': ['journeys', 'loyalty', 'nobility'],

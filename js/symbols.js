@@ -30,7 +30,7 @@ export const SYMBOLS = Object.freeze([
   { name: 'Compasses', glyph: '📐', meanings: ['measurement', 'mathematics', 'science'] },
   { name: 'Dolphin', glyph: '🐬', meanings: ['water', 'swiftness', 'rescue'] },
   { name: 'Elephant', glyph: '🐘', meanings: ['memory', 'sovereignty', 'restraint'] },
-  { name: 'Garland', glyph: '🏵️', meanings: ['victory', 'fame', 'transience'] },
+  { name: 'Salamander', glyph: '🔥', meanings: ['endurance', 'trial by fire', 'renewal'] },
   { name: 'Globe', glyph: '🌍', meanings: ['the world', 'politics', 'far places'] },
   { name: 'Griffin', glyph: '🦅', meanings: ['treasure', 'watchfulness', 'twinned natures'] },
   { name: 'Horse', glyph: '🐎', meanings: ['journeys', 'loyalty', 'nobility'] },

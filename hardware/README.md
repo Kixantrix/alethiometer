@@ -35,9 +35,10 @@ the interpretation aloud.
 - **Case.** Three bent .040" brass shells: a lower tray, an upper shell that telescopes over it
   like a watch case, and a hinged lid with a pierced rosette inside. The upper shell's top face
   carries the crystal window and a ring of 90 radial slots.
-- **Dial.** A printed sticker (cream ring, 36 sepia silhouettes in the website's order, Hourglass
-  at 12) on a brass dial plate. The plate's skeleton window shows the gear train underneath.
-  Acrylic crystal.
+- **Dial.** A printed sticker on a brass dial plate: a cream ring with 36 sepia symbols in the
+  website's order, Hourglass at 12. It uses Myth Made's hand-drawn, film-style symbols, which you
+  generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
+  window shows the gear train underneath. Acrylic crystal.
 - **Three framing hands, set by hand.** Each thumbwheel (five stacked 31-tooth brass gears)
   drives a 36-tooth sensor gear, which drives a 36-tooth gear on that hand's arbor. The arbors
   are nested K&S tubes, like the hour and minute pipes of a clock. The sensor gear turns
@@ -133,6 +134,7 @@ voids, and the minimum flange length.
 
 The form follows the BBC/HBO *His Dark Materials* prop and is inspired by Jamie of
 [Myth Made](https://www.youtube.com/watch?v=rpL9xWBeznU), whose build proved that a folded
-octagonal case, side thumbwheels, and an X27 needle make a convincing instrument. No Myth Made
-files are used here. This design, its CAD, and its artwork are original. It's an unofficial fan
-project, not affiliated with the BBC, HBO, Philip Pullman, or Myth Made.
+octagonal case, side thumbwheels, and an X27 needle make a convincing instrument. The dial uses
+Myth Made's free symbol artwork. It's read from your own download at build time and isn't
+redistributed here. The case, movement, CAD, and electronics are original. It's an unofficial
+fan project, not affiliated with the BBC, HBO, Philip Pullman, or Myth Made.

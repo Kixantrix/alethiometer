@@ -34,7 +34,8 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 
 ## 0. Before you order
 
-1. Print `dial/dial_print_letter.pdf` at 100 % on plain paper and check the 50 mm bar.
+1. Generate the dial with Myth Made's symbols (see [`dial/README.md`](dial/README.md)). Print
+   `dial/local/dial_print_letter.pdf` at 100 % on plain paper and check the 50 mm bar.
    It confirms the printer scale before you buy sticker stock.
 2. Upload the files in `out/sendcutsend/` and check the instant quote (see *Ordering* in
    [README.md](README.md)).

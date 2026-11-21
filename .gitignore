@@ -3,3 +3,4 @@ local.settings.json
 *.zip
 .DS_Store
 __pycache__/
+hardware/dial/local/

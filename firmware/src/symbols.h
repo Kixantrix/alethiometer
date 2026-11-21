@@ -32,7 +32,7 @@ static const char *const SYMBOL_NAMES[SYMBOL_COUNT] = {
     "Compasses",  // 21  210 deg
     "Dolphin",  // 22  220 deg
     "Elephant",  // 23  230 deg
-    "Garland",  // 24  240 deg
+    "Salamander",  // 24  240 deg
     "Globe",  // 25  250 deg
     "Griffin",  // 26  260 deg
     "Horse",  // 27  270 deg

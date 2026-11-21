@@ -21,6 +21,8 @@ Requires: fonttools, pymupdf, pillow
 
 from __future__ import annotations
 
+import argparse
+import base64
 import hashlib
 import math
 import re
@@ -188,7 +190,7 @@ def text_path(outliner: Outliner, text: str, x: float, y: float, size: float,
 
 # ================================================================= the dial
 def symbol_paths(symbols, emoji: Outliner, serif: Outliner):
-    """Return [(name, d)] with each glyph positioned/rotated in dial mm."""
+    """Return [(name, element)] with each glyph positioned/rotated in dial mm."""
     out = []
     for i, (name, glyph) in enumerate(symbols):
         text = glyph.replace("\ufe0f", "").replace("\u200d", "")
@@ -213,7 +215,43 @@ def symbol_paths(symbols, emoji: Outliner, serif: Outliner):
         c, d = s * sin_t, -s * cos_t
         e = px - a * cxu - c * cyu
         f = py - b * cxu - d * cyu
-        out.append((name, path_d(ol, run, (a, b, c, d, e, f))))
+        out.append((name, f'<path id="sym{i:02d}" data-name="{escape(name)}" '
+                          f'd="{path_d(ol, run, (a, b, c, d, e, f))}"/>'))
+    return out
+
+
+# Radial/tangential room for a symbol inside the band (between the hairlines,
+# less a margin) — used to scale artwork symbols uniformly.
+ART_RADIAL_MAX = 7.6
+ART_TANGENTIAL_MAX = 5.5
+
+
+def art_elements(symbols, art) -> list[tuple[str, str]]:
+    """Myth Made raster symbols as positioned <image> elements (see mythmade_art.py).
+
+    All symbols share one scale factor so the drawings keep their designed
+    relative sizes; the factor is the largest that fits every symbol in the band.
+    """
+    missing = [n for n, _ in symbols if n not in art]
+    if missing:
+        raise SystemExit(f"artwork has no symbol for: {missing}")
+    fit = min(min(ART_RADIAL_MAX / ((s.ink_box[3] - s.ink_box[1]) * s.mm_per_px),
+                  ART_TANGENTIAL_MAX / ((s.ink_box[2] - s.ink_box[0]) * s.mm_per_px))
+              for s in art.values())
+    out = []
+    for i, (name, _) in enumerate(symbols):
+        s = art[name]
+        k = s.mm_per_px * fit
+        cx = (s.ink_box[0] + s.ink_box[2]) / 2
+        cy = (s.ink_box[1] + s.ink_box[3]) / 2
+        ang = i * 360 / len(symbols)
+        px, py = polar(R_SYMBOL, ang)
+        href = "data:image/png;base64," + base64.b64encode(s.png).decode("ascii")
+        out.append((name, (
+            f'<image id="sym{i:02d}" data-name="{escape(name)}" width="{s.size_px[0]}" '
+            f'height="{s.size_px[1]}" xlink:href="{href}" '
+            f'transform="translate({fmt(px)} {fmt(py)}) rotate({fmt(ang)}) scale({k:.6f}) '
+            f'translate({fmt(-cx)} {fmt(-cy)})"/>')))
     return out
 
 
@@ -296,8 +334,8 @@ def dial_group(glyphs, gradient: bool, cutlines: bool) -> tuple[str, str]:
     pips = "".join(circle_d(PIP_RADIUS, *polar(R_PIP, i * 10)) for i in range(36))
     body.append(f'<path id="pips" d="{pips}" fill="{GLYPH}"/>')
     body.append(f'<g id="symbols" fill="{GLYPH}">')
-    for i, (name, d) in enumerate(glyphs):
-        body.append(f'<path id="sym{i:02d}" data-name="{escape(name)}" d="{d}"/>')
+    for _, element in glyphs:
+        body.append(element)
     body.append("</g>")
     if cutlines:
         body.append(
@@ -310,7 +348,7 @@ def dial_group(glyphs, gradient: bool, cutlines: bool) -> tuple[str, str]:
 def svg_doc(width: float, height: float, viewbox: str, defs: str, body: str, title: str) -> str:
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<svg xmlns="http://www.w3.org/2000/svg" '
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
         f'width="{fmt(width)}mm" height="{fmt(height)}mm" viewBox="{viewbox}">\n'
         f"<title>{title}</title>\n"
         + (f"<defs>{defs}</defs>\n" if defs else "")
@@ -452,24 +490,37 @@ def verify_pdf(out: Path):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--art", type=Path, metavar="SVG",
+                    help="Myth Made's 'Alethiometer Symbols.svg': use its hand-drawn symbols "
+                         "instead of Noto Emoji. Outputs go to the git-ignored local/ folder.")
+    args = ap.parse_args()
+
     symbols = load_symbols()
-    emoji = Outliner(EMOJI_FONT, {"wght": EMOJI_WGHT})
     serif = Outliner(SERIF_FONT, SERIF_LOC)
     caption = Outliner(SERIF_FONT, CAPTION_LOC)
-    glyphs = symbol_paths(symbols, emoji, serif)
+    if args.art:
+        import mythmade_art
+        glyphs = art_elements(symbols, mythmade_art.load(args.art, GLYPH))
+        out_dir = HERE / "local"
+        out_dir.mkdir(exist_ok=True)
+    else:
+        emoji = Outliner(EMOJI_FONT, {"wght": EMOJI_WGHT})
+        glyphs = symbol_paths(symbols, emoji, serif)
+        out_dir = HERE
 
     outputs = {}
-    p = HERE / "dial.svg"
+    p = out_dir / "dial.svg"
     p.write_text(dial_svg(glyphs, gradient=True, cutlines=True), encoding="utf-8", newline="\n")
     outputs["dial.svg"] = p
 
-    p = HERE / "dial_print_letter.pdf"
+    p = out_dir / "dial_print_letter.pdf"
     write_pdf(letter_svg(glyphs, caption), p)
     outputs["dial_print_letter.pdf"] = p
     verify_pdf(p)
 
     art = dial_svg(glyphs, gradient=False, cutlines=False)
-    p = HERE / "dial_1200dpi.png"
+    p = out_dir / "dial_1200dpi.png"
     pix = render_svg(art, 1200, alpha=True)
     pix.set_dpi(1200, 1200)
     pix.save(p)
@@ -477,7 +528,7 @@ def main():
     print(f"  dial_1200dpi.png: {pix.width}x{pix.height} px "
           f"= {pix.width / 1200 * 25.4:.2f} mm @1200dpi")
 
-    p = HERE / "dial_preview.png"
+    p = out_dir / "dial_preview.png"
     write_preview(art, p)
     outputs["dial_preview.png"] = p
 

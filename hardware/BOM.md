@@ -88,7 +88,7 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 
 | Item | ≈ $ | Notes |
 |---|---|---|
-| Matte white (or cream) inkjet vinyl sticker sheet + clear matte laminate | 8 | Or upload `dial/dial_1200dpi.png` to a die-cut sticker service. See `dial/README.md`. |
+| Matte white (or cream) inkjet vinyl sticker sheet + clear matte laminate | 8 | Generate the dial with Myth Made's symbols (`dial/make_dial.py --art …`), then print `dial/local/dial_print_letter.pdf` or upload `dial/local/dial_1200dpi.png` to a die-cut sticker service. See `dial/README.md`. |
 | Soft solder + brass flux + solder paste | 12 | |
 | 5-minute epoxy, Loctite 638 (retaining compound) | 10 | |
 | Clock oil | 6 | |
