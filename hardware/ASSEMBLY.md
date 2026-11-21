@@ -78,8 +78,8 @@ Cut, deburr and check each piece against the cut list (also in `out/stock_and_bo
 | Sensor sleeves | 5/32" tube | 2.5 mm (II), 4.5 mm (III); I uses a 0.5 mm M3 shim washer |
 | Knob upper sleeves ×3 | 5/32" tube | 2.42 mm |
 | Knob lower spacers ×3 | M3 shim washer | 0.5 mm |
-| Crown plunger | 3/32" rod | 10.5 mm |
-| Crown collar | 5/32" tube | 2.0 mm |
+| Crown plunger | 3/32" rod | 6.7 mm |
+| Crown collar | 5/32" tube | 1.5 mm |
 | Hinge knuckles ×5 | 3/16" tube | 11.6 mm |
 | Hinge pin | 5/32" rod | 60 mm |
 
@@ -129,15 +129,16 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 
 ## 5. Movement
 
-1. **Set the motor mesh (carrier as a jig).** Stand the four **M2×12 F-F** bay standoffs on the
+1. **Set the motor mesh (carrier as a jig).** Stand the three **M2×12 F-F** bay standoffs on the
    carrier, each held by an M2×8 screw from below through a 2.5 mm nylon spacer and the board.
+   At the top-right corner (no bay post) an M2 nut under P1 takes the gear standoff instead.
    The floor isn't fitted yet, so the screws go a little deeper. Lay P1 on top and screw the
    four **M2×8 M-F** gear standoffs through P1 into them. The X27, plugged into its loose
    sockets, pokes up through P1's slot. Nest arbors I, II and III and the needle arbor (with its
    19T gear) in the centre bearing, as in step 3. Slide the X27 along the slot until the 38T motor gear meshes with a hair of
    backlash. Hold it there, turn the stack over and solder the eight X27 socket pins. Then
-   undo the four floor screws and lift P1 + standoffs off the carrier. The X27 stays plugged in.
-2. Stand P1 on its four bay standoffs on the bench. They hold it 12 mm up, so the parts below
+   undo the three floor screws and lift P1 + standoffs off the carrier. The X27 stays plugged in.
+2. Stand P1 on its three bay standoffs on the bench. They hold it 12 mm up, so the parts below
    P1 hang free.
 3. Drop in, in this order:
    - arbor I (3/32" rod into the centre bearing);
@@ -163,25 +164,25 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 
 ## 7. Case
 
-1. **Lower tray.** Line the floor with one layer of Kapton. Put the four nylon spacers over the
-   floor holes and the populated carrier on top. Plug in the battery, then connect the mic,
-   speaker, crown switch and reed leads to J4, J5, J3 and J6. Plug the FPC extension into the
-   ProS3.
-2. Lower the movement straight down onto the carrier. The X27 and its gear rise up through
+1. **Crown.** Push the crown plunger in from outside through the lower tray's top-right chamfer
+   hole and solder the 1.5 mm collar on inside, leaving 0.3 mm of play.
+2. **Lower tray.** Line the floor with one layer of Kapton. Put the three nylon spacers over the
+   floor holes and lower the populated carrier straight in: U7's receptacle lines up with the wall
+   opening and the crown switch drops in just behind the plunger. Plug in the
+   battery and connect the mic, speaker and reed leads to J4, J5 and J6. Press the crown: you
+   should feel the switch click.
+3. Lower the movement straight down onto the carrier. The X27 and its gear rise up through
    P1's slot and the motor gear slides into mesh with the needle gear (rock the needle a hair
-   if the teeth butt). Fix it with four **M2×8** screws from under the floor, through the
+   if the teeth butt). Fix it with three **M2×8** screws from under the floor, through the
    spacers and board into the bay standoffs.
-3. **Upper shell (do this with the shell upside down).**
+4. **Upper shell (do this with the shell upside down).**
    - Glue a ring of speaker cloth under the grille slots.
    - Epoxy the body closure magnet (top-left, between grille and wall) and the reed switch
      (lower-right) to the underside of the top face.
-   - Push the crown plunger in from outside through the chamfer hole and solder the collar on
-     the inside, leaving 0.3 mm of play.
    - Drop the crystal into the frame spider, then lay the seat spider on top.
-4. Solder the **body hinge leaf** to the shell's right wall: its top edge level with the top face,
+5. Solder the **body hinge leaf** to the shell's right wall: its top edge level with the top face,
    centred on the wall.
-5. Lower the shell over the movement. The thumbwheels must pass through the three notches and
-   the USB-C receptacle into its slot. Fix it with four **M2×5** screws through the top face.
+6. Lower the shell over the movement. The thumbwheels must pass through the three notches. Fix it with four **M2×5** screws through the top face.
 
 ## 8. Lid
 

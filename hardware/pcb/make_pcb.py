@@ -44,7 +44,8 @@ ORIGIN = (150.0, 100.0)            # where the dial centre lands on the KiCad pa
 
 TRACK_W, CLEARANCE, VIA_D, VIA_DRILL = 0.35, 0.25, 0.8, 0.4
 POWER_TRACK_W = 0.6
-POWER_NETS = {"GND", "VBAT", "+5V", "+3V3", "3V3_SW", "AOUT1", "AOUT2", "BOUT1", "BOUT2", "SPK+", "SPK-"}
+POWER_NETS = {"GND", "VBAT", "+5V", "+3V3", "3V3_SW", "AOUT1", "AOUT2", "BOUT1", "BOUT2", "SPK+", "SPK-",
+              "USB_VBUS"}
 
 mm = pcbnew.FromMM
 
@@ -105,7 +106,7 @@ def _label(fp, text, x, y, size=0.8, both=True, angle=0.0):
         fp.Add(_text(fp, text, LP(x, y), size, pcbnew.B_SilkS, angle))
 
 
-def module_fp(board, name, desc, pads, outline=None, extra=None):
+def module_fp(board, name, desc, pads, outline=None, extra=None, silk=True):
     """pads: [(number, x, y, drill, pad_dia, label, label_dy)] in CAD-local mm.
     pad_dia 0 -> non-plated clearance hole. Pad '1' is square."""
     fp = pcbnew.FOOTPRINT(board)
@@ -131,7 +132,8 @@ def module_fp(board, name, desc, pads, outline=None, extra=None):
         if label:
             _label(fp, label, x, y + ldy)
     if outline:
-        _rect(fp, *outline, pcbnew.F_SilkS, 0.12)
+        if silk:
+            _rect(fp, *outline, pcbnew.F_SilkS, 0.12)
         _rect(fp, *outline, pcbnew.F_Fab, 0.1)
         _rect(fp, outline[0] + 0.5, outline[1] + 0.5, pcbnew.F_CrtYd, 0.05)
     if extra:
@@ -212,6 +214,49 @@ def fp_x27(board):
                      pads, None, extra)
 
 
+def fp_usbc(board):
+    u = L.ADAFRUIT_USBC
+    names = ["GND", "VBUS", "SBU2", "CC1", "D-", "D+", "SBU1", "CC2"]
+    pads = [(i + 1, 8.89 - i * 2.54, u["header_dy"], 1.0, 1.7, None, 0) for i in range(8)]
+    pads += [("", x, y, 2.4, 0, None, 0) for x, y in u["holes"]]          # M2 screws on 5 mm spacers
+
+    def extra(fp):
+        for i, n in enumerate(names):
+            _label(fp, n, 8.89 - i * 2.54, u["header_dy"] + 3.0, 0.8, angle=90)
+        _label(fp, "USB-C #4090", 0, 2.6, 0.9, both=False)
+        _seg(fp, (-u["w"] / 2, u["h"] / 2 - 2.0), (-u["w"] / 2, -u["h"] / 2), pcbnew.F_SilkS, 0.12)
+        _seg(fp, (-u["w"] / 2, -u["h"] / 2), (u["w"] / 2, -u["h"] / 2), pcbnew.F_SilkS, 0.12)
+        _seg(fp, (u["w"] / 2, -u["h"] / 2), (u["w"] / 2, u["h"] / 2 - 2.0), pcbnew.F_SilkS, 0.12)
+    return module_fp(board, "Adafruit_USB_C_4090", "Adafruit USB Type C breakout #4090 on a 1x8 socket, 2x M2",
+                     pads, (u["w"], u["h"]), extra, silk=False)
+
+
+def place_by_feature(fp, local_pt, local_dir, cad_pt, cad_dir):
+    """Orient/position a stock footprint so a feature (KiCad-local mm, y down) lands on cad_pt
+    and the feature's direction local_dir points along cad_dir (CAD frame, y up)."""
+    want = math.atan2(-cad_dir[1], cad_dir[0])                    # board frame is y-down
+    have = math.atan2(local_dir[1], local_dir[0])
+    best = None
+    for deg in range(-180, 180, 15):                              # find KiCad's rotation sign empirically
+        fp.SetOrientationDegrees(deg)
+        fp.SetPosition(pcbnew.VECTOR2I(0, 0))
+        pads = sorted(fp.Pads(), key=lambda q: (q.GetFPRelativePosition().x, q.GetFPRelativePosition().y))
+        a, b = pads[0], pads[-1]
+        la, lb = a.GetFPRelativePosition(), b.GetFPRelativePosition()
+        ga, gb = a.GetPosition(), b.GetPosition()
+        rot = math.atan2(gb.y - ga.y, gb.x - ga.x) - math.atan2(lb.y - la.y, lb.x - la.x)
+        err = abs((have + rot - want + math.pi) % (2 * math.pi) - math.pi)
+        if best is None or err < best[0]:
+            best = (err, deg, rot)
+    _, deg, rot = best
+    fp.SetOrientationDegrees(deg)
+    lx, ly = local_pt
+    gx = lx * math.cos(rot) - ly * math.sin(rot)
+    gy = lx * math.sin(rot) + ly * math.cos(rot)
+    t = P(*cad_pt)
+    fp.SetPosition(pcbnew.VECTOR2I(int(t.x - mm(gx)), int(t.y - mm(gy))))
+
+
 def fp_load(lib_dir: Path, name: str):
     fp = pcbnew.FootprintLoad(str(lib_dir), name)
     if fp is None:
@@ -254,11 +299,13 @@ HEADERS = {
                                            ("IO0", "IO0"), ("RST", "RST"), ("+5V", "5V"), ("VBAT", "BAT")]),
     "J2": ("SPARE GPIO", 16.0, 24.5, 2.54, 0.0, [("GND", "GND"), ("IO3", "3"), ("IO38", "38"), ("IO34", "34"),
                                                  ("IO35", "35"), ("IO36", "36"), ("IO37", "37")]),
-    "J3": ("CROWN SW", 16.0, 18.8, 2.54, 0.0, [("CROWN", "SW"), ("GND", "GND")]),
     "J4": ("MIC", -46.0, -17.0, 0.0, -2.54, [("3V3_SW", "VDD"), ("GND", "GND"), ("BCLK", "SCK"),
                                              ("WS", "WS"), ("MIC_SD", "SD")]),
     "J5": ("SPKR", -18.5, 31.0, 0.0, -2.54, [("SPK+", "+"), ("SPK-", "-")]),
     "J6": ("LID", 44.0, -18.0, 0.0, -2.54, [("LID", "SW"), ("GND", "GND")]),
+    # cut-down USB-C cable from the ProS3's own port: red, white, green, black
+    "J7": ("USB CABLE", -35.0, 49.3, 0.0, -2.54, [("USB_VBUS", "VBUS red"), ("USB_D-", "D- white"),
+                                                 ("USB_D+", "D+ green"), ("GND", "GND black")]),
 }
 
 # Resistors: ref -> (value, net pad1, net pad2, x, y, rot); 10.16 mm axial, pad 1 at (x, y)
@@ -336,11 +383,11 @@ def build() -> pcbnew.BOARD:
     for pad in pros3.Pads():          # pin names between the rows
         lab = PROS3_LABELS.get(int(pad.GetNumber()), "")
         pos = pad.GetPosition()
-        off = -mm(2.6) if pad.GetFPRelativePosition().x > 0 else mm(2.6)
+        off = mm(2.6) if pros3.GetPosition().y > pos.y else -mm(2.6)      # toward the module centre
         p = pcbnew.VECTOR2I(pos.x, pos.y + off)
         for layer in (pcbnew.F_SilkS, pcbnew.B_SilkS):
             board.Add(_text(board, lab, p, 0.8, layer, 90))
-    text("ProS3  USB-C -> FPC to wall", (pp["c"][0] - 4, pp["c"][1]), 1.0)
+    text("ProS3   USB-C -> cable to J7", (pp["c"][0] + 2, pp["c"][1]), 1.0)
 
     for i, (k, place) in enumerate(L.AS5600_PLACE.items()):
         add(fp_as5600(board), f"U{2 + i}", f"AS5600 hand {k}", place["c"], place["rot"],
@@ -350,6 +397,18 @@ def build() -> pcbnew.BOARD:
          "9": "AOUT1", "10": "AOUT2", "11": "BOUT2", "12": "BOUT1", "13": "GND", "14": "GND"})
     add(fp_max98357(board), "U6", "MAX98357A", L.MAX98357_PLACE["c"], L.MAX98357_PLACE["rot"],
         {"1": "VBAT", "2": "GND", "3": "AMP_SD", "5": "DOUT", "6": "BCLK", "7": "WS", "8": "SPK-", "9": "SPK+"})
+    add(fp_usbc(board), "U7", "USB-C wall port", L.USBC_PLACE["c"], L.USBC_PLACE["rot"],
+        {"1": "GND", "2": "USB_VBUS", "5": "USB_D-", "6": "USB_D+"})
+    # crown switch: actuator tip (KiCad-local 2.25, -6.4) on the crown axis, pointing out of the corner
+    sw = add(fp_std("Button_Switch_THT", "SW_SPST_Omron_B3F-315x_Angled"), "SW1", "B3F-3150 crown",
+             (0, 0), 0.0, {"1": "CROWN", "2": "GND"})
+    d = L.CROWN_FACE_D - L.CROWN_TIP_GAP
+    ca = math.radians(L.CROWN_ANGLE)
+    place_by_feature(sw, (2.25, -6.4), (0.0, -1.0), (d * math.cos(ca), d * math.sin(ca)),
+                     (math.cos(ca), math.sin(ca)))
+    sw.Reference().SetVisible(False)
+    sw.Value().SetVisible(False)
+    text("CROWN", L.polar(d - 13.0, L.CROWN_ANGLE), 0.9, angle=-45)
     add(fp_x27(board), "M1", "X27.168", L.X27_CENTER, 0.0,
         {"1": "AOUT1", "2": "AOUT2", "3": "BOUT1", "4": "BOUT2"})
     bx0, by0, bx1, by1 = L.BATTERY_BOX
@@ -381,6 +440,8 @@ def build() -> pcbnew.BOARD:
                     t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_RIGHT if layer == pcbnew.B_SilkS
                                       else pcbnew.GR_TEXT_H_ALIGN_LEFT)
         tpos = (x + (n - 1) * dx / 2, y - 2.0) if dy == 0 else (x, y + 2.3)
+        if ref == "J7":                               # top-left corner: title below, clear of the post
+            tpos = (x + 7.0, y + (n - 1) * dy - 2.4)
         text(f"{ref} {title}", tpos, 0.85)
 
     # ---- test pads ----
@@ -398,7 +459,7 @@ def build() -> pcbnew.BOARD:
     text("TEST PADS  -  ALETHIOMETER CARRIER rev A", (TP_X0 + (per_row - 1) * TP_PITCH / 2, -51.6), 0.8)
 
     # ---- corner posts: NPTH + copper keep-out (brass standoffs must not touch copper) ----
-    for i, (x, y) in enumerate(L.POSTS):
+    for i, (x, y) in enumerate(L.BAY_POSTS):
         fp = add(fp_std("MountingHole", "MountingHole_2.7mm_M2.5"), f"H{i + 1}", "M2 post", (x, y))
         fp.Reference().SetVisible(False)
         ra = pcbnew.ZONE(board)
@@ -567,7 +628,8 @@ def save_library():
     """Write the custom footprints to alethiometer.pretty and register it for the project."""
     scratch = pcbnew.BOARD()
     for maker, name in ((fp_as5600, "Adafruit_AS5600_6357"), (fp_drv8833, "Adafruit_DRV8833_3297"),
-                        (fp_max98357, "Adafruit_MAX98357A_3006"), (fp_x27, "X27_168_socketed")):
+                        (fp_max98357, "Adafruit_MAX98357A_3006"), (fp_x27, "X27_168_socketed"),
+                        (fp_usbc, "Adafruit_USB_C_4090")):
         fp = maker(scratch)
         fp.SetReference("REF**")
         pcbnew.FootprintSave(str(LOCAL_LIB), fp)

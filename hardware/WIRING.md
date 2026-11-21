@@ -1,9 +1,10 @@
 # Wiring
 
 Almost all of this is on the [carrier PCB](pcb/README.md): every module plugs into sockets
-on it and the board makes the connections below. The only wires are to the four off-board parts
-(mic, speaker, crown switch, lid reed), which solder to labelled pads J3–J6, plus the
-battery lead and the USB-C FPC extension. This page is the signal reference. For per-pad
+on it and the board makes the connections below. The only wires are to the three off-board parts
+(mic, speaker, lid reed), which solder to labelled pads J4–J6, plus the battery lead and a
+short USB-C cable from the ProS3's port to J7. The crown switch and the wall USB-C port are on
+the carrier. This page is the signal reference. For per-pad
 detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 
 > The pin numbers are the single source of truth in [`firmware/src/config.h`](../firmware/src/config.h).
@@ -12,7 +13,7 @@ detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 ```mermaid
 flowchart LR
   BAT[(LiPo 1S<br/>402535)] -- PicoBlade --> MCU
-  USBC[USB-C on the wall<br/>FPC extension] -- USB data + 5 V --> MCU
+  USBC[Wall USB-C U7<br/>via carrier + J7 cable] -- USB data + 5 V --> MCU
   subgraph MCU[ProS3 ESP32-S3]
     direction TB
     LDO2[LDO2 3V3<br/>switched IO17]
@@ -35,7 +36,7 @@ flowchart LR
 | From | Pin | To | Notes |
 |---|---|---|---|
 | LiPo + / − | — | ProS3 battery (PicoBlade 1.25) | Use a cell with a PicoBlade lead, or crimp one. ProS3 charges it from USB. |
-| Wall USB-C | — | ProS3 USB-C (FPC ribbon extension) | Charging, serial console and flashing with the case closed. OTA also works. |
+| Wall USB-C (U7) | VBUS, D+, D−, GND | J7 → short cable → ProS3 USB-C | Charging, serial console and flashing with the case closed. OTA also works. |
 | ProS3 | **3V3 (LDO2)** | AS5600 ×3 VCC, INMP441 VDD | LDO2 is switched by IO17 and turns off in deep sleep. |
 | ProS3 | GND | AS5600 ×3 GND, INMP441 GND + L/R, DRV8833 GND, MAX98357A GND | INMP441 **L/R → GND** (left channel). |
 | AS5600 I (top, 12 o'clock) | OUT | 10 kΩ → **IO1**; 47 kΩ IO1 → GND | Divider keeps the 0–3.3 V output inside the ADC range. |
@@ -55,7 +56,7 @@ flowchart LR
 | ProS3 | **IO15** | MAX98357A SD | HIGH = on (left channel), LOW = shutdown |
 | ProS3 | VBAT | MAX98357A VIN | |
 | MAX98357A | + / − | **J5** → speaker | Through the amp's two speaker-pin sockets. GAIN is unconnected (9 dB). |
-| Crown tactile switch | — | **J3**: IO9 ↔ GND | Internal pull-up; also the deep-sleep wake button. |
+| Crown switch SW1 | — | IO9 ↔ GND (on the carrier) | Internal pull-up; also the deep-sleep wake button. |
 | Lid reed switch | — | **J6**: IO16 ↔ GND | R7 (1 MΩ) pulls IO16 up to the always-on 3V3 (not LDO2). LOW = lid closed. |
 | INMP441 | VDD GND SCK WS SD | **J4** | Tie the mic's L/R pin to GND at the mic. |
 
@@ -66,7 +67,7 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 
 | Part | Position | Mounting |
 |---|---|---|
-| ProS3 | centre (0, 43.4), USB-C toward +x | 2 × 1×17 sockets on the carrier |
+| ProS3 | centre (4, 43.4), USB-C toward −x | 2 × 1×17 sockets on the carrier; cable to J7 |
 | AS5600 ×3 | chips under the sensor shafts: (0, 25.2), (−25.2, 0), (0, −25.2) | 1×6 socket + rest post. Chip about 1.1 mm below its magnet. |
 | DRV8833 | centre (28, −31) | 1×8 + 1×6 sockets |
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
@@ -75,9 +76,9 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. Leads to J5. |
 | INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Leads to J4. |
 | Reed switch | under the top face at r 53.6 mm, 300° | Epoxy; its lid magnet sits directly above it. Leads to J6. |
-| Crown switch | on a perfboard tab epoxied to P1, behind the top-right chamfer | Switch face 9.5 mm inside the wall, on the crown axis. Leads to J3. |
-| Wall USB-C | right wall, receptacle centre y = 22.5 | Female end of the FPC extension, epoxied to a 2 mm spacer on P1, flush with the wall |
+| Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |
+| Wall USB-C | right wall, receptacle centre y = 23.5 | Adafruit #4090 on a socket, screwed to the carrier on two spacers |
 
 Make the off-board leads about 10 cm long, enough to lift the upper shell clear and lay it
-beside the base. Solder them into J3–J6; a plug standing up wouldn't fit under P1. An inline
+beside the base. Solder them into J4–J6; a plug standing up wouldn't fit under P1. An inline
 connector partway along a lead makes that part unpluggable.

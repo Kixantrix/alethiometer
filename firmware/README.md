@@ -21,7 +21,7 @@ pio run                      # build (first run downloads ~1 GB of toolchains)
 > (`HKLM\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled = 1`) or use a short
 > PlatformIO home: `$env:PLATFORMIO_CORE_DIR = "C:\pio"` before running `pio`.
 
-**Over USB.** The ProS3's USB-C reaches the case wall through an FPC extension, so USB
+**Over USB.** The ProS3's USB-C reaches the wall port through the carrier PCB, so USB
 flashing and the serial console work before and after assembly. For the very first flash you can
 also plug straight into the ProS3 on the bench:
 

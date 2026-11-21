@@ -1,11 +1,11 @@
 part,qty,grams,material
-case_lower_tray,1,166.6,"brass .040"""
+case_lower_tray,1,165.9,"brass .040"""
 case_lid,1,126.2,"brass .040"""
-case_upper_shell,1,107.5,"brass .040"""
+case_upper_shell,1,107.9,"brass .040"""
 dial_plate_P2,1,79.7,"brass .063"""
-movement_base_plate_P1,1,54.2,"brass .063"""
+movement_base_plate_P1,1,50.3,"brass .063"""
 lid_overlay,1,48.8,"brass .040"""
-pcb_carrier,1,31.9,"FR4 1.6 mm, 2 layers"
+pcb_carrier,1,31.8,"FR4 1.6 mm, 2 layers"
 knob_I_31T_x5,5,15.3,"brass .040"""
 knob_II_31T_x5,5,15.3,"brass .040"""
 knob_III_31T_x5,5,15.3,"brass .040"""
@@ -15,10 +15,10 @@ crystal,1,11.6,"clear acrylic .063"""
 motor_X27_168,1,9,Juken/Switec X27.168 gauge stepper
 battery,1,7,LiPo 1S 402535 (~350 mAh)
 hinge_pin,1,6.3,"K&S 5/32"" brass rod, 60 mm"
-mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + FPC USB-C extension
+mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
-standoff_bay,4,4.4,M2×12 F-F brass hex standoff
 hinge_leaf_body,1,3.9,"brass .040"""
+standoff_bay,3,3.3,M2×12 F-F brass hex standoff
 gear_sensor_I_36T,1,3.0,"brass .040"""
 gear_sensor_II_36T,1,3.0,"brass .040"""
 gear_sensor_III_36T,1,3.0,"brass .040"""
@@ -35,15 +35,15 @@ crown_cap_disc,3,1.7,"brass .040"""
 sensor_AS5600_I,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
-usb_c_breakout,1,1.5,USB-C female end of an FPC USB-C extension (to the ProS3)
+usb_c_breakout,1,1.5,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
 hinge_knuckle_body,3,1.5,"K&S 3/16"" tube, 11.6 mm"
-screw_floor,4,1.3,M2×8 brass cheese head
 gear_needle_19T,1,1.0,"brass .040"""
-spacer_carrier,4,1.0,M2 nylon spacer 2.5 mm
+screw_floor,3,1.0,M2×8 brass cheese head
 screw_top,4,1.0,M2×5 brass cheese head
 module_sockets,1,1,5 mm female header sockets
 mic_INMP441,1,1,INMP441 I2S MEMS mic module
-crown_switch,1,1,4.5×4.5 mm tactile switch on a perfboard tab glued to P1
+spacer_usb,1,1,M2 nylon spacer 5 mm
+crown_switch,1,1,Omron B3F-3150 right-angle tactile switch on the carrier
 hinge_knuckle_lid,2,1.0,"K&S 3/16"" tube, 11.6 mm"
 hand_III,1,0.8,"brass .040"""
 shaft_sensor_I,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
@@ -52,6 +52,7 @@ shaft_sensor_II,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
 shaft_knob_II,1,0.8,"K&S 1/8"" brass rod, 11.2 mm"
 shaft_sensor_III,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
 shaft_knob_III,1,0.8,"K&S 1/8"" brass rod, 11.2 mm"
+spacer_carrier,3,0.8,M2 nylon spacer 2.5 mm
 hand_I,1,0.7,"brass .040"""
 hand_II,1,0.7,"brass .040"""
 hand_needle,1,0.7,"copper .032"""
@@ -65,10 +66,10 @@ magnet_lid_closure,1,0.6,Ø5×4 mm N52 magnet
 magnet_lid_reed,1,0.6,Ø5×4 mm N52 magnet
 dial_sticker,1,0.5,printed vinyl
 hand_cap_rosette,1,0.5,"brass .040"""
-crown_plunger,1,0.4,"K&S 3/32"" brass rod, 10.5 mm"
 arbor_II,1,0.3,"K&S 1/8"" brass tube, 11.1 mm"
 arbor_III,1,0.3,"K&S 5/32"" brass tube, 7.7 mm"
 reed_switch,1,0.3,"Glass reed switch, NO, ~2×14 mm"
+crown_plunger,1,0.3,"K&S 3/32"" brass rod, 6.6 mm"
 arbor_needle,1,0.2,"K&S 3/16"" brass tube, 4.4 mm"
 sleeve_sensor_III,1,0.2,"K&S 5/32"" tube, 4.50 mm"
 cannon,1,0.1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
@@ -76,6 +77,7 @@ sleeve_knob_I,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 sleeve_sensor_II,1,0.1,"K&S 5/32"" tube, 2.50 mm"
 sleeve_knob_II,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 sleeve_knob_III,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
-crown_collar,1,0.1,"K&S 5/32"" tube, 2 mm, soldered on the plunger inside the wall"
+nut_p1_corner,1,0.1,M2 brass hex nut
+crown_collar,1,0.1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside the wall"
 bushing_1_8,1,0.0,"K&S 1/8"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
 sleeve_sensor_I,1,0.0,"K&S 5/32"" tube, 0.50 mm"

@@ -36,9 +36,10 @@ the interpretation aloud.
   45.6 mm with the lid closed. Weight is about **815 g**, almost all of it brass.
 - **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
   3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
-  reflash or swap. The board has labelled test pads for every signal. The ProS3's USB-C reaches
-  the case wall through an FPC extension for flashing and charging; firmware can also be
-  updated over Wi-Fi.
+  reflash or swap. The board has labelled test pads for every signal. The wall USB-C port and the
+  crown switch are mounted on the carrier too, so plugging in and pressing the crown push on
+  screws, not glue. The wall port is for flashing and charging; firmware can also be updated
+  over Wi-Fi.
 - **Case.** Three bent .040" brass shells: a lower tray, an upper shell that telescopes over it
   like a watch case, and a hinged lid with a pierced rosette inside. The upper shell's top face
   carries the crystal window and a ring of 90 radial slots.
@@ -61,7 +62,7 @@ the interpretation aloud.
   ring on the top face. It reads as decoration, and fine mesh behind it hides the interior.
   The microphone listens through a 7-hole port in the dial plate, under the same ring. Nothing
   on the outside says "speaker" or "microphone".
-- **Crown.** A small scalloped brass crown on the top-right chamfer. Hold it to speak, release
+- **Crown.** A small scalloped brass crown centred on the top-right corner, low on the case. Hold it to speak, release
   to ask. Triple-click opens Wi-Fi setup; five clicks starts calibration.
 - **Lid.** A magnet and reed switch wake the instrument when you open the lid and send it to
   sleep when you close it. A USB-C charging port is tucked in the hinge-side wall. Battery is

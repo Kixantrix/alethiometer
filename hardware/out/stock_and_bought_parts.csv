@@ -22,14 +22,15 @@ shaft_knob_III,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
 sleeve_sensor_III,stock,1,"K&S 5/32"" tube, 4.50 mm"
 sleeve_knob_III,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
-standoff_bay,bought,4,M2×12 F-F brass hex standoff
+standoff_bay,bought,3,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
 standoff_hand,bought,4,M2×6+3 M-F brass hex standoff
-spacer_carrier,bought,4,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
-screw_floor,bought,4,M2×8 brass slotted cheese head screw
+nut_p1_corner,bought,1,M2 brass hex nut (top-right gear standoff under P1; no bay post there)
+spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
+screw_floor,bought,3,M2×8 brass slotted cheese head screw
 screw_top,bought,4,M2×5 brass slotted cheese head screw
 module_sockets,bought,1,"Adafruit #3008 5 mm short female headers, cut to length (modules and X27)"
-mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + FPC USB-C extension
+mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 battery,bought,1,LiPo 1S 402535 (~350 mAh)
 driver_DRV8833,bought,1,Adafruit DRV8833 #3297
 amp_MAX98357A,bought,1,Adafruit MAX98357A #3006
@@ -40,10 +41,11 @@ motor_X27_168,bought,1,Juken/Switec X27.168 gauge stepper
 speaker,bought,1,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
 mic_INMP441,bought,1,INMP441 I2S MEMS mic module
 reed_switch,bought,1,"Glass reed switch, NO, ~2×14 mm"
-usb_c_breakout,bought,1,USB-C female end of an FPC USB-C extension (to the ProS3)
-crown_switch,bought,1,4.5×4.5 mm tactile switch on a perfboard tab glued to P1
-crown_plunger,stock,1,"K&S 3/32"" brass rod, 10.5 mm"
-crown_collar,stock,1,"K&S 5/32"" tube, 2 mm, soldered on the plunger inside the wall"
+usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
+spacer_usb,bought,1,M2 nylon round spacer 5 mm ×2 + M2×10 screws and nuts (USB breakout)
+crown_switch,bought,1,Omron B3F-3150 right-angle tactile switch on the carrier
+crown_plunger,stock,1,"K&S 3/32"" brass rod, 6.6 mm"
+crown_collar,stock,1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside the wall"
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet

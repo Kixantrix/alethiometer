@@ -143,8 +143,9 @@ MIC = dict(c=(-32.0, -32.0), d=14.0, h=3.0)
 REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
-USB = dict(y=22.5, z=Z_P1_TOP + 5.2)      # USB-C (FPC extension) receptacle centre on the right wall
-CROWN_Z, CROWN_OFFSET = Z_P1_TOP + 5.13, 8.0
+USB_BOARD_Z = Z_CARRIER_TOP + L.MODULE_LIFT               # Adafruit #4090 underside (on its socket)
+USB = dict(y=L.USBC_PLACE["c"][1], z=USB_BOARD_Z + 1.6 + 1.63)   # receptacle centre, right wall
+CROWN_Z = Z_CARRIER_TOP + L.CROWN_SW_ACT_H                # crown axis = switch actuator height
 HINGE_KNUCKLES, KNUCKLE_LEN, KNUCKLE_GAP = 5, 11.6, 0.5
 
 
@@ -250,8 +251,13 @@ def lower_tray() -> Part:
     knob_z0 = LEVELS[0] - KNOB_NOTCH_BELOW
     cuts = [WallCut(*wall_point(LOWER_OUTER, tr["angle"]), knob_notch_width(CASE_W / 2 - T040),
                     knob_z0, LOWER_H + 1) for tr in TRAINS]
+    ux = wall_point(LOWER_OUTER, 0.0)[0]
+    # USB-C opening big enough for a plug's overmould to enter (the receptacle sits ~1.5 mm in)
+    cuts.append(WallCut(ux, USB["y"], 12.6, USB["z"] - 3.3, USB["z"] + 3.3, rounded=True))
+    (cx, cy), _ = crown_axis()
+    cuts.append(WallCut(cx, cy, 3.1, CROWN_Z - 1.55, CROWN_Z + 1.55, rounded=True))
     tray = Tray(LOWER_OUTER, LOWER_H, T040, BEND_IR, K_FACTOR,
-                floor_holes=[(x, y, POST_HOLE) for x, y in POSTS], wall_cuts=cuts)
+                floor_holes=[(x, y, POST_HOLE) for x, y in L.BAY_POSTS], wall_cuts=cuts)
     prof, bends = tray.flat()
     p = Part("case_lower_tray", "scs-bent", "brass .040\"", tray.formed(), [loc()], BRASS,
              "case", prof, bends, "brass .040\", 8 bends 90° up, SCS bend spec", tray=tray)
@@ -264,9 +270,8 @@ def _to_local_upper(x, y, z):
 
 
 def crown_axis() -> tuple[tuple[float, float], tuple[float, float]]:
-    """Point on the TR chamfer outer face and outward unit direction."""
-    h = max(UPPER_OUTER.bounds[2], UPPER_OUTER.bounds[3])
-    pts = list(UPPER_OUTER.exterior.coords)
+    """Centre of the lower tray's top-right chamfer (outer face) and outward unit direction."""
+    pts = list(LOWER_OUTER.exterior.coords)
     # TR chamfer is the edge whose midpoint lies on the +x+y diagonal
     best = None
     for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
@@ -278,8 +283,7 @@ def crown_axis() -> tuple[tuple[float, float], tuple[float, float]]:
     e = ((x1 - x0) / L, (y1 - y0) / L)
     if e[1] < 0:
         e = (-e[0], -e[1])
-    p = (mx + CROWN_OFFSET * e[0], my + CROWN_OFFSET * e[1])
-    return p, (math.sqrt(0.5), math.sqrt(0.5))
+    return (mx, my), (math.sqrt(0.5), math.sqrt(0.5))
 
 
 def upper_shell() -> Part:
@@ -299,10 +303,6 @@ def upper_shell() -> Part:
         _, ly, _ = _to_local_upper(x, y, 0)
         cuts.append(WallCut(x, ly, knob_notch_width(CASE_W / 2 + SEAM_GAP),
                             Z_TOP - knob_top, UPPER_H + 1))
-    ux, uy = wall_point(UPPER_OUTER, 0.0)[0], USB["y"]
-    cuts.append(WallCut(ux, -uy, 10.6, Z_TOP - USB["z"] - 2.3, Z_TOP - USB["z"] + 2.3, rounded=True))
-    (cx, cy), _ = crown_axis()
-    cuts.append(WallCut(cx, -cy, 3.1, Z_TOP - CROWN_Z - 1.55, Z_TOP - CROWN_Z + 1.55, rounded=True))
     tray = Tray(UPPER_OUTER, UPPER_H, T040, BEND_IR, K_FACTOR, floor_cuts=face,
                 floor_holes=holes, wall_cuts=cuts)
     prof, bends = tray.flat()
@@ -381,9 +381,6 @@ def p1_plate() -> Part:
     keep = [circle(x, y, 4.6) for x, y in bearings] + [circle(x, y, 4.4) for x, y in POSTS]
     keep.append(circle(*X27_CENTER, X27_BODY_D / 2 + 2.6))
     keep.append(circle(*SPEAKER["c"], SPEAKER["d"] / 2 + 1.0))            # speaker seat
-    keep.append(rect(46.0, USB["y"], 16.0, 15.0))                          # USB-C board pad
-    (cx, cy), (dx, dy) = crown_axis()
-    keep.append(circle(cx - dx * 14.0, cy - dy * 14.0, 6.5))               # crown switch tab
     ribs = []
     for tr in TRAINS:
         ribs += [((0, 0), sensor_xy(tr)), (sensor_xy(tr), knob_xy(tr))]
@@ -674,20 +671,26 @@ def hardware() -> list[Part]:
                               f"M2×{CARRIER_STANDOFF:g} F-F brass hex standoff"),
                              ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, "M2×8+3 M-F brass hex standoff"),
                              ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×6+3 M-F brass hex standoff")):
-        sol = hx(h, z, 2.0)
-        parts.append(Part(name, "bought", spec, sol[0], [loc(), *[loc(x - POSTS[0][0], y - POSTS[0][1])
-                                                                 for x, y in POSTS[1:]]],
+        posts = L.BAY_POSTS if name == "standoff_bay" else POSTS
+        (x0, y0) = posts[0]
+        sol = hexagon(4.0, h, x0, y0, z, 2.0)
+        parts.append(Part(name, "bought", spec, sol, [loc(x - x0, y - y0) for x, y in posts],
                           BRASS_DARK, "hardware", spec=spec))
-    x0, y0 = POSTS[0]
+    nx, ny = POSTS[0]
+    parts.append(Part("nut_p1_corner", "bought", "M2 brass hex nut", hexagon(4.0, 1.6, nx, ny, Z_P1 - 1.6, 2.0),
+                      [loc()], BRASS_DARK, "hardware",
+                      spec="M2 brass hex nut (top-right gear standoff under P1; no bay post there)"))
+    x0, y0 = L.BAY_POSTS[0]
     spacer = cylinder(4.5, CARRIER_SPACER, x0, y0, Z_FLOOR_TOP, hole=2.2)
     parts.append(Part("spacer_carrier", "bought", "M2 nylon spacer 2.5 mm", spacer,
-                      [loc(x - x0, y - y0) for x, y in POSTS], IVORY, "hardware",
+                      [loc(x - x0, y - y0) for x, y in L.BAY_POSTS], IVORY, "hardware",
                       spec="M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"))
     floor_len = 8.0
     head = cylinder(3.8, 1.3, x0, y0, -1.3).fuse(cylinder(1.9, floor_len, x0, y0, 0.0))
     parts.append(Part("screw_floor", "bought", f"M2×{floor_len:g} brass cheese head", head,
-                      [loc(x - x0, y - y0) for x, y in POSTS], BRASS_DARK, "hardware",
+                      [loc(x - x0, y - y0) for x, y in L.BAY_POSTS], BRASS_DARK, "hardware",
                       spec=f"M2×{floor_len:g} brass slotted cheese head screw"))
+    x0, y0 = POSTS[0]
     top = cylinder(3.8, 1.3, x0, y0, Z_TOP).fuse(cylinder(1.9, 5.5, x0, y0, Z_TOP - 5.5))
     parts.append(Part("screw_top", "bought", "M2×5 brass cheese head", top,
                       [loc(x - x0, y - y0) for x, y in POSTS], BRASS_DARK, "hardware",
@@ -698,6 +701,11 @@ def hardware() -> list[Part]:
 def carrier_outline() -> Polygon:
     w, c = L.octagon_inset(CASE_W, CASE_CHAMFER, T040 + L.CARRIER_CLEAR)
     return octagon(w, c)
+
+
+def _place_pt(pt, place):
+    (x, y), r = place["c"], math.radians(place["rot"])
+    return (x + pt[0] * math.cos(r) - pt[1] * math.sin(r), y + pt[0] * math.sin(r) + pt[1] * math.cos(r))
 
 
 def placed(solid: cq.Solid, place: dict, z: float = 0.0) -> cq.Solid:
@@ -716,8 +724,11 @@ def electronics() -> list[Part]:
     zm = zt + L.MODULE_LIFT                                   # socketed module undersides
     # carrier PCB (ordered from a PCB fab; see hardware/pcb)
     pcb = Profile(carrier_outline())
-    for x, y in POSTS:
+    for x, y in L.BAY_POSTS:
         pcb.hole(x, y, POST_HOLE)
+    u = L.ADAFRUIT_USBC
+    for hx_, hy_ in u["holes"]:                               # USB breakout screws
+        pcb.hole(*_place_pt((hx_, hy_), L.USBC_PLACE), 2.4)
     for x, y in L.X27_PINS.values():
         pcb.hole(x, y, 1.2)
     E.append(Part("pcb_carrier", "pcb", "FR4 1.6 mm, 2 layers", profile_solid(pcb, CARRIER_T),
@@ -733,6 +744,7 @@ def electronics() -> list[Part]:
                (L.MAX98357_PLACE, [row(0, -6.985, True, 7), row(-1.8, 5.969, True, 1), row(1.7, 5.969, True, 1)])]
     sockets += [(L.AS5600_PLACE[tr["name"]], [row(0, a["header_dy"], True, 6), row(0, a["rest"][0][1], True, 2)])
                 for tr in TRAINS]
+    sockets += [(L.USBC_PLACE, [row(0, u["header_dy"], True, 8)])]
     strip = None
     for place, rows in sockets:
         for x, y, along_x, n in rows:
@@ -751,8 +763,8 @@ def electronics() -> list[Part]:
     # ProS3 (frame: USB-C toward +y; placed with USB toward +x), on its headers
     pros3 = box(-8.9, -27.76, 0, 8.9, 24.13, 1.0).fuse(box(-6.5, -14, 1.0, 6.5, 14, 2.6)) \
         .fuse(box(-4.47, 17.3, 1.0, 4.47, 25.1, 4.3)).fuse(box(-3, -27.0, 1.0, 3, -22.0, 5.4))
-    pros3 = pros3.fuse(box(-4.0, 25.1, 1.0, 4.0, 36.0, 4.3))  # FPC extension plug
-    add("mcu_ProS3", placed(pros3, L.PROS3_PLACE, zm), "Unexpected Maker ProS3 (ESP32-S3) + FPC USB-C extension")
+    pros3 = pros3.fuse(box(-4.2, 25.1, 0.2, 4.2, 37.0, 5.4))  # USB-C cable plug overmould (to J7)
+    add("mcu_ProS3", placed(pros3, L.PROS3_PLACE, zm), "Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable")
     bx0, by0, bx1, by1 = L.BATTERY_BOX
     add("battery", box(bx0, by0, zt + 0.3, bx1, by1, zt + 4.8), "LiPo 1S 402535 (~350 mAh)", (0.5, 0.5, 0.55))
     drv = box(-8.89, -12.7, 0, 8.89, 12.7, 1.6).fuse(box(-3, -4, 1.6, 3, 4, 2.8))
@@ -786,29 +798,41 @@ def electronics() -> list[Part]:
     reed = reed.rotate(cq.Vector(), cq.Vector(0, 0, 1), REED["angle"]).translate(
         cq.Vector(rx, ry, Z_TOPFACE - 0.2 - REED["d"] / 2))
     add("reed_switch", reed, "Glass reed switch, NO, ~2×14 mm", GLASS)
-    # USB-C power breakout on the right wall
-    ux = wall_point(UPPER_OUTER, 0.0)[0] - 0.4
-    uy, uz = USB["y"], USB["z"]
-    receptacle = (cq.Workplane("YZ", origin=(ux - 7.4, uy, uz)).slot2D(8.94, 3.26).extrude(7.4).val())
-    usb = box(ux - 17.0, uy - 6.5, uz - 3.23, ux - 2.6, uy + 6.5, uz - 1.63).fuse(receptacle)
-    add("usb_c_breakout", usb, "USB-C female end of an FPC USB-C extension (to the ProS3)")
-    # crown: switch + plunger + cap
+    # Wall USB-C: Adafruit #4090 on its socket + two 5 mm spacers, receptacle mouth toward the wall
+    hw, hh = u["w"] / 2, u["h"] / 2
+    usb = box(-hw, -hh, 0, hw, hh, 1.6).fuse(
+        cq.Workplane("XZ", origin=(0, hh + 0.23, 1.6 + 1.63)).slot2D(8.94, 3.26).extrude(7.6).val())
+    add("usb_c_breakout", placed(usb, L.USBC_PLACE, USB_BOARD_Z),
+        "Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers")
+    sp = None
+    for hx_, hy_ in u["holes"]:
+        c_ = cylinder(4.5, L.MODULE_LIFT, hx_, hy_, 0, hole=2.2)
+        sp = c_ if sp is None else sp.fuse(c_)
+    E.append(Part("spacer_usb", "bought", "M2 nylon spacer 5 mm", placed(sp, L.USBC_PLACE, Z_CARRIER_TOP),
+                  [loc()], IVORY, "electronics",
+                  spec="M2 nylon round spacer 5 mm ×2 + M2×10 screws and nuts (USB breakout)"))
+    # crown: right-angle tactile switch on the carrier, plunger through the lower tray chamfer
     (cx, cy), (dx, dy) = crown_axis()
     ang = math.degrees(math.atan2(dy, dx))
 
     def along(solid):
         return solid.rotate(cq.Vector(), cq.Vector(0, 0, 1), ang).translate(cq.Vector(cx, cy, CROWN_Z))
 
-    sw = box(-13.3, -2.25, -2.25, -9.5, 2.25, 2.25).fuse(
-        box(-14.9, -5, Z_P1_TOP + 0.2 - CROWN_Z, -13.3, 5, Z_P2 - 0.3 - CROWN_Z))
-    add("crown_switch", along(sw), "4.5×4.5 mm tactile switch on a perfboard tab glued to P1")
-    plunger = cq.Solid.makeCylinder(ROD_332 / 2, 10.5, cq.Vector(-9.5, 0, 0), cq.Vector(1, 0, 0))
-    E.append(stock("crown_plunger", along(plunger), [loc()], "K&S 3/32\" brass rod, 10.5 mm",
+    bw, bd, bh = L.CROWN_SW_BODY
+    tip = -L.CROWN_TIP_GAP
+    front = tip - L.CROWN_SW_ACT_LEN
+    sw = box(front - bd, -bw / 2, -L.CROWN_SW_ACT_H, front, bw / 2, bh - L.CROWN_SW_ACT_H).fuse(
+        box(front, -1.45, -1.45, tip, 1.45, 1.45))
+    add("crown_switch", along(sw), "Omron B3F-3150 right-angle tactile switch on the carrier")
+    pl_len = -tip - 0.2 + 0.6 + 3 * T040
+    plunger = cq.Solid.makeCylinder(ROD_332 / 2, pl_len, cq.Vector(tip + 0.2, 0, 0), cq.Vector(1, 0, 0))
+    E.append(stock("crown_plunger", along(plunger), [loc()], f"K&S 3/32\" brass rod, {pl_len:.1f} mm",
                    group="electronics"))
-    collar = cq.Solid.makeCylinder(TUBE_532 / 2, 2.0, cq.Vector(-3.3, 0, 0), cq.Vector(1, 0, 0)).cut(
-        cq.Solid.makeCylinder(TUBE_532 / 2 - KS_WALL, 2.0, cq.Vector(-3.3, 0, 0), cq.Vector(1, 0, 0)))
+    c0, cl = -T040 - 0.3 - 1.5, 1.5
+    collar = cq.Solid.makeCylinder(TUBE_532 / 2, cl, cq.Vector(c0, 0, 0), cq.Vector(1, 0, 0)).cut(
+        cq.Solid.makeCylinder(TUBE_532 / 2 - KS_WALL, cl, cq.Vector(c0, 0, 0), cq.Vector(1, 0, 0)))
     E.append(stock("crown_collar", along(collar), [loc()],
-                   "K&S 5/32\" tube, 2 mm, soldered on the plunger inside the wall", group="electronics"))
+                   "K&S 5/32\" tube, 1.5 mm, soldered on the plunger inside the wall", group="electronics"))
     magnet_spec = f"Ø{MAGNET_D:g}×{MAGNET_H:g} mm N52 magnet"
     for x, y in (LID_MAGNET_L,):
         E.append(stock("magnet_body", cylinder(MAGNET_D, MAGNET_H, x, y, Z_TOPFACE - MAGNET_H), [loc()],

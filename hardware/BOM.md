@@ -14,8 +14,8 @@ and quantity, e.g. `knob_I_31T_x5__brass-040in__qty5.dxf`. The same list is in
 
 | Part | Material | Qty | Notes |
 |---|---|---|---|
-| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up, 13.6 mm tall. Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
-| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 18.25 mm. Knob notches, USB-C slot, crown hole. |
+| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall) and crown hole (top-right chamfer). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
+| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 18.25 mm. Knob notches. |
 | `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum). |
 | `lid_overlay` | Brass 260 .040" | 1 | Pierced rosette, fixed inside the lid |
 | `dial_plate_P2` | Brass 260 .063" | 1 | Skeleton window; carries the dial sticker and top bearings |
@@ -62,11 +62,12 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 
 | Item | Qty | ≈ $ | Notes |
 |---|---|---|---|
-| M2 brass hex standoff, **female-female 12 mm**, 4 mm AF | 4 | 3 | Bay posts (carrier PCB → P1) |
-| M2 nylon round spacer, 2.5 mm × Ø4.5 | 4 | 1 | Floor → carrier PCB (keeps the board off the brass) |
+| M2 brass hex standoff, **female-female 12 mm**, 4 mm AF | 3 | 3 | Bay posts (carrier PCB → P1); none at the top-right corner (crown switch) |
+| M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | 1 | Floor → carrier PCB (keeps the board off the brass) |
+| M2 brass hex nut | 1 | | Under P1 at the top-right corner |
 | M2 brass hex standoff, **male-female 8 mm** (+3 mm thread) | 4 | 3 | Gear posts (P1 → P2) |
 | M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
-| M2 × 8 brass slotted cheese-head screw | 4 | 2 | Floor → spacer → PCB → bay standoff (the heads double as feet) |
+| M2 × 8 brass slotted cheese-head screw | 3 | 2 | Floor → spacer → PCB → bay standoff (the heads make a steady three-point stand) |
 | M2 × 5 brass slotted cheese-head screw | 4 | | Top face |
 | M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 4 | 2 | Shaft spacers |
 | Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
@@ -90,12 +91,13 @@ header with part numbers. Summary:
 | Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, lid pull-up |
 | 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch, ≤ 11 mm tall | 1 | 0.3 | VBAT bulk cap |
 | LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), PicoBlade 1.25 lead | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits |
-| USB-C male-to-female **FPC ribbon extension**, ~10 cm, USB 2.0 data | 1 | 4–8 | ProS3 → wall port (charging and flashing) |
+| **Adafruit USB Type C breakout** (#4090) + 2× M2 × 10 screws, nuts and 5 mm nylon spacers | 1 | 4 | Wall USB-C port, screwed to the carrier |
+| Short USB-C cable with data (thin), cut to ~6 cm | 1 | 3 | ProS3 → carrier J7 |
 | 28 mm, 8 Ω, 0.5–1 W thin speaker (≤ 5 mm) | 1 | 2–4 | e.g. Adafruit #1890 |
 | **INMP441** I2S MEMS microphone module (round, Ø14 mm) | 1 | 3 | |
 | Glass reed switch, normally open, ≈ 2 × 14 mm | 1 | 1 | Lid sensor |
-| Tactile switch 4.5 × 4.5 mm, through-hole | 1 | 0.2 | Crown |
-| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape, a scrap of perfboard | — | 6 | Off-board leads to J3–J6 |
+| **Omron B3F-3150** right-angle tactile switch | 1 | 0.5 | Crown, on the carrier |
+| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape,  | — | 6 | Off-board leads to J4–J6 |
 
 ## E. Dial, finish and consumables
 

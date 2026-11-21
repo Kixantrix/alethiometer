@@ -68,6 +68,9 @@ X27_PINS = {   # coil A on the +y side, coil B on the -y side (CAD frame)
 # ---- corner posts (screws through every level) -------------------------------
 POST_R = 57.0
 POSTS = [polar(POST_R, a) for a in (45, 135, 225, 315)]
+# The top-right corner has no bay post (floor -> carrier -> P1): the crown switch sits there.
+# Its P1 -> top-face posts remain (an M2 nut under P1 takes the gear standoff's thread).
+BAY_POSTS = POSTS[1:]
 
 # ---- carrier PCB modules (plan centre, rotation deg CCW in the CAD frame) -----
 # Footprint frames: see hardware/pcb/make_pcb.py. Rotation 0 means the module's
@@ -87,10 +90,26 @@ AS5600_PLACE = {          # header row toward the dial centre
     "II": dict(c=SENSORS["II"], rot=90.0),
     "III": dict(c=SENSORS["III"], rot=180.0),
 }
-PROS3_PLACE = dict(c=(0.0, 43.4), rot=-90.0)     # USB-C end toward +x (FPC extension to the wall)
+PROS3_PLACE = dict(c=(4.0, 43.4), rot=90.0)      # USB-C end toward -x: short cable to J7
 DRV8833_PLACE = dict(c=(28.0, -31.0), rot=0.0)
 MAX98357_PLACE = dict(c=(-32.0, 24.5), rot=0.0)
 BATTERY_BOX = (-37.0, -48.0, -13.2, -13.2)       # x0, y0, x1, y1 (sits on the carrier)
+
+# Wall USB-C: Adafruit #4090 USB-C breakout (0.1" header + two M2 holes beside the receptacle),
+# on a 1x8 socket and two 5 mm spacers, receptacle facing the right wall. Frame as the other
+# modules: header row toward -y, receptacle mouth at +y.
+ADAFRUIT_USBC = dict(w=20.32, h=13.97, header_dy=-4.445, holes=((-7.62, 4.445), (7.62, 4.445)))
+USBC_WALL_GAP = 0.75                                   # board front edge to the inner wall
+USBC_PLACE = dict(c=(CASE_W / 2 - T040 - USBC_WALL_GAP - ADAFRUIT_USBC["h"] / 2, 23.5), rot=-90.0)
+
+# Crown: centred on the top-right chamfer of the lower tray, pressing a right-angle
+# Omron B3F-3150 tactile switch soldered to the carrier.
+CROWN_ANGLE = 45.0
+CROWN_FACE_D = (CASE_W / 2 - CASE_CHAMFER / 2) * math.sqrt(2)   # outer chamfer face from the centre
+CROWN_TIP_GAP = 3.2                                    # actuator tip inside the outer face
+CROWN_SW_ACT_H = 3.75                                  # actuator centre above the carrier top
+CROWN_SW_ACT_LEN = 4.03                                # actuator beyond the switch body
+CROWN_SW_BODY = (7.3, 6.25, 7.4)                       # width, depth, height (B3F-3150)
 
 # Carrier board outline: inside the lower tray with 1.0 mm clearance
 CARRIER_CLEAR = 1.0
