@@ -16,6 +16,7 @@ the interpretation aloud.
 
 | Path | What it is |
 |---|---|
+| [`SETUP.md`](SETUP.md) | **Start here on a new computer**: tools, regenerating everything, what to check before ordering |
 | [`BOM.md`](BOM.md) | Everything to buy, with sources and rough costs |
 | [`ASSEMBLY.md`](ASSEMBLY.md) | Step-by-step build |
 | [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
