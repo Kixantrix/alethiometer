@@ -21,11 +21,12 @@ pio run                      # build (first run downloads ~1 GB of toolchains)
 > (`HKLM\SYSTEM\CurrentControlSet\Control\FileSystem\LongPathsEnabled = 1`) or use a short
 > PlatformIO home: `$env:PLATFORMIO_CORE_DIR = "C:\pio"` before running `pio`.
 
-**First flash — over USB, before the board goes into the case** (afterwards the USB port is
-power-only):
+**Over USB.** The ProS3's USB-C reaches the case wall through an FPC extension, so USB
+flashing and the serial console work before and after assembly. For the very first flash you can
+also plug straight into the ProS3 on the bench:
 
 ```powershell
-pio run -t upload            # hold BOOT, tap RST if the port doesn't appear
+pio run -t upload            # hold BOOT, tap RST if the port doesn't appear (or IO0→GND + RST on carrier J1)
 pio device monitor           # 115200 baud, USB CDC
 ```
 
@@ -139,7 +140,7 @@ All pins are defined in `src/config.h`.
 | I2S DIN ← INMP441 SD | IO14 | INMP441 L/R → GND (left) |
 | MAX98357A SD_MODE | IO15 | HIGH = on (left channel), LOW = shutdown; held LOW in deep sleep |
 | Crown button → GND | IO9 | internal/RTC pull-up, ext1 wake (any-low) |
-| Lid reed → GND | IO16 | external 1 MΩ pull-up to 3V3; LOW = closed; ext0 wake on HIGH |
+| Lid reed → GND | IO16 | 1 MΩ pull-up (R7) to 3V3; LOW = closed; ext0 wake on HIGH |
 | LDO2 enable | IO17 (on-board) | powers AS5600 ×3, INMP441, RGB LED |
 | VBAT sense | IO10 (on-board) | divider 442k/160k |
 | VBUS sense | IO33 (on-board) | |
@@ -148,8 +149,8 @@ All pins are defined in `src/config.h`.
 ### Hands
 
 Each AS5600 drives its default analog output (0…VDD over 0…360°). The ESP32-S3 ADC saturates
-at ~3.1 V, so each OUT goes through a divider (10 kΩ series, 47 kΩ to GND — part of the
-standard wiring in `hardware/WIRING.md`) and `HAND_DIVIDER_RATIO` defaults to `57.0f / 47.0f`.
+at ~3.1 V, so each OUT goes through a divider (10 kΩ series, 47 kΩ to GND — R1–R6 on the
+carrier PCB, see `hardware/pcb/README.md`) and `HAND_DIVIDER_RATIO` defaults to `57.0f / 47.0f`.
 If you build without the dividers, set it to `1.0f` and expect the two symbols in the last
 ~22° of sensor rotation to read unreliably (the `hands` command flags clipping). Readings are
 averaged (16 samples), smoothed along the shortest arc and snapped to the nearest symbol with

@@ -1,0 +1,288 @@
+(footprint "X27_168_socketed"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Juken X27.168 gauge stepper, rear pins in two 1x4 female headers")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "45dba033-0cd7-44be-83b6-3b397ad49bac")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Value" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "e7e9b28b-3ada-4874-a66b-5bbfe9039894")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2b39f2b9-f607-43e3-b14b-11e798090e93")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7f830e39-9463-4733-9627-968beb9db1c2")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_circle
+		(center 0 0)
+		(end 15.2 0)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "e3934b07-6d83-451a-a47c-a92bb9e06e30")
+	)
+	(fp_circle
+		(center 0 0)
+		(end 15.2 0)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "5a92ead6-a61c-486d-a4bd-d05fa5b0152b")
+	)
+	(fp_text user "A1"
+		(at -3.809999 -9.43 0)
+		(layer "F.SilkS")
+		(uuid "2103d9d9-3ff9-4672-98f5-4477624b3abb")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "B1"
+		(at -3.809999 9.43 0)
+		(layer "F.SilkS")
+		(uuid "1e0f5c10-51e5-40fe-ad95-d3cc4046d308")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "coil A"
+		(at 0 -7.6 0)
+		(layer "F.SilkS")
+		(uuid "a0825d7a-09c3-4765-aacf-fe5e0822f530")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "X27.168  in two 1x4 sockets"
+		(at 0 -4 0)
+		(layer "F.SilkS")
+		(uuid "b764d0ee-64c6-40bf-98dc-be35ea3aed5e")
+		(effects
+			(font
+				(size 0.9 0.9)
+				(thickness 0.135)
+			)
+		)
+	)
+	(fp_text user "coil B"
+		(at 0 7.6 0)
+		(layer "F.SilkS")
+		(uuid "9e63b769-29b0-401e-91f7-d214ac96b400")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "A2"
+		(at 3.809999 -9.43 0)
+		(layer "F.SilkS")
+		(uuid "5b74d6d0-d817-440f-ad5d-c01dab18332d")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "B2"
+		(at 3.809999 9.43 0)
+		(layer "F.SilkS")
+		(uuid "b1233c75-fa0b-4406-9d79-e412da2c82a4")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(fp_text user "A1"
+		(at -3.809999 -9.43 0)
+		(layer "B.SilkS")
+		(uuid "3bcc191a-9a2b-487b-9295-63e2a4c89df0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(fp_text user "B1"
+		(at -3.809999 9.43 0)
+		(layer "B.SilkS")
+		(uuid "bf8741b3-bd09-4629-a42d-9bed2a75dcbf")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(fp_text user "coil A"
+		(at 0 -7.6 0)
+		(layer "B.SilkS")
+		(uuid "4797c88f-72f7-41c3-8d5d-477f22cf43d9")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(fp_text user "coil B"
+		(at 0 7.6 0)
+		(layer "B.SilkS")
+		(uuid "b913bb1e-501d-4574-a795-58817135c5f1")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(fp_text user "A2"
+		(at 3.809999 -9.43 0)
+		(layer "B.SilkS")
+		(uuid "d93b8b7e-1bc0-4f01-bcd2-1db4632b5395")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(fp_text user "B2"
+		(at 3.809999 9.43 0)
+		(layer "B.SilkS")
+		(uuid "23a607f5-64ab-4cbe-aa0b-76a1ac20be43")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+			(justify mirror)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -3.809999 -11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 45)
+		(uuid "598427c3-09d1-49a9-b97f-a8e3cdf829a1")
+	)
+	(pad "2" thru_hole circle
+		(at 3.809999 -11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "150c393b-2174-4086-be90-08ac90c46537")
+	)
+	(pad "3" thru_hole circle
+		(at -3.809999 11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "705d39e6-154d-49ca-9038-2e23194ca766")
+	)
+	(pad "4" thru_hole circle
+		(at 3.809999 11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3fbea428-3d6c-4d2e-90aa-51de7ebda6c9")
+	)
+	(pad "5" thru_hole circle
+		(at -1.27 -11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "8542f5a9-56d8-49f7-a24e-bbacc1dbaa71")
+	)
+	(pad "6" thru_hole circle
+		(at 1.27 -11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "5b817a82-183b-466e-bec1-5e0a046ece53")
+	)
+	(pad "7" thru_hole circle
+		(at -1.27 11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "41800190-8264-4847-b363-862657736d5d")
+	)
+	(pad "8" thru_hole circle
+		(at 1.27 11.43)
+		(size 2 2)
+		(drill 1.3)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "27326be5-f99f-4ca1-90f8-e446773fe608")
+	)
+	(embedded_fonts no)
+)

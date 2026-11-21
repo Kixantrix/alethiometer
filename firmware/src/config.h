@@ -43,7 +43,7 @@ constexpr uint8_t LED_BRIGHTNESS = 24;    // 0-255; the LED is hidden in the cas
 // ---------------------------------------------------------------------------
 constexpr float HAND_VDD_MV = 3300.0f;      // measured AS5600 supply (LDO2)
 // Multiply ADC mV by this to undo the resistor divider on each AS5600 OUT
-// (10 kΩ series, 47 kΩ to GND — part of the standard wiring, see hardware/WIRING.md).
+// (10 kΩ series, 47 kΩ to GND — R1-R6 on the carrier PCB, see hardware/pcb/README.md).
 // ESP32-S3 ADC tops out near 3100 mV; without the divider the last ~22 deg of each
 // sensor's rotation read as clipped. Set to 1.0f if you omit the divider.
 constexpr float HAND_DIVIDER_RATIO = (10.0f + 47.0f) / 47.0f;

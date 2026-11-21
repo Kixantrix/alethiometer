@@ -76,7 +76,9 @@ def explode_dz(p, zmin: float) -> float:
         return 72.0
     if n in ("movement_base_plate_P1", "standoff_gear"):
         return 48.0
-    if g == "electronics" or n == "standoff_bay":
+    if n in ("pcb_carrier", "standoff_bay"):
+        return 12.0
+    if g == "electronics":
         return 24.0
     return 0.0
 

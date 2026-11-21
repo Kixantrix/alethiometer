@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "alethiometer")(type "KiCad")(uri "${KIPRJMOD}/alethiometer.pretty")(options "")(descr "Alethiometer carrier footprints"))
+)

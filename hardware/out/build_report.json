@@ -1,30 +1,31 @@
 {
  "summary": {
   "case_outer": "112.4 \u00d7 112.4 mm",
-  "body_height": 29.85,
-  "closed_height": 37.47,
+  "body_height": 40.95,
+  "closed_height": 48.57,
   "knob_protrusion": 3.98,
   "levels": [
-   11.116,
-   13.116,
-   15.116,
-   17.116
+   22.216,
+   24.216,
+   26.216,
+   28.216
   ],
   "hands": {
-   "III": 21.8292,
-   "II": 23.1952,
-   "I": 24.5612
+   "III": 32.9292,
+   "II": 34.2952,
+   "I": 35.6612
   },
-  "cap": 25.577,
+  "cap": 36.677,
   "crystal_clearance": 0.639,
   "x27_body": [
-   7.02,
-   16.62
+   13.62,
+   23.22
   ],
+  "as5600_magnet_gap": 1.06,
   "needle_ratio": 2.0,
   "knob_turns_per_rev": 1.1612903225806452
  },
- "weight_g": 749,
+ "weight_g": 825,
  "interference": [],
  "manufacturability": [],
  "sendcutsend_files": 28

@@ -1,5 +1,5 @@
 file,part,material,qty,size_mm,bends,notes
-case_lower_tray__brass-040in__qty1.dxf,case_lower_tray,"brass .040""",1,133.5 x 133.5,8,"brass .040"", 8 bends 90° up, SCS bend spec"
+case_lower_tray__brass-040in__qty1.dxf,case_lower_tray,"brass .040""",1,155.7 x 155.7,8,"brass .040"", 8 bends 90° up, SCS bend spec"
 case_upper_shell__brass-040in__qty1.dxf,case_upper_shell,"brass .040""",1,145.2 x 145.2,8,"brass .040"", 8 bends 90°, SCS bend spec (top face with crystal window + grille)"
 case_lid__brass-040in__qty1.dxf,case_lid,"brass .040""",1,123.9 x 123.9,8,"brass .040"", 8 bends 90°, SCS bend spec"
 lid_overlay__brass-040in__qty1.dxf,lid_overlay,"brass .040""",1,107.2 x 107.2,0,"brass .040"" pierced rosette"

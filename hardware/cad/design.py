@@ -16,6 +16,7 @@ from shapely import affinity
 from shapely.geometry import LineString, Polygon
 from shapely.ops import unary_union
 
+import layout as L
 from gears import center_distance, gear_polygon, pitch_radius
 from geom import (Profile, annulus, circle, clock, octagon, offset, polar, profile_solid,
                   rect, slot)
@@ -32,13 +33,13 @@ T032 = 0.032 * IN            # 0.813  copper 110
 BEND_IR = 0.040 * IN         # SendCutSend inside radius, brass .040
 K_FACTOR = 0.38
 MIN_FLANGE = 0.292 * IN
-DENSITY = {"brass": 8.53e-3, "copper": 8.94e-3, "acrylic": 1.19e-3, "steel": 7.9e-3}  # g/mm³
+DENSITY = {"brass": 8.53e-3, "copper": 8.94e-3, "acrylic": 1.19e-3, "steel": 7.9e-3, "fr4": 1.85e-3}  # g/mm³
 
 # ---------------------------------------------------------------------------
 # Case outline
 # ---------------------------------------------------------------------------
-CASE_W = 110.0
-CASE_CHAMFER = 16.0
+CASE_W = L.CASE_W
+CASE_CHAMFER = L.CASE_CHAMFER
 SEAM_GAP = 0.20                       # radial gap where upper shell telescopes over lower tray
 PLATE_CLEAR = 0.35                    # internal plates to case wall
 LOWER_OUTER = octagon(CASE_W, CASE_CHAMFER)
@@ -49,9 +50,14 @@ UPPER_INNER = offset(UPPER_OUTER, -T040)
 # ---------------------------------------------------------------------------
 # Vertical stack (absolute z)
 # ---------------------------------------------------------------------------
-BAY_STANDOFF, GEAR_STANDOFF, HAND_STANDOFF = 8.0, 8.0, 6.0   # M2 hex standoff lengths
+# floor -> 2.5 mm nylon spacers -> carrier PCB -> M2x15 F-F standoffs -> P1 (movement)
+# The bay is tall enough for socketed modules (L.MODULE_LIFT) under the sensor magnets.
+CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 15.0
+GEAR_STANDOFF, HAND_STANDOFF = 8.0, 6.0    # M2 hex standoff lengths
 Z_FLOOR_TOP = T040
-Z_P1 = Z_FLOOR_TOP + BAY_STANDOFF          # movement base plate (bottom face)
+Z_CARRIER = Z_FLOOR_TOP + CARRIER_SPACER   # carrier PCB (bottom face)
+Z_CARRIER_TOP = Z_CARRIER + CARRIER_T
+Z_P1 = Z_CARRIER_TOP + CARRIER_STANDOFF    # movement base plate (bottom face)
 Z_P1_TOP = Z_P1 + T063
 Z_P2 = Z_P1_TOP + GEAR_STANDOFF            # dial plate
 Z_P2_TOP = Z_P2 + T063
@@ -59,29 +65,31 @@ Z_SEAT = Z_P2_TOP + HAND_STANDOFF          # crystal seat spider
 Z_FRAME = Z_SEAT + T040                    # crystal frame spider / crystal bottom
 Z_TOPFACE = Z_FRAME + T063                 # inside of the case top
 Z_TOP = Z_TOPFACE + T040                   # outside of the case top
-LOWER_H = 13.6                             # lower tray wall height
-Z_UPPER_BOTTOM = 11.6                      # upper shell skirt bottom (2 mm overlap)
+GEAR_PITCH_Z = 2.0
+LEVELS = [Z_P1_TOP + 0.5 + i * GEAR_PITCH_Z for i in range(4)]   # L0..L3 gear bottoms
+LOWER_H = LEVELS[0] + 2.5                  # lower tray wall height (seam crosses the thumbwheels)
+Z_UPPER_BOTTOM = LOWER_H - 2.0             # upper shell skirt bottom (2 mm overlap)
 UPPER_H = Z_TOP - Z_UPPER_BOTTOM
 LID_H = 0.300 * IN                         # lid flange (>= SCS min flange .292")
 STICKER_T = 0.15
 CRYSTAL_T = T063
 
-GEAR_PITCH_Z = 2.0
-LEVELS = [Z_P1_TOP + 0.5 + i * GEAR_PITCH_Z for i in range(4)]   # L0..L3 gear bottoms
-
 # ---------------------------------------------------------------------------
-# Gear train (module 0.7, 20° PA, laser-cut .040 brass)
+# Gear train (module 0.7, 20° PA, laser-cut .040 brass) — shared with the PCB via layout.py
 # ---------------------------------------------------------------------------
-MODULE = 0.7
-Z_HAND, Z_SENSOR, Z_KNOB = 36, 36, 31
-Z_NEEDLE, Z_MOTOR = 19, 38
-R_SENSOR = center_distance(MODULE, Z_HAND, Z_SENSOR)              # 25.2
-R_KNOB = R_SENSOR + center_distance(MODULE, Z_SENSOR, Z_KNOB)     # 48.65
+MODULE = L.MODULE
+Z_HAND, Z_SENSOR, Z_KNOB = L.Z_HAND, L.Z_SENSOR, L.Z_KNOB
+Z_NEEDLE, Z_MOTOR = L.Z_NEEDLE, L.Z_MOTOR
+R_SENSOR = L.R_SENSOR                      # 25.2
+R_KNOB = L.R_KNOB                          # 48.65
 KNOB_LAYERS = 5
-X27_SHAFT = (center_distance(MODULE, Z_NEEDLE, Z_MOTOR), 0.0)     # 19.95, 0
-X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = 30.4, 9.6, 10.0
-X27_CENTER = (X27_SHAFT[0] + X27_SHAFT_OFFSET, 0.0)
-X27_BODY_TOP = LEVELS[3] - 0.5            # gear rides on the Ø2 shaft collar
+X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
+X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
+X27_CENTER = L.X27_CENTER
+X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 8.5 mm sockets
+X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
+SENSOR_MAGNET_H = 3.0                      # Ø6×3 diametric
+SENSOR_MAGNET_DROP = 0.3                   # sensor shaft pokes below P1 so the magnet can't rub the plate
 
 # K&S Precision Metals telescoping brass (0.014" wall); ID = OD - 0.028"
 def ks_od(frac: str) -> float:
@@ -112,8 +120,8 @@ CRYSTAL_R = 44.0
 WINDOW_R = 42.0
 SEAT_R_IN, SPIDER_R_OUT = 41.5, 46.6
 SLOT_R0, SLOT_R1, SLOT_N, SLOT_W = 47.6, 51.4, 90, 1.1
-POST_R = 57.0
-POSTS = [polar(POST_R, a) for a in (45, 135, 225, 315)]
+POST_R = L.POST_R
+POSTS = L.POSTS
 
 # Electronics placements
 SPEAKER = dict(c=(-28.5, 28.5), d=28.0, h=5.0)
@@ -121,8 +129,8 @@ MIC = dict(c=(-32.0, -32.0), d=14.0, h=3.0)
 REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
-USB = dict(y=22.5, z=15.8)                # USB-C receptacle centre on the right wall
-CROWN_Z, CROWN_OFFSET = 15.75, 8.0
+USB = dict(y=22.5, z=Z_P1_TOP + 5.2)      # USB-C (FPC extension) receptacle centre on the right wall
+CROWN_Z, CROWN_OFFSET = Z_P1_TOP + 5.13, 8.0
 HINGE_KNUCKLES, KNUCKLE_LEN, KNUCKLE_GAP = 5, 11.6, 0.5
 
 
@@ -375,7 +383,7 @@ def p1_plate() -> Part:
         p.hole(*knob_xy(tr), ROD_18 + BEARING)
     for x, y in POSTS:
         p.hole(x, y, 2.2)
-    p.cut(circle(*X27_CENTER, (X27_BODY_D + 0.6) / 2))
+    p.cut(slot(X27_CENTER[0] - 0.5, 0, X27_CENTER[0] + 0.5, 0, X27_BODY_D + 0.3))  # slide to set gear mesh
     return flat_part("movement_base_plate_P1", p, T063, material="brass .063\"",
                      placements=[loc(z=Z_P1)], spec="brass .063\" (hidden; skeletonised)",
                      color=BRASS_DARK)
@@ -518,7 +526,7 @@ def gears() -> list[Part]:
                                spec="brass .040\" — 5 identical layers soldered into one thumbwheel"))
     parts.append(flat_part("gear_needle_19T", gear_profile(Z_NEEDLE, TUBE_316 + FIT), T040,
                            placements=[loc(z=LEVELS[3], rz=0.0)]))
-    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 2.0 + FIT, GEAR_PATTERNS["motor"]), T040,
+    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 1.0 + FIT, GEAR_PATTERNS["motor"]), T040,
                            placements=[loc(*X27_SHAFT, LEVELS[3], mesh_rot(180, Z_MOTOR, gap=True))]))
     return parts
 
@@ -608,8 +616,9 @@ def arbors() -> list[Part]:
     for tr in TRAINS:
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
-        parts.append(stock(f"shaft_sensor_{tr['name']}", cylinder(ROD_18, shaft_h, sx, sy, Z_P1), [loc()],
-                           f"K&S 1/8\" brass rod, {shaft_h:.1f} mm"))
+        sh = shaft_h + SENSOR_MAGNET_DROP
+        parts.append(stock(f"shaft_sensor_{tr['name']}", cylinder(ROD_18, sh, sx, sy, Z_P1 - SENSOR_MAGNET_DROP),
+                           [loc()], f"K&S 1/8\" brass rod, {sh:.1f} mm"))
         parts.append(stock(f"shaft_knob_{tr['name']}", cylinder(ROD_18, shaft_h, kx, ky, Z_P1), [loc()],
                            f"K&S 1/8\" brass rod, {shaft_h:.1f} mm"))
         zl = LEVELS[tr["level"]]
@@ -621,9 +630,11 @@ def arbors() -> list[Part]:
                            cylinder(TUBE_532, k0 - Z_P1_TOP, kx, ky, Z_P1_TOP, hole=TUBE_532 - 2 * KS_WALL)
                            .fuse(cylinder(TUBE_532, Z_P2 - k1, kx, ky, k1, hole=TUBE_532 - 2 * KS_WALL)),
                            [loc()], f"K&S 5/32\" tube, {k0 - Z_P1_TOP:.2f} + {Z_P2 - k1:.2f} mm"))
-        parts.append(stock(f"magnet_{tr['name']}", cylinder(6.0, 2.5, sx, sy, Z_P1 - 2.5), [loc()],
-                           "Ø6×2.5 mm diametric NdFeB (AS5600 magnet)", STEEL, density="steel",
-                           kind="bought"))
+        parts.append(stock(f"magnet_{tr['name']}",
+                           cylinder(6.0, SENSOR_MAGNET_H, sx, sy, Z_P1 - SENSOR_MAGNET_DROP - SENSOR_MAGNET_H),
+                           [loc()],
+                           f"Ø6×{SENSOR_MAGNET_H:g} mm diametric NdFeB (AS5600 magnet)", STEEL,
+                           density="steel", kind="bought"))
     return parts
 
 
@@ -633,7 +644,8 @@ def arbors() -> list[Part]:
 def hardware() -> list[Part]:
     parts = []
     hx = lambda h, z, hole=0.0: [hexagon(4.0, h, x, y, z, hole) for x, y in POSTS]
-    for name, h, z, spec in (("standoff_bay", BAY_STANDOFF, Z_FLOOR_TOP, "M2×8 F-F brass hex standoff"),
+    for name, h, z, spec in (("standoff_bay", CARRIER_STANDOFF, Z_CARRIER_TOP,
+                              f"M2×{CARRIER_STANDOFF:g} F-F brass hex standoff"),
                              ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, "M2×8+3 M-F brass hex standoff"),
                              ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×6+3 M-F brass hex standoff")):
         sol = hx(h, z, 2.0)
@@ -641,15 +653,30 @@ def hardware() -> list[Part]:
                                                                  for x, y in POSTS[1:]]],
                           BRASS_DARK, "hardware", spec=spec))
     x0, y0 = POSTS[0]
-    head = cylinder(3.8, 1.3, x0, y0, -1.3).fuse(cylinder(1.9, 4.0, x0, y0, 0.0))
-    parts.append(Part("screw_floor", "bought", "M2×4 brass pan/cheese head", head,
+    spacer = cylinder(4.5, CARRIER_SPACER, x0, y0, Z_FLOOR_TOP, hole=2.2)
+    parts.append(Part("spacer_carrier", "bought", "M2 nylon spacer 2.5 mm", spacer,
+                      [loc(x - x0, y - y0) for x, y in POSTS], IVORY, "hardware",
+                      spec="M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"))
+    floor_len = 8.0
+    head = cylinder(3.8, 1.3, x0, y0, -1.3).fuse(cylinder(1.9, floor_len, x0, y0, 0.0))
+    parts.append(Part("screw_floor", "bought", f"M2×{floor_len:g} brass cheese head", head,
                       [loc(x - x0, y - y0) for x, y in POSTS], BRASS_DARK, "hardware",
-                      spec="M2×4 brass slotted cheese head screw"))
+                      spec=f"M2×{floor_len:g} brass slotted cheese head screw"))
     top = cylinder(3.8, 1.3, x0, y0, Z_TOP).fuse(cylinder(1.9, 5.5, x0, y0, Z_TOP - 5.5))
     parts.append(Part("screw_top", "bought", "M2×5 brass cheese head", top,
                       [loc(x - x0, y - y0) for x, y in POSTS], BRASS_DARK, "hardware",
                       spec="M2×5 brass slotted cheese head screw"))
     return parts
+
+
+def carrier_outline() -> Polygon:
+    w, c = L.octagon_inset(CASE_W, CASE_CHAMFER, T040 + L.CARRIER_CLEAR)
+    return octagon(w, c)
+
+
+def placed(solid: cq.Solid, place: dict, z: float = 0.0) -> cq.Solid:
+    (x, y), rot = place["c"], place["rot"]
+    return solid.rotate(cq.Vector(), cq.Vector(0, 0, 1), rot).translate(cq.Vector(x, y, z))
 
 
 def electronics() -> list[Part]:
@@ -659,26 +686,68 @@ def electronics() -> list[Part]:
         E.append(Part(name, "bought", spec, solid, [loc()], color, "electronics", spec=spec,
                       density="steel"))
 
-    zb = Z_FLOOR_TOP + 0.3                                   # foam tape
-    pros3 = box(-1, -8.9, zb, 52, 8.9, zb + 2.4).fuse(box(45, -4.5, zb, 52.5, 4.5, zb + 4.3)) \
-        .fuse(box(-1, -3, zb, 4, 3, zb + 5.4))
-    add("mcu_ProS3", pros3, "Unexpected Maker ProS3 (ESP32-S3)")
-    add("battery", box(13, 12.6, zb, 48, 37.6, zb + 4.5), "LiPo 1S 402535 (~350 mAh)", (0.5, 0.5, 0.55))
-    add("driver_DRV8833", box(15, -32.2, zb, 35.3, -13.9, zb + 3.6), "Adafruit DRV8833 #3297")
-    add("amp_MAX98357A", box(-39.5, 17, zb, -20.5, 34.8, zb + 3.6), "Adafruit MAX98357A #3006")
+    zt = Z_CARRIER_TOP
+    zm = zt + L.MODULE_LIFT                                   # socketed module undersides
+    # carrier PCB (ordered from a PCB fab; see hardware/pcb)
+    pcb = Profile(carrier_outline())
+    for x, y in POSTS:
+        pcb.hole(x, y, 2.4)
+    for x, y in L.X27_PINS.values():
+        pcb.hole(x, y, 1.2)
+    E.append(Part("pcb_carrier", "pcb", "FR4 1.6 mm, 2 layers", profile_solid(pcb, CARRIER_T),
+                  [loc(z=Z_CARRIER)], (0.06, 0.28, 0.14), "electronics", pcb, [],
+                  "hardware/pcb (JLCPCB/PCBWay, 2-layer 1.6 mm)", density="fr4"))
+
+    # Sockets: (module placement, [(x, y, along_x, n_pins)] in the module frame, socket height, male plastic)
+    def row(x, y, along_x, n):
+        return (x, y, along_x, n)
+    a = L.ADAFRUIT_AS5600
+    sockets = [(L.PROS3_PLACE, [row(7.62, 0, False, 17), row(-7.62, 0, False, 17)]),
+               (L.DRV8833_PLACE, [row(-6.35, 0, False, 8), row(6.35, 0, False, 6)]),
+               (L.MAX98357_PLACE, [row(0, -6.985, True, 7), row(-1.8, 5.969, True, 1), row(1.7, 5.969, True, 1)])]
+    sockets += [(L.AS5600_PLACE[tr["name"]], [row(0, a["header_dy"], True, 6), row(0, a["rest"][0][1], True, 2)])
+                for tr in TRAINS]
+    strip = None
+    for place, rows in sockets:
+        for x, y, along_x, n in rows:
+            hx, hy = (n * 1.27, 1.27) if along_x else (1.27, n * 1.27)
+            body = box(x - hx, y - hy, 0, x + hx, y + hy, L.SOCKET_H).fuse(
+                box(x - hx, y - hy, L.SOCKET_H, x + hx, y + hy, L.MODULE_LIFT))
+            body = placed(body, place, zt)
+            strip = body if strip is None else strip.fuse(body)
+    cx = X27_CENTER[0]
+    for sy in (11.43, -11.43):                                # X27: two standard 1x4 female headers
+        body = box(cx - 5.08, sy - 1.27, zt, cx + 5.08, sy + 1.27, zt + L.X27_SOCKET_H)
+        strip = strip.fuse(body)
+    E.append(Part("module_sockets", "bought", "female header sockets + module male headers", strip, [loc()],
+                  BLACK, "electronics", spec="Adafruit #3008 5 mm female headers (cut to length) + 2x 1x4 "
+                  "8.5 mm female headers for the X27; module male headers on top", density="acrylic"))
+
+    # ProS3 (frame: USB-C toward +y; placed with USB toward +x), on its headers
+    pros3 = box(-8.9, -27.76, 0, 8.9, 24.13, 1.0).fuse(box(-6.5, -14, 1.0, 6.5, 14, 2.6)) \
+        .fuse(box(-4.47, 17.3, 1.0, 4.47, 25.1, 4.3)).fuse(box(-3, -27.0, 1.0, 3, -22.0, 5.4))
+    pros3 = pros3.fuse(box(-4.0, 25.1, 1.0, 4.0, 36.0, 4.3))  # FPC extension plug
+    add("mcu_ProS3", placed(pros3, L.PROS3_PLACE, zm), "Unexpected Maker ProS3 (ESP32-S3) + FPC USB-C extension")
+    bx0, by0, bx1, by1 = L.BATTERY_BOX
+    add("battery", box(bx0, by0, zt + 0.3, bx1, by1, zt + 4.8), "LiPo 1S 402535 (~350 mAh)", (0.5, 0.5, 0.55))
+    drv = box(-8.89, -12.7, 0, 8.89, 12.7, 1.6).fuse(box(-3, -4, 1.6, 3, 4, 2.8))
+    add("driver_DRV8833", placed(drv, L.DRV8833_PLACE, zm), "Adafruit DRV8833 #3297")
+    amp = box(-8.89, -9.525, 0, 8.89, 9.525, 1.6).fuse(box(-2.5, -4, 1.6, 2.5, 2, 2.6))
+    add("amp_MAX98357A", placed(amp, L.MAX98357_PLACE, zm), "Adafruit MAX98357A #3006")
+    as5600 = box(-a["w"] / 2, -a["h"] / 2, 0, a["w"] / 2, a["h"] / 2, 1.6) \
+        .fuse(box(-2.5, -3.0, 1.6, 2.5, 3.0, 3.1)) \
+        .fuse(box(-12.7, -3.0, 1.6, -7.6, 3.0, 4.5)).fuse(box(7.6, -3.0, 1.6, 12.7, 3.0, 4.5))
     for tr in TRAINS:
-        sx, sy = sensor_xy(tr)
-        chip_top = Z_P1 - 2.5 - 0.6
-        b = box(sx - 11.5, sy - 11.5, chip_top - 3.1, sx + 11.5, sy + 11.5, chip_top - 1.5) \
-            .fuse(box(sx - 2.5, sy - 3, chip_top - 1.5, sx + 2.5, sy + 3, chip_top))
-        add(f"sensor_AS5600_{tr['name']}", b, "AS5600 magnetic encoder board (≤23×23 mm)")
-    # X27.168 gauge stepper: Ø30.4 body, Ø2 collar, Ø1 shaft (trimmed), rear pins bent flat
+        add(f"sensor_AS5600_{tr['name']}", placed(as5600, L.AS5600_PLACE[tr["name"]], zm),
+            "Adafruit AS5600 #6357, plugged into the carrier")
+    # X27.168: rear pins plug into the 8.5 mm sockets, motor gear on the Ø1 shaft
     bx, by = X27_CENTER
-    body = cylinder(X27_BODY_D, X27_BODY_H, bx, by, X27_BODY_TOP - X27_BODY_H)
+    body = cylinder(X27_BODY_D, X27_BODY_H, bx, by, X27_BODY_BOTTOM)
     body = body.fuse(cylinder(2.0, 2.2, *X27_SHAFT, X27_BODY_TOP)).fuse(
         cylinder(1.0, LEVELS[3] + T040 + 0.3 - X27_BODY_TOP, *X27_SHAFT, X27_BODY_TOP))
-    body = body.fuse(box(bx - 6, by - 12, X27_BODY_TOP - X27_BODY_H - 1.4, bx + 6, by + 12,
-                         X27_BODY_TOP - X27_BODY_H))
+    body = body.fuse(cylinder(2.0, 2.4, *X27_SHAFT, X27_BODY_BOTTOM - 2.4))
+    for px, py in L.X27_PINS.values():
+        body = body.fuse(cylinder(0.5, 4.4, px, py, X27_BODY_BOTTOM - 4.4))
     add("motor_X27_168", body, "Juken/Switec X27.168 gauge stepper", (0.92, 0.92, 0.88))
     sx, sy = SPEAKER["c"]
     add("speaker", cylinder(SPEAKER["d"], SPEAKER["h"], sx, sy, Z_P1_TOP + 0.2),
@@ -697,7 +766,7 @@ def electronics() -> list[Part]:
     uy, uz = USB["y"], USB["z"]
     receptacle = (cq.Workplane("YZ", origin=(ux - 7.4, uy, uz)).slot2D(8.94, 3.26).extrude(7.4).val())
     usb = box(ux - 17.0, uy - 6.5, uz - 3.23, ux - 2.6, uy + 6.5, uz - 1.63).fuse(receptacle)
-    add("usb_c_breakout", usb, "USB-C power breakout (e.g. Adafruit #4090)")
+    add("usb_c_breakout", usb, "USB-C female end of an FPC USB-C extension (to the ProS3)")
     # crown: switch + plunger + cap
     (cx, cy), (dx, dy) = crown_axis()
     ang = math.degrees(math.atan2(dy, dx))
@@ -808,7 +877,7 @@ ALLOWED = [
     ("screw_floor", "standoff_bay"), ("screw_top", "standoff_hand"),
     ("standoff_gear", "standoff_bay"), ("standoff_hand", "standoff_gear"),
     ("hinge_pin", "hinge_knuckle"), ("crown_plunger", "crown_"),
-    ("magnet_lid", "lid_overlay"),
+    ("magnet_lid", "lid_overlay"), ("module_sockets", "motor_X27"),   # X27 pins inside their sockets
 ]
 
 LID_OPEN_ANGLE = 180.0
@@ -828,5 +897,6 @@ def summary() -> dict:
         levels=[round(z, 3) for z in LEVELS], hands=Z_HANDS, cap=round(Z_CAP, 3),
         crystal_clearance=round(Z_FRAME - (Z_CAP + T040), 3),
         x27_body=(round(X27_BODY_TOP - X27_BODY_H, 2), round(X27_BODY_TOP, 2)),
+        as5600_magnet_gap=round(Z_P1 - SENSOR_MAGNET_DROP - SENSOR_MAGNET_H - (Z_CARRIER_TOP + L.MODULE_LIFT + 3.1), 2),
         needle_ratio=Z_MOTOR / Z_NEEDLE, knob_turns_per_rev=Z_SENSOR / Z_KNOB,
     )

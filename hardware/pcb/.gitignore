@@ -1,0 +1,11 @@
+# KiCad user state and lock files
+*.kicad_prl
+*.lck
+~*
+fp-info-cache
+_route.dsn
+_route.ses
+# individual Gerbers/drill files: fab/alethiometer_carrier_gerbers.zip is what you upload
+fab/gerbers/
+logs/
+!fab/alethiometer_carrier_gerbers.zip

@@ -18,7 +18,9 @@ the interpretation aloud.
 |---|---|
 | [`BOM.md`](BOM.md) | Everything to buy, with sources and rough costs |
 | [`ASSEMBLY.md`](ASSEMBLY.md) | Step-by-step build |
-| [`WIRING.md`](WIRING.md) | Wiring diagram, pin table, and where each module sits |
+| [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
+| [`pcb/`](pcb/README.md) | **Carrier PCB**: all through-hole, every module socketed, test pads; Gerbers ready for JLCPCB/PCBWay |
+| [`viewer/`](viewer/README.md) | Local 3D viewer: toggle layers and parts, explode, open the lid, section cut |
 | [`out/sendcutsend/`](out/sendcutsend) | **Ready-to-upload** DXFs, one per part, with material and quantity in the filename, plus formed STEP files for the three bent parts |
 | `out/alethiometer_open.glb` | Colour 3D assembly (lid open) for any glTF viewer (Windows 3D Viewer, Blender, Fusion) |
 | `out/step/`, `out/alethiometer_*.step` | Full STEP for every part and the assemblies. They're too big for git (hundreds of MB), so `python cad/build.py` generates them locally. |
@@ -30,8 +32,13 @@ the interpretation aloud.
 
 ## The instrument
 
-- **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 29.9 mm tall,
-  37.5 mm with the lid closed. Weight is about **760 g**, almost all of it brass.
+- **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 41.0 mm tall,
+  48.6 mm with the lid closed. Weight is about **825 g**, almost all of it brass.
+- **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
+  3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
+  reflash or swap. The board has labelled test pads for every signal. The ProS3's USB-C reaches
+  the case wall through an FPC extension for flashing and charging; firmware can also be
+  updated over Wi-Fi.
 - **Case.** Three bent .040" brass shells: a lower tray, an upper shell that telescopes over it
   like a watch case, and a hinged lid with a pierced rosette inside. The upper shell's top face
   carries the crystal window and a ring of 90 radial slots.
@@ -78,14 +85,19 @@ flowchart LR
 
 | Z (mm) | Layer |
 |---|---|
-| 0 – 1.0 | lower tray floor |
-| 1.0 – 9.0 | **electronics bay**: ProS3, LiPo, DRV8833, amp, 3 × AS5600, bottom of the X27 |
-| 9.0 – 10.6 | **P1**, movement base plate (bearings) |
-| 11.1 – 18.1 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
-| 18.6 – 20.2 | **P2**, dial plate + sticker |
-| 20.7 – 26.6 | needle, hands III, II, I, cap |
-| 26.2 – 29.8 | crystal spiders, crystal, top face |
-| 29.8 – 37.5 | lid |
+| 0 – 1.0 | lower tray floor (Kapton-lined) |
+| 1.0 – 3.5 | nylon spacers |
+| 3.5 – 5.1 | **carrier PCB** |
+| 5.1 – 20.1 | **electronics bay**: modules on 5 mm sockets (ProS3, 3 × AS5600, DRV8833, amp), LiPo, X27 on its sockets |
+| 20.1 – 21.7 | **P1**, movement base plate (bearings) |
+| 22.2 – 30.2 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
+| 29.7 – 31.3 | **P2**, dial plate + sticker |
+| 31.8 – 37.7 | needle, hands III, II, I, cap |
+| 37.3 – 41.0 | crystal spiders, crystal, top face |
+| 41.0 – 48.6 | lid |
+
+The socketed carrier costs about 7 mm of height compared with soldering the modules flat. That
+buys a build where nothing needs desoldering to reflash, probe or replace a part.
 
 ## Ordering
 
@@ -96,8 +108,10 @@ flowchart LR
      (inside radius .040", K-factor 0.38).
    - Everything else is a flat DXF in millimetres. Choose the material from the filename
      (`brass-040in`, `brass-063in`, `copper-032in`, `clear-acrylic-063in`) and the quantity.
-2. **K&S tube and rod, fasteners, electronics:** [BOM.md](BOM.md) §B–D.
-3. **Dial sticker:** [`dial/README.md`](dial/README.md).
+2. **Carrier PCB:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` to JLCPCB/PCBWay
+   (2 layers, 1.6 mm; see [`pcb/README.md`](pcb/README.md)).
+3. **K&S tube and rod, fasteners, electronics:** [BOM.md](BOM.md) §B–D.
+4. **Dial sticker:** [`dial/README.md`](dial/README.md).
 
 ## Regenerating
 
@@ -108,6 +122,9 @@ python build.py          # ~5 min: checks, DXF/STEP, assemblies, renders, report
 python build.py --check  # ~1.5 min: interference + manufacturability only
 python plot_flats.py     # flat-pattern previews
 ```
+
+The carrier PCB is generated from the same `cad/layout.py` positions by
+[`pcb/make_pcb.py`](pcb/README.md#regenerating) (KiCad 10 + Freerouting).
 
 Every dimension lives in [`cad/design.py`](cad/design.py): case size, stack heights, gear
 module and tooth counts, hand lengths, and component positions. `build.py` runs a full pairwise
@@ -123,11 +140,15 @@ voids, and the minimum flange length.
 - **Laser-cut module-0.7 gears** in .040" brass are fine at hand-setting speeds and for a gauge
   motor, but expect some backlash. The firmware approaches every needle target from the same
   direction to hide it.
-- **X27 shaft collar.** The motor gear is designed to sit on the Ø2 collar. Check yours, and
-  see ASSEMBLY.md §3 for the fallback.
+- **X27 shaft length.** The 38T motor gear is pressed onto the Ø1 output shaft about 6.3 mm
+  above the motor body. Check your motor's shaft before cutting gears.
+- **Wi-Fi through brass.** The ProS3's antenna sits inside a metal case. Radio leaks out through
+  the crystal window, the grille slots and the skeletonised plates, but range will be shorter
+  than on the bench. Because the ProS3 is socketed, the u.FL version (**ProS3[D]**) with a small
+  flex antenna under the crystal can be dropped in if needed.
 - **Cloud voice** needs two extra Azure OpenAI deployments. The endpoints exist in `api/` but
   haven't been exercised against real Azure yet.
-- **Weight.** About 760 g, because brass is dense. P1 can be cut from aluminium to save about
+- **Weight.** About 825 g, because brass is dense. P1 can be cut from aluminium to save about
   45 g; it's fully hidden.
 
 ## Credits

@@ -1,7 +1,7 @@
 # Assembly
 
 Allow two or three evenings. It's watchmaking-lite: soft-soldering small brass parts,
-setting arbors into plates, and some fine wiring. Read it through once before starting.
+setting arbors into plates, and populating a through-hole PCB. Read it through once before starting.
 
 **Conventions.** "Up" is toward the dial. Positions along a shaft are measured from the
 **bottom face of P1** (the movement base plate). Every dimension comes from
@@ -62,7 +62,8 @@ Cut, deburr and check each piece against the cut list (also in `out/stock_and_bo
 | Arbor III | 5/32" tube | 7.7 mm |
 | Needle arbor | 3/16" tube | 4.4 mm |
 | Cannon | 7/32" tube | 1.95 mm |
-| Sensor shafts ×3, knob shafts ×3 | 1/8" rod | 11.2 mm each |
+| Sensor shafts ×3 | 1/8" rod | 11.5 mm each (0.3 mm proud below P1 for the magnet) |
+| Knob shafts ×3 | 1/8" rod | 11.2 mm each |
 | Sensor sleeves | 5/32" tube | 2.5 mm (II), 4.5 mm (III); I uses a 0.5 mm M3 shim washer |
 | Knob upper sleeves ×3 | 5/32" tube | 2.42 mm |
 | Knob lower spacers ×3 | M3 shim washer | 0.5 mm |
@@ -79,8 +80,8 @@ sweat-solder the stack with paste between the layers, and file the knurl flush. 
 stack onto its knob shaft at **2.1 mm** above the shaft bottom and solder it.
 
 **Sensor shafts (×3).** Solder each 36T sensor gear at its level: I at 2.1 mm, II at 4.1 mm,
-III at 6.1 mm above the bottom end. Epoxy a Ø6×2.5 mm **diametric** magnet centred on the
-bottom end face, with its face square to the shaft.
+III at 6.1 mm above the bottom end. The magnet goes on later (§5), once the shaft
+is in its bearings, because it's wider than the bearing hole.
 
 **Arbors.** Solder the hand gears flush with the arbor *bottom* ends: hand-I gear on the
 3/32" rod at 2.1 mm above its bottom end, hand-II gear on the bottom of the 1/8" tube, and
@@ -91,10 +92,9 @@ touched to the gear, not the tube.
 **Cannon.** Solder the 7/32" cannon into P2's centre hole, flush with P2's underside so it
 stands 0.35 mm proud of the top. Ream the bore to slide on the 3/16" tube.
 
-**Motor gear.** Trim the X27.168 shaft so it ends 0.3 mm above the 38T gear's top face.
-Put the gear on the **Ø2 collar** of the X27 shaft, about 0.5 mm above the housing, and fix
-it with Loctite 638. If your motor's Ø2 collar doesn't turn with the shaft, open the gear hole
-to fit the Ø1 shaft and raise the motor 2 mm with a shim instead.
+**Motor gear.** The 38T gear sits on the X27's **Ø1 output shaft**, with its bottom face
+5.0 mm above the motor's front face (level L3). Press it on with a drop of Loctite 638 and
+trim the shaft 0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
 
 **Crown.** Solder the three scalloped `crown_cap_disc` pieces onto one end of the plunger as a
 little crown. The collar goes on later, from inside the case.
@@ -103,22 +103,32 @@ little crown. The collar goes on later, from inside the case.
 comb leaves against them, so each knuckle sits on its own tab tangent along the tab centre-line.
 Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the paper spacers.
 
-## 4. Electronics bench test (before anything goes in the case)
+## 4. Carrier PCB and bench test (before anything goes in the case)
 
-1. Flash the firmware over the ProS3's own USB-C (see [`../firmware/README.md`](../firmware/README.md)).
-2. Wire everything per [WIRING.md](WIRING.md) on the bench with the X27 and one AS5600.
-3. In the serial console check `hands`, `home`, `sweep`, `rec`, `tone`. Turning a magnet over
-   the AS5600 should walk through all 36 symbols.
-4. Run `wifi` and **write down the setup-portal password** it prints. Once the board is
+1. Populate the carrier per [`pcb/README.md`](pcb/README.md#assembly-order): resistors, C1, pin
+   headers, then the module sockets, using each module as its own soldering jig. Leave the
+   X27 sockets **unsoldered** for now.
+2. Work through the [bring-up checklist](pcb/README.md#bring-up-checklist) one module at a
+   time. Flash the firmware (see [`../firmware/README.md`](../firmware/README.md)) once the
+   ProS3 is in, then check `hands`, `home`, `sweep`, `tone` and `rec` from the serial console,
+   probing the test pads if anything misbehaves. Turning a magnet over each AS5600 should walk
+   through all 36 symbols.
+3. Run `wifi` and **write down the setup-portal password** it prints. Once the board is
    inside the case you'll need it.
 
 ## 5. Movement
 
-1. Screw the four **M2×8 M-F** standoffs into the four **M2×8 F-F** bay standoffs through P1.
-   The male threads pass through P1.
-2. Fit the X27 through P1's Ø31 cutout so the motor gear sits at L3 (8.1 mm). Fillet it to P1
-   with epoxy and let it cure.
-3. With P1 flat on the bench, drop in, in this order:
+1. **Set the motor mesh (carrier as a jig).** Stand the four **M2×15 F-F** bay standoffs on the
+   carrier, each held by an M2×8 screw from below through a 2.5 mm nylon spacer and the board.
+   The floor isn't fitted yet, so the screws go a little deeper. Lay P1 on top and screw the
+   four **M2×8 M-F** gear standoffs through P1 into them. The X27, plugged into its loose
+   sockets, pokes up through P1's slot. Nest arbors I, II and III and the needle arbor (with its
+   19T gear) in the centre bearing, as in step 3. Slide the X27 along the slot until the 38T motor gear meshes with a hair of
+   backlash. Hold it there, turn the stack over and solder the eight X27 socket pins. Then
+   undo the four floor screws and lift P1 + standoffs off the carrier. The X27 stays plugged in.
+2. Stand P1 on its four bay standoffs on the bench. They hold it 15 mm up, so the parts below
+   P1 hang free.
+3. Drop in, in this order:
    - arbor I (3/32" rod into the centre bearing);
    - arbor II, then arbor III, then the needle arbor, sliding each over the last;
    - the three sensor shafts, each with its sleeve or washer below the gear;
@@ -126,7 +136,9 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 4. Lower P2 over the cannon and onto every shaft tip. This is the fiddly watchmaker's moment:
    start from one side and coax each tip into its hole with tweezers. Screw the four **M2×6 M-F**
    standoffs through P2 into the gear standoffs.
-5. Check that every knob turns its hand arbor smoothly and that the X27 gear meshes with the needle gear.
+5. From underneath, epoxy a Ø6×3 diametric magnet centred on the bottom end of each sensor
+   shaft (the shaft pokes 0.3 mm below P1, so the magnet clears the plate).
+6. Check that every knob turns its hand arbor smoothly and that the X27 gear meshes with the needle gear.
    Add a drop of clock oil to each bearing.
 
 ## 6. Dial and hands
@@ -140,19 +152,24 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 
 ## 7. Case
 
-1. **Lower tray.** Lay out the bay modules (WIRING.md "Where things go") and wire them. Place
-   the AS5600 boards using P1's bearing holes as the template. Lower the movement in so the
-   bay standoffs land on the floor holes, and fix it with four **M2×4** screws from below.
-2. **Upper shell (do this with the shell upside down).**
+1. **Lower tray.** Line the floor with one layer of Kapton. Put the four nylon spacers over the
+   floor holes and the populated carrier on top. Plug in the battery, then connect the mic,
+   speaker, crown switch and reed leads to J4, J5, J3 and J6. Plug the FPC extension into the
+   ProS3.
+2. Lower the movement straight down onto the carrier. The X27 and its gear rise up through
+   P1's slot and the motor gear slides into mesh with the needle gear (rock the needle a hair
+   if the teeth butt). Fix it with four **M2×8** screws from under the floor, through the
+   spacers and board into the bay standoffs.
+3. **Upper shell (do this with the shell upside down).**
    - Glue a ring of speaker cloth under the grille slots.
    - Epoxy the body closure magnet (top-left, between grille and wall) and the reed switch
      (lower-right) to the underside of the top face.
    - Push the crown plunger in from outside through the chamfer hole and solder the collar on
      the inside, leaving 0.3 mm of play.
    - Drop the crystal into the frame spider, then lay the seat spider on top.
-3. Solder the **body hinge leaf** to the shell's right wall: its top edge level with the top face,
+4. Solder the **body hinge leaf** to the shell's right wall: its top edge level with the top face,
    centred on the wall.
-4. Lower the shell over the movement. The thumbwheels must pass through the three notches and
+5. Lower the shell over the movement. The thumbwheels must pass through the three notches and
    the USB-C receptacle into its slot. Fix it with four **M2×5** screws through the top face.
 
 ## 8. Lid
@@ -178,6 +195,7 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 |---|---|
 | A knob is stiff | Ream that shaft's P1/P2 holes; check the wheel isn't rubbing the case notch. |
 | A hand drags its neighbour | Add a 0.1 mm shim between the gears, or ease the tube's fit. |
-| Hand reads the wrong symbol near one spot | Check the AS5600 chip is centred under its magnet and 0.5–1 mm away, then recalibrate. |
+| Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 1.1 mm under the magnet), then recalibrate. |
+| Something electrical misbehaves | Lift the movement out and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |
 | The needle buzzes at the wrong end on wake | Set `MOTOR_PHASE_DIR = -1` in `firmware/src/config.h`. |
 | Lid doesn't wake it | Move the reed up or nearer the lid magnet, or use a stronger magnet. |

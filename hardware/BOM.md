@@ -3,8 +3,8 @@
 Prices are rough USD estimates from late 2026 for **one** instrument. Check current prices
 before ordering. Every fabricated part comes from `out/`, which `cad/build.py` regenerates.
 
-**Estimated total ≈ $430–560** (≈ $300–380 SendCutSend, ≈ $95–115 electronics, ≈ $35–60 stock,
-hardware and consumables). Tools are not included.
+**Estimated total ≈ $450–590** (≈ $300–380 SendCutSend, ≈ $115–140 electronics including the
+carrier PCB, ≈ $35–60 stock, hardware and consumables). Tools are not included.
 
 ## A. SendCutSend: laser-cut and bent parts
 
@@ -27,7 +27,7 @@ and quantity, e.g. `knob_I_31T_x5__brass-040in__qty5.dxf`. The same list is in
 | `gear_sensor_I/II/III_36T` | Brass 260 .040" | 1 each | Bore 1/8" |
 | `knob_I/II/III_31T_x5` | Brass 260 .040" | 5 each | Five layers → one thumbwheel |
 | `gear_needle_19T` | Brass 260 .040" | 1 | Bore 3/16" |
-| `gear_motor_38T` | Brass 260 .040" | 1 | Bore Ø2.05 (X27 collar) |
+| `gear_motor_38T` | Brass 260 .040" | 1 | Press fit on the X27's Ø1 shaft |
 | `hand_I`, `hand_II`, `hand_III` | Brass 260 .040" | 1 each | Darken after cutting |
 | `hand_needle` | **Copper 110 .032"** | 1 | The answering needle |
 | `hand_cap_rosette` | Brass 260 .040" | 1 | Ø10 centre cap |
@@ -57,32 +57,41 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 
 | Item | Qty | ≈ $ | Notes |
 |---|---|---|---|
-| M2 brass hex standoff, **female-female 8 mm**, 4 mm AF | 4 | 3 | Bay posts (floor → P1) |
+| M2 brass hex standoff, **female-female 15 mm**, 4 mm AF | 4 | 3 | Bay posts (carrier PCB → P1) |
+| M2 nylon round spacer, 2.5 mm × Ø4.5 | 4 | 1 | Floor → carrier PCB (keeps the board off the brass) |
 | M2 brass hex standoff, **male-female 8 mm** (+3 mm thread) | 4 | 3 | Gear posts (P1 → P2) |
 | M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
-| M2 × 4 brass slotted cheese-head screw | 4 | 2 | Floor (they double as feet) |
+| M2 × 8 brass slotted cheese-head screw | 4 | 2 | Floor → spacer → PCB → bay standoff (the heads double as feet) |
 | M2 × 5 brass slotted cheese-head screw | 4 | | Top face |
 | M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 4 | 2 | Shaft spacers |
-| Ø6 × 2.5 mm **diametric** NdFeB magnet | 3 | (incl.) | Usually supplied with AS5600 boards |
+| Ø6 × 3 mm **diametrically magnetised** NdFeB magnet (Ø6.35 × 3.2, e.g. K&J D42DIA, also works) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
 | Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
 
 ## D. Electronics
 
+The modules plug into the [carrier PCB](pcb/README.md), whose own BOM lists every socket, resistor and
+header with part numbers. Summary:
+
 | Item | Qty | ≈ $ | Source / notes |
 |---|---|---|---|
-| **Unexpected Maker ProS3** (ESP32-S3, 16 MB/8 MB PSRAM, LiPo charger, switchable LDO2) | 1 | 30 | unexpectedmaker.com, Pimoroni, Mouser |
-| LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), PicoBlade 1.25 lead | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits |
+| **Carrier PCB** (`pcb/fab/alethiometer_carrier_gerbers.zip`), 2-layer, 1.6 mm | 1 (of 5) | 10–20 | JLCPCB, PCBWay, OSH Park |
+| **Unexpected Maker ProS3** (ESP32-S3, 16 MB/8 MB PSRAM, LiPo charger, switchable LDO2) | 1 | 30 | unexpectedmaker.com, Adafruit, Pimoroni. The ProS3[D] (Adafruit #6398, adds a u.FL antenna jack) drops into the same sockets. |
+| **Adafruit AS5600** magnetic angle sensor, STEMMA QT (**#6357**) | 3 | 15 | Header included |
+| **Adafruit DRV8833** dual H-bridge breakout (#3297) | 1 | 5 | Header included |
+| **Adafruit MAX98357A** I2S class-D amp (#3006) | 1 | 6 | Header included |
 | **Juken/Switec X27.168** gauge stepper (with internal stop; *don't* remove it) | 1 | 4–10 | Adafruit #2424, AliExpress |
-| **Adafruit DRV8833** dual H-bridge breakout (#3297) | 1 | 5 | |
-| **Adafruit MAX98357A** I2S class-D amp (#3006) | 1 | 6 | |
+| Short female headers, 5 mm body (**Adafruit #3008**, 5 × 36-pin) | 1 pack | 5 | Module sockets |
+| Female header 1×4, 0.1", 8.5 mm (Sullins PPTC041LFBN-RC or equivalent) | 2 | 1 | X27 sockets |
+| Male header strip 0.1", 1×40 | 1 | 1 | Rest posts, speaker pins, J1–J6 |
+| Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, lid pull-up |
+| 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch | 1 | 0.3 | VBAT bulk cap |
+| LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), PicoBlade 1.25 lead | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits |
+| USB-C male-to-female **FPC ribbon extension**, ~10 cm, USB 2.0 data | 1 | 4–8 | ProS3 → wall port (charging and flashing) |
 | 28 mm, 8 Ω, 0.5–1 W thin speaker (≤ 5 mm) | 1 | 2–4 | e.g. Adafruit #1890 |
 | **INMP441** I2S MEMS microphone module (round, Ø14 mm) | 1 | 3 | |
-| **AS5600** magnetic encoder board (≤ 23 × 23 mm, OUT pin broken out) + diametric magnet | 3 | 6–10 | |
-| USB-C power breakout (CC pull-downs fitted), e.g. Adafruit #4090 | 1 | 3 | Side charging port |
 | Glass reed switch, normally open, ≈ 2 × 14 mm | 1 | 1 | Lid sensor |
 | Tactile switch 4.5 × 4.5 mm, through-hole | 1 | 0.2 | Crown |
-| Resistors 1/8 W: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, reed pull-up |
-| 30 AWG silicone or Kynar wire, heat-shrink, scrap perfboard, Kapton tape, thin double-sided foam tape | — | 8 | |
+| Dupont female jumper leads (or 30 AWG wire), Kapton tape, thin double-sided foam tape, a scrap of perfboard | — | 6 | Off-board leads to J3–J6 |
 
 ## E. Dial, finish and consumables
 
