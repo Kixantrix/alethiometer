@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 import cadquery as cq
 from shapely import affinity
-from shapely.geometry import Polygon
+from shapely.geometry import LineString, Polygon
 from shapely.ops import unary_union
 
 from gears import center_distance, gear_polygon, pitch_radius
@@ -446,10 +446,50 @@ def dial_sticker() -> Part:
 # ---------------------------------------------------------------------------
 # Gears, hands, arbors
 # ---------------------------------------------------------------------------
-def gear_profile(z, hole) -> Profile:
+def gear_profile(z, hole, pattern=None) -> Profile:
     p = Profile(gear_polygon(MODULE, z))
+    if pattern:
+        p.cut(crossings(z, hole, **pattern))
     p.hole(0, 0, hole)
     return p
+
+
+def crossings(z, hole, *, kind="curved", n=5, sweep=30.0, spoke=1.2, ring=None) -> Polygon:
+    """Clock-wheel style 'crossings': windows cut between a rim and a hub, leaving
+    `n` spokes (curved by `sweep` degrees, or straight) and an optional ring
+    (radius) — or, for kind='rosette', n round windows. Returns the area to remove."""
+    rf = pitch_radius(MODULE, z) - 1.25 * MODULE
+    r_rim = rf - 1.3                       # solid rim under the teeth
+    r_hub = hole / 2 + 1.7                 # solder land around the arbor
+    band = annulus(r_hub, r_rim)
+    if kind == "rosette":
+        rm = (r_hub + r_rim) / 2
+        r_win = min((r_rim - r_hub) / 2 - 0.9, math.pi * rm / n - 1.0)
+        wins = [circle(*polar(rm, 360.0 * k / n), r_win) for k in range(n)]
+        wins += [circle(*polar(r_rim - 1.0, 360.0 * (k + 0.5) / n), 0.55) for k in range(n)]
+        return unary_union(wins).intersection(band.buffer(-0.6))
+    keep = []
+    for k in range(n):
+        a0 = 360.0 * k / n
+        pts = []
+        for i in range(13):
+            t = i / 12
+            r = (r_hub - 0.5) + t * (r_rim - r_hub + 1.0)
+            pts.append(polar(r, a0 + (sweep * math.sin(t * math.pi / 2) if kind == "curved" else 0.0)))
+        keep.append(LineString(pts).buffer(spoke / 2, quad_segs=6))
+    if ring:
+        keep.append(annulus(ring - spoke / 2, ring + spoke / 2))
+    return band.difference(unary_union(keep)).buffer(-0.35).buffer(0.35)
+
+
+# Crossing patterns for the gears you can see through the dial window.
+GEAR_PATTERNS = {
+    "I": dict(kind="curved", n=5, sweep=34.0),
+    "II": dict(kind="straight", n=6, ring=7.6),
+    "III": dict(kind="curved", n=4, sweep=-46.0),
+    "sensor": dict(kind="rosette", n=6),
+    "motor": dict(kind="curved", n=6, sweep=-28.0),
+}
 
 
 def mesh_rot(direction_deg, z, gap=False):
@@ -465,9 +505,11 @@ def gears() -> list[Part]:
         a = tr["angle"]
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
-        parts.append(flat_part(f"gear_hand_{tr['name']}_36T", gear_profile(Z_HAND, od + FIT), T040,
+        parts.append(flat_part(f"gear_hand_{tr['name']}_36T",
+                               gear_profile(Z_HAND, od + FIT, GEAR_PATTERNS[tr["name"]]), T040,
                                placements=[loc(z=z, rz=mesh_rot(a, Z_HAND))]))
-        parts.append(flat_part(f"gear_sensor_{tr['name']}_36T", gear_profile(Z_SENSOR, ROD_18 + FIT), T040,
+        parts.append(flat_part(f"gear_sensor_{tr['name']}_36T",
+                               gear_profile(Z_SENSOR, ROD_18 + FIT, GEAR_PATTERNS["sensor"]), T040,
                                placements=[loc(sx, sy, z, mesh_rot(a + 180, Z_SENSOR, gap=True))]))
         knob = gear_profile(Z_KNOB, ROD_18 + FIT)
         parts.append(flat_part(f"knob_{tr['name']}_31T_x{KNOB_LAYERS}", knob, T040,
@@ -476,7 +518,7 @@ def gears() -> list[Part]:
                                spec="brass .040\" — 5 identical layers soldered into one thumbwheel"))
     parts.append(flat_part("gear_needle_19T", gear_profile(Z_NEEDLE, TUBE_316 + FIT), T040,
                            placements=[loc(z=LEVELS[3], rz=0.0)]))
-    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 2.0 + FIT), T040,
+    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 2.0 + FIT, GEAR_PATTERNS["motor"]), T040,
                            placements=[loc(*X27_SHAFT, LEVELS[3], mesh_rot(180, Z_MOTOR, gap=True))]))
     return parts
 

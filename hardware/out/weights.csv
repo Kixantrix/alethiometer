@@ -16,20 +16,20 @@ battery,1,7,LiPo 1S 402535 (~350 mAh)
 hinge_pin,1,6.3,"K&S 5/32"" brass rod, 60 mm"
 mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3)
 speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
-gear_motor_38T,1,4.7,"brass .040"""
-gear_hand_I_36T,1,4.2,"brass .040"""
-gear_sensor_I_36T,1,4.2,"brass .040"""
-gear_hand_II_36T,1,4.2,"brass .040"""
-gear_sensor_II_36T,1,4.2,"brass .040"""
-gear_sensor_III_36T,1,4.2,"brass .040"""
-gear_hand_III_36T,1,4.1,"brass .040"""
 hinge_leaf_body,1,3.9,"brass .040"""
+gear_sensor_I_36T,1,3.0,"brass .040"""
+gear_sensor_II_36T,1,3.0,"brass .040"""
+gear_sensor_III_36T,1,3.0,"brass .040"""
 standoff_bay,4,2.9,M2×8 F-F brass hex standoff
 standoff_gear,4,2.9,M2×8+3 M-F brass hex standoff
+gear_hand_II_36T,1,2.4,"brass .040"""
 hinge_leaf_lid,1,2.3,"brass .040"""
 standoff_hand,4,2.2,M2×6+3 M-F brass hex standoff
+gear_motor_38T,1,2.1,"brass .040"""
 driver_DRV8833,1,2,Adafruit DRV8833 #3297
 amp_MAX98357A,1,2,Adafruit MAX98357A #3006
+gear_hand_I_36T,1,1.9,"brass .040"""
+gear_hand_III_36T,1,1.9,"brass .040"""
 crown_cap_disc,3,1.7,"brass .040"""
 sensor_AS5600_I,1,1.5,AS5600 magnetic encoder board (≤23×23 mm)
 sensor_AS5600_II,1,1.5,AS5600 magnetic encoder board (≤23×23 mm)
