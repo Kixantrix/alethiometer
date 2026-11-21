@@ -10,12 +10,12 @@ update this sheet.
 
 | Level | Height above P1 bottom | What lives there |
 |---|---|---|
-| P1 (base plate) | 0 – 1.6 | bearings for every shaft |
+| P1 (base plate) | 0 – 1.6 | tube bushings for every shaft |
 | L0 | 2.1 | hand-I gear + sensor-I gear; bottom of all knob stacks |
 | L1 | 4.1 | hand-II gear + sensor-II gear |
 | L2 | 6.1 | hand-III gear + sensor-III gear (knob stacks end at 7.18) |
 | L3 | 8.1 | needle gear + X27 motor gear |
-| P2 (dial plate) | 9.6 – 11.2 | top bearings, cannon, dial sticker |
+| P2 (dial plate) | 9.6 – 11.2 | top bushings, cannon, dial sticker |
 
 Above the dial (measured from the top of P2): cannon tip +0.35, needle +0.45, hand III +1.61,
 hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's underside sits at +7.0.
@@ -25,8 +25,8 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 - Soldering iron (fine chisel tip, ≥60 W) **and** a small butane torch. Brass sinks heat.
 - Soft solder (lead-free Sn96/Ag4 or 60/40), liquid flux for brass (e.g. Harris Stay-Clean),
   and a solder-paste syringe for the small joints.
-- Needle files, 600–2000 grit paper, a pin vise with **1/8" (3.18 mm)** and **3/32" (2.38 mm)**
-  drills to ream bearing holes, a 0.5 mm drill.
+- Needle files, 600–2000 grit paper, and a pin vise with a set of small drills (to open a gear
+  bore that comes out tight).
 - Tube cutter (K&S #296) or a jeweller's saw and mitre box for the K&S stock.
 - Tweezers, a small vise, Kapton tape, 5-minute epoxy, Loctite 638 (or any retaining compound),
   clock oil (e.g. Moebius 8030).
@@ -44,12 +44,21 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 
 1. Deburr and flatten everything. Rub each face on 600 grit on glass, then finer.
    Gears only need their faces deburred; don't round the teeth.
-2. **Ream the bearing holes.** P1 and P2 have 3.30 mm holes for the 1/8" shafts and
-   P1 has a 2.50 mm centre hole for the 3/32" arbor. Laser tolerance is ±0.13 mm, so run
-   the matching drill through each hole by hand until the rod turns freely without
-   rattling.
-3. Test-fit every gear on its rod or tube. Holes are drawn 0.05 mm over the stock diameter
-   so solder can wick in.
+2. **Fit the bushings.** No shaft runs in a laser-cut hole. Each plate hole takes a
+   1.6 mm piece of K&S tube (§2), and the next K&S size slides inside it with about 0.08 mm
+   of play, so every shaft is located precisely whatever the laser tolerance.
+   - Screw P1 and P2 together on their four gear standoffs. This keeps the two plates' holes
+     aligned.
+   - Rub pencil graphite on the shafts and arbor I so nothing sticks to them.
+   - Put a dab of Loctite 638 on each bushing and push it into its hole, flush with the plate.
+     The plate holes are drawn 0.1 mm over the tube, so they go in by hand.
+   - Slide the shafts through both plates while the 638 is wet: the three sensor and three
+     knob shafts through each pair of bushings, and arbor I into P1's centre bushing. This
+     lines the pairs up with each other. Spin each shaft once, then let it cure (about 1 hour).
+3. Test-fit every gear on its rod or tube. Gear bores are drawn only 0.08 mm over the stock, so
+   each gear runs centred. If one won't slide on, turn the matching drill through it by hand.
+   Everything that doesn't affect gear mesh (hands, crown, hinge, case holes) is drawn with
+   more room and goes on as cut.
 
 ## 2. Cut the K&S stock
 
@@ -62,6 +71,8 @@ Cut, deburr and check each piece against the cut list (also in `out/stock_and_bo
 | Arbor III | 5/32" tube | 7.7 mm |
 | Needle arbor | 3/16" tube | 4.4 mm |
 | Cannon | 7/32" tube | 1.95 mm |
+| Bushings ×12 | 5/32" tube | 1.6 mm each (sensor and knob shafts, P1 and P2) |
+| Bushing ×1 | 1/8" tube | 1.6 mm (arbor I, P1 centre) |
 | Sensor shafts ×3 | 1/8" rod | 11.5 mm each (0.3 mm proud below P1 for the magnet) |
 | Knob shafts ×3 | 1/8" rod | 11.2 mm each |
 | Sensor sleeves | 5/32" tube | 2.5 mm (II), 4.5 mm (III); I uses a 0.5 mm M3 shim washer |
@@ -90,10 +101,10 @@ the 3/16" tube. Don't let solder wick into the bores. Use a drop of paste and th
 touched to the gear, not the tube.
 
 **Cannon.** Solder the 7/32" cannon into P2's centre hole, flush with P2's underside so it
-stands 0.35 mm proud of the top. Ream the bore to slide on the 3/16" tube.
+stands 0.35 mm proud of the top. The 3/16" needle arbor slides inside it (a K&S telescoping fit); keep solder out of the bore.
 
 **Motor gear.** The 38T gear sits on the X27's **Ø1 output shaft**, with its bottom face
-5.0 mm above the motor's front face (level L3). Press it on with a drop of Loctite 638 and
+5.5 mm above the motor's front face (level L3). Press it on with a drop of Loctite 638 and
 trim the shaft 0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
 
 **Crown.** Solder the three scalloped `crown_cap_disc` pieces onto one end of the plunger as a
@@ -118,7 +129,7 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 
 ## 5. Movement
 
-1. **Set the motor mesh (carrier as a jig).** Stand the four **M2×15 F-F** bay standoffs on the
+1. **Set the motor mesh (carrier as a jig).** Stand the four **M2×12 F-F** bay standoffs on the
    carrier, each held by an M2×8 screw from below through a 2.5 mm nylon spacer and the board.
    The floor isn't fitted yet, so the screws go a little deeper. Lay P1 on top and screw the
    four **M2×8 M-F** gear standoffs through P1 into them. The X27, plugged into its loose
@@ -126,7 +137,7 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
    19T gear) in the centre bearing, as in step 3. Slide the X27 along the slot until the 38T motor gear meshes with a hair of
    backlash. Hold it there, turn the stack over and solder the eight X27 socket pins. Then
    undo the four floor screws and lift P1 + standoffs off the carrier. The X27 stays plugged in.
-2. Stand P1 on its four bay standoffs on the bench. They hold it 15 mm up, so the parts below
+2. Stand P1 on its four bay standoffs on the bench. They hold it 12 mm up, so the parts below
    P1 hang free.
 3. Drop in, in this order:
    - arbor I (3/32" rod into the centre bearing);
@@ -136,7 +147,7 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 4. Lower P2 over the cannon and onto every shaft tip. This is the fiddly watchmaker's moment:
    start from one side and coax each tip into its hole with tweezers. Screw the four **M2×6 M-F**
    standoffs through P2 into the gear standoffs.
-5. From underneath, epoxy a Ø6×3 diametric magnet centred on the bottom end of each sensor
+5. From underneath, epoxy a Ø6×2.5 diametric magnet centred on the bottom end of each sensor
    shaft (the shaft pokes 0.3 mm below P1, so the magnet clears the plate).
 6. Check that every knob turns its hand arbor smoothly and that the X27 gear meshes with the needle gear.
    Add a drop of clock oil to each bearing.
@@ -193,7 +204,7 @@ Solder knuckles 1, 3, 5 to the body leaf and 2, 4 to the lid leaf. Remove the pa
 
 | Symptom | Fix |
 |---|---|
-| A knob is stiff | Ream that shaft's P1/P2 holes; check the wheel isn't rubbing the case notch. |
+| A knob is stiff | Check the wheel stack is soldered square and its sleeves aren't too long; the case notch leaves 1.2 mm each side. |
 | A hand drags its neighbour | Add a 0.1 mm shim between the gears, or ease the tube's fit. |
 | Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 1.1 mm under the magnet), then recalibrate. |
 | Something electrical misbehaves | Lift the movement out and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |

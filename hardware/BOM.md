@@ -42,7 +42,12 @@ and quantity, e.g. `knob_I_31T_x5__brass-040in__qty5.dxf`. The same list is in
   flat and bend it yourself on a small box-and-pan brake.
 - Order a spare set of the small gears (`gear_*`, one extra `knob_*` layer each). They're cheap,
   and laser-cut module-0.7 teeth sometimes need a second try.
-- Bearing holes are drawn at nominal +0.12 mm; ream them to fit (ASSEMBLY.md §1).
+- Fits are sized for SendCutSend's ±0.13 mm. Shafts run in K&S tube bushings, not in the cut
+  holes, so nothing needs reaming (ASSEMBLY.md §1).
+- **Gear precision upgrade (optional).** The laser-cut gears are fine for this slow, hand-turned
+  mechanism: expect about a degree of play at the hands, and calibration absorbs any fixed offset.
+  If you want tighter meshing, send the same `gear_*` and `knob_*` DXFs to a wire-EDM service
+  (e.g. Xometry, PCBWay) for about ±0.01 mm teeth. No design change is needed.
 
 ## B. K&S Precision Metals brass stock (hobby shops, Amazon)
 
@@ -57,14 +62,14 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 
 | Item | Qty | ≈ $ | Notes |
 |---|---|---|---|
-| M2 brass hex standoff, **female-female 15 mm**, 4 mm AF | 4 | 3 | Bay posts (carrier PCB → P1) |
+| M2 brass hex standoff, **female-female 12 mm**, 4 mm AF | 4 | 3 | Bay posts (carrier PCB → P1) |
 | M2 nylon round spacer, 2.5 mm × Ø4.5 | 4 | 1 | Floor → carrier PCB (keeps the board off the brass) |
 | M2 brass hex standoff, **male-female 8 mm** (+3 mm thread) | 4 | 3 | Gear posts (P1 → P2) |
 | M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
 | M2 × 8 brass slotted cheese-head screw | 4 | 2 | Floor → spacer → PCB → bay standoff (the heads double as feet) |
 | M2 × 5 brass slotted cheese-head screw | 4 | | Top face |
 | M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 4 | 2 | Shaft spacers |
-| Ø6 × 3 mm **diametrically magnetised** NdFeB magnet (Ø6.35 × 3.2, e.g. K&J D42DIA, also works) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
+| Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
 | Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
 
 ## D. Electronics
@@ -80,18 +85,17 @@ header with part numbers. Summary:
 | **Adafruit DRV8833** dual H-bridge breakout (#3297) | 1 | 5 | Header included |
 | **Adafruit MAX98357A** I2S class-D amp (#3006) | 1 | 6 | Header included |
 | **Juken/Switec X27.168** gauge stepper (with internal stop; *don't* remove it) | 1 | 4–10 | Adafruit #2424, AliExpress |
-| Short female headers, 5 mm body (**Adafruit #3008**, 5 × 36-pin) | 1 pack | 5 | Module sockets |
-| Female header 1×4, 0.1", 8.5 mm (Sullins PPTC041LFBN-RC or equivalent) | 2 | 1 | X27 sockets |
-| Male header strip 0.1", 1×40 | 1 | 1 | Rest posts, speaker pins, J1–J6 |
+| Short female headers, 5 mm body (**Adafruit #3008**, 5 × 36-pin) | 1 pack | 5 | Every module socket, including the X27 |
+| Male header strip 0.1", 1×40 | 1 | 1 | Speaker pins, J1/J2 |
 | Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, lid pull-up |
-| 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch | 1 | 0.3 | VBAT bulk cap |
+| 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch, ≤ 11 mm tall | 1 | 0.3 | VBAT bulk cap |
 | LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), PicoBlade 1.25 lead | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits |
 | USB-C male-to-female **FPC ribbon extension**, ~10 cm, USB 2.0 data | 1 | 4–8 | ProS3 → wall port (charging and flashing) |
 | 28 mm, 8 Ω, 0.5–1 W thin speaker (≤ 5 mm) | 1 | 2–4 | e.g. Adafruit #1890 |
 | **INMP441** I2S MEMS microphone module (round, Ø14 mm) | 1 | 3 | |
 | Glass reed switch, normally open, ≈ 2 × 14 mm | 1 | 1 | Lid sensor |
 | Tactile switch 4.5 × 4.5 mm, through-hole | 1 | 0.2 | Crown |
-| Dupont female jumper leads (or 30 AWG wire), Kapton tape, thin double-sided foam tape, a scrap of perfboard | — | 6 | Off-board leads to J3–J6 |
+| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape, a scrap of perfboard | — | 6 | Off-board leads to J3–J6 |
 
 ## E. Dial, finish and consumables
 

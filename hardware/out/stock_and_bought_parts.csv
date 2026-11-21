@@ -5,28 +5,30 @@ arbor_II,stock,1,"K&S 1/8"" brass tube, 11.1 mm"
 arbor_III,stock,1,"K&S 5/32"" brass tube, 7.7 mm"
 arbor_needle,stock,1,"K&S 3/16"" brass tube, 4.4 mm"
 cannon,stock,1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
+bushing_1_8,stock,1,"K&S 1/8"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
+bushing_5_32,stock,12,"K&S 5/32"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
 shaft_sensor_I,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
 shaft_knob_I,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
 sleeve_sensor_I,stock,1,"K&S 5/32"" tube, 0.50 mm"
 sleeve_knob_I,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
-magnet_I,bought,1,Ø6×3 mm diametric NdFeB (AS5600 magnet)
+magnet_I,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 shaft_sensor_II,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
 shaft_knob_II,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
 sleeve_sensor_II,stock,1,"K&S 5/32"" tube, 2.50 mm"
 sleeve_knob_II,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
-magnet_II,bought,1,Ø6×3 mm diametric NdFeB (AS5600 magnet)
+magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 shaft_sensor_III,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
 shaft_knob_III,stock,1,"K&S 1/8"" brass rod, 11.2 mm"
 sleeve_sensor_III,stock,1,"K&S 5/32"" tube, 4.50 mm"
 sleeve_knob_III,stock,1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
-magnet_III,bought,1,Ø6×3 mm diametric NdFeB (AS5600 magnet)
-standoff_bay,bought,4,M2×15 F-F brass hex standoff
+magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
+standoff_bay,bought,4,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
 standoff_hand,bought,4,M2×6+3 M-F brass hex standoff
 spacer_carrier,bought,4,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
 screw_floor,bought,4,M2×8 brass slotted cheese head screw
 screw_top,bought,4,M2×5 brass slotted cheese head screw
-module_sockets,bought,1,Adafruit #3008 5 mm female headers (cut to length) + 2x 1x4 8.5 mm female headers for the X27; module male headers on top
+module_sockets,bought,1,"Adafruit #3008 5 mm short female headers, cut to length (modules and X27)"
 mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + FPC USB-C extension
 battery,bought,1,LiPo 1S 402535 (~350 mAh)
 driver_DRV8833,bought,1,Adafruit DRV8833 #3297

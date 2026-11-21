@@ -32,8 +32,8 @@ the interpretation aloud.
 
 ## The instrument
 
-- **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 41.0 mm tall,
-  48.6 mm with the lid closed. Weight is about **825 g**, almost all of it brass.
+- **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 38.0 mm tall,
+  45.6 mm with the lid closed. Weight is about **815 g**, almost all of it brass.
 - **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
   3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
   reflash or swap. The board has labelled test pads for every signal. The ProS3's USB-C reaches
@@ -88,15 +88,16 @@ flowchart LR
 | 0 – 1.0 | lower tray floor (Kapton-lined) |
 | 1.0 – 3.5 | nylon spacers |
 | 3.5 – 5.1 | **carrier PCB** |
-| 5.1 – 20.1 | **electronics bay**: modules on 5 mm sockets (ProS3, 3 × AS5600, DRV8833, amp), LiPo, X27 on its sockets |
-| 20.1 – 21.7 | **P1**, movement base plate (bearings) |
-| 22.2 – 30.2 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
-| 29.7 – 31.3 | **P2**, dial plate + sticker |
-| 31.8 – 37.7 | needle, hands III, II, I, cap |
-| 37.3 – 41.0 | crystal spiders, crystal, top face |
-| 41.0 – 48.6 | lid |
+| 5.1 – 17.1 | **electronics bay**: modules on 5 mm sockets (ProS3, 3 × AS5600, DRV8833, amp), LiPo, X27 on its sockets |
+| 17.1 – 18.7 | **P1**, movement base plate (bearings) |
+| 19.2 – 27.2 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
+| 26.7 – 28.3 | **P2**, dial plate + sticker |
+| 28.8 – 34.7 | needle, hands III, II, I, cap |
+| 34.3 – 38.0 | crystal spiders, crystal, top face |
+| 38.0 – 45.6 | lid |
 
-The socketed carrier costs about 7 mm of height compared with soldering the modules flat. That
+The bay height is set by the AS5600 sensors: socket, sensor board, air gap and magnet stacked
+under P1. Sockets cost about 4 mm of case height compared with soldering the modules flat. That
 buys a build where nothing needs desoldering to reflash, probe or replace a part.
 
 ## Ordering
@@ -138,8 +139,14 @@ voids, and the minimum flange length.
   Plan for a second SendCutSend order for small parts.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
 - **Laser-cut module-0.7 gears** in .040" brass are fine at hand-setting speeds and for a gauge
-  motor, but expect some backlash. The firmware approaches every needle target from the same
-  direction to hide it.
+  motor, but expect some backlash. Every pair is spaced 0.1 mm wider than theoretical and the
+  teeth are thinned, so a worst-case cut still turns freely. Shafts run in K&S tube bushings,
+  which locate them to about 0.05 mm. The firmware approaches every needle target from the
+  same direction to hide the backlash. Wire-EDM gears from the same DXFs are a drop-in
+  upgrade (BOM.md §A).
+- **Fit tolerances** are collected at the top of `cad/design.py` (*Tolerance budget*). They're
+  sized for SendCutSend's ±0.13 mm cuts and ±0.25–0.5 mm bends, so parts should assemble
+  without filing.
 - **X27 shaft length.** The 38T motor gear is pressed onto the Ø1 output shaft about 6.3 mm
   above the motor body. Check your motor's shaft before cutting gears.
 - **Wi-Fi through brass.** The ProS3's antenna sits inside a metal case. Radio leaks out through
@@ -148,7 +155,7 @@ voids, and the minimum flange length.
   flex antenna under the crystal can be dropped in if needed.
 - **Cloud voice** needs two extra Azure OpenAI deployments. The endpoints exist in `api/` but
   haven't been exercised against real Azure yet.
-- **Weight.** About 825 g, because brass is dense. P1 can be cut from aluminium to save about
+- **Weight.** About 815 g, because brass is dense. P1 can be cut from aluminium to save about
   45 g; it's fully hidden.
 
 ## Credits

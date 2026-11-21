@@ -1,31 +1,31 @@
 {
  "summary": {
-  "case_outer": "112.4 \u00d7 112.4 mm",
-  "body_height": 40.95,
-  "closed_height": 48.57,
-  "knob_protrusion": 3.98,
+  "case_outer": "112.9 \u00d7 112.9 mm",
+  "body_height": 37.95,
+  "closed_height": 45.57,
+  "knob_protrusion": 3.93,
   "levels": [
-   22.216,
-   24.216,
-   26.216,
-   28.216
+   19.216,
+   21.216,
+   23.216,
+   25.216
   ],
   "hands": {
-   "III": 32.9292,
-   "II": 34.2952,
-   "I": 35.6612
+   "III": 29.9292,
+   "II": 31.2952,
+   "I": 32.6612
   },
-  "cap": 36.677,
+  "cap": 33.677,
   "crystal_clearance": 0.639,
   "x27_body": [
-   13.62,
-   23.22
+   10.12,
+   19.72
   ],
-  "as5600_magnet_gap": 1.06,
+  "as5600_magnet_gap": 1.1,
   "needle_ratio": 2.0,
   "knob_turns_per_rev": 1.1612903225806452
  },
- "weight_g": 825,
+ "weight_g": 810,
  "interference": [],
  "manufacturability": [],
  "sendcutsend_files": 28

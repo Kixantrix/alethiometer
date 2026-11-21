@@ -37,37 +37,38 @@ boards plus shipping.
 |---|---|---|---|
 | — | Carrier PCB (above) | 1 | |
 | U1 | **Unexpected Maker ProS3** (ESP32-S3) | 1 | Solder its two 1×17 male headers on, pins down |
-| U2–U4 | **Adafruit AS5600** magnetic angle sensor, STEMMA QT (#6357) | 3 | Header included. Use the 1×6 row only. |
+| U2–U4 | **Adafruit AS5600** magnetic angle sensor, STEMMA QT (#6357) | 3 | Header included. Use the 1×6 row only. **Magnets not included**; see the main BOM. |
 | U5 | **Adafruit DRV8833** dual H-bridge (#3297) | 1 | Header included (1×8 + 1×6) |
 | U6 | **Adafruit MAX98357A** I2S amp (#3006) | 1 | Header included. Leave the screw terminal off. |
 | M1 | **Juken/Switec X27.168** gauge stepper (keep its internal stop) | 1 | Adafruit #2424 or AliExpress |
-| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin) | 1 pack | Cut into the module sockets: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A) |
-| — | **Female header 1×4, 0.1", standard 8.5 mm** (e.g. Sullins PPTC041LFBN-RC) | 2 | X27 sockets |
-| — | Male header strip 0.1", 1×40 | 1 | AS5600 rest posts, MAX98357A speaker pins, J1–J6 |
+| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin) | 1 pack | Cut into every socket: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A), 2× 1×4 (X27). About 110 of the 180 positions. |
+| — | Male header strip 0.1", 1×40 | 1 | MAX98357A speaker pins, J1 (and J2 if wanted) |
 | R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers |
 | R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) |
 | R7 | 1 MΩ, ¼ W metal film | 1 | Lid pull-up to the always-on 3V3 |
-| C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, ≤ 12 mm tall | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
-| — | Dupont female-female jumper leads, 10 cm | ~12 | Off-board parts to J3–J6 (or solder wires) |
+| C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
+| — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J3–J6 |
 | — | M2 nylon round spacer, 2.5 mm × Ø4.5 | 4 | Between the case floor and the board |
-| — | M2 × 15 mm brass hex standoff, female-female | 4 | Board → P1 |
+| — | M2 × 12 mm brass hex standoff, female-female | 4 | Board → P1 |
 | — | M2 × 8 mm brass cheese-head screw | 4 | Floor → spacer → board → standoff |
 | — | Kapton tape | | One layer on the case floor under the board |
 | — | USB-C male-to-female **FPC ribbon extension**, about 10 cm, USB 2.0 data, female end with screw ears | 1 | ProS3 USB-C → the case's right wall (power, charging and flashing) |
 
 ## How it goes together
 
-The board stands on four nylon spacers above a Kapton-lined floor. Brass M2 × 15 standoffs carry
+The board stands on four nylon spacers above a Kapton-lined floor. Brass M2 × 12 standoffs carry
 plate P1 above it. Around the four post holes the board has a 3.4 mm copper keep-out, so the brass
-case never touches a net. The 15 mm bay leaves room for the 5 mm sockets plus 2.5 mm of header
-plastic under each module. The three AS5600 chips end up about **1.1 mm below their magnets**.
+case never touches a net. Every module rests **directly on its 5 mm sockets**: its male header is
+soldered with the black plastic spacer on top, which is then pulled off (step 4 below). The bay
+height is set by the AS5600 chain (socket 5 + board and chip 3.1 + 1.1 mm air gap + Ø6×2.5 magnet
++ 0.3 mm below P1 = 12 mm). The sockets cost about 4 mm of case height compared with soldering the
+modules flat.
 
 ```
  P1 (brass)                 ────────────────────────────────────────
                                 magnet ▒▒        X27 body ██████
- M2×15 standoff ║          AS5600 ▬▬▬▬▬▬▬           │  │
-                ║          header ▮                 │  │
-                ║          socket ▮   rest post ▮   socket (8.5)
+ M2×12 standoff ║          AS5600 ▬▬▬▬▬▬▬           │  │
+                ║          socket ▮   rest post ▮   socket
  carrier PCB    ═══════════════════════════════════════════════════
  nylon spacer   ▯  Kapton  ─────────────────────────────────────────
  case floor     ════════════════════════════════════════════════════
@@ -78,23 +79,26 @@ plastic under each module. The three AS5600 chips end up about **1.1 mm below th
 - **ProS3 (U1).** Two 1×17 rows, with its USB-C toward the right wall. The FPC extension runs
   from it to the wall.
 - **AS5600 ×3 (U2–U4).** Each chip sits exactly under its sensor shaft. The 1×6 row faces the
-  dial centre. A **rest post** under the far edge (a 1×2 socket with a 1×2 male header whose
-  top pins are clipped flush) holds the board level at the same height as the header row. Its
+  dial centre. A **rest post** under the far edge (just a bare 1×2 socket) holds the board level at the
+  same height as the header row. Its
   pads are grounded. Only VIN, GND and OUT are used; leave SDA, SCL and 3Vo unconnected.
 - **DRV8833 (U5).** A 1×8 row (VM … AIN1) and a 1×6 row (AO1 … BSEN). BSEN and ASEN are grounded on the board.
 - **MAX98357A (U6).** The 1×7 row, plus two single-pin sockets under its **SPK−/SPK+** holes. Solder a
   single male pin into each of those holes. They carry the speaker signal to **J5** and support
   the board's far edge.
-- **X27.168 (M1).** Its four rear pins plug into two **standard 8.5 mm 1×4** sockets (outer
-  positions only). The holes are 1.3 mm, so the sockets can float about 0.3 mm. Solder them
+- **X27.168 (M1).** Its four rear pins plug into two 1×4 sockets cut from the same 5 mm strip
+  (outer positions only). The holes are 1.3 mm, so the sockets can float about 0.3 mm. Solder them
   only once the gear mesh is set (below).
 
-**Off-board connections.** Fit 0.1" male headers, or solder wires straight in.
+**Off-board connections.** Solder the leads for J3–J6 straight into the pads: there's no room
+under P1 for a plug standing up. If you want a part unpluggable, put a small inline connector
+partway along its lead. J1 and J2 take ordinary vertical male headers (8.5 mm fits under P1);
+you only plug into J1 on the bench, with the movement lifted off.
 
 | Ref | Pins (silkscreen) | Goes to |
 |---|---|---|
 | J1 DEBUG | GND 3V3 TX RX IO0 RST 5V BAT | USB-serial adapter / probes. Hold IO0 low and tap RST for ROM download mode. |
-| J2 SPARE GPIO | GND 3 38 39 40 41 42 | Free ESP32-S3 pins for later ideas |
+| J2 SPARE GPIO | GND 3 38 34 35 36 37 | Free ESP32-S3 pins for later ideas (IO39–42 stay free on the ProS3, unrouted) |
 | J3 CROWN SW | SW GND | Crown tactile switch |
 | J4 MIC | VDD GND SCK WS SD | INMP441 (tie its L/R pin to GND at the mic) |
 | J5 SPKR | + − | 28 mm speaker |
@@ -106,13 +110,16 @@ plastic under each module. The three AS5600 chips end up about **1.1 mm below th
    `+5V`, `+3V3` or `3V3_SW`.
 2. **Resistors and C1.** R1–R7 lie flat. C1's long leg (+) goes to the square pad marked `+`.
    Clip the leads.
-3. **Male headers** for J1–J6 (and J2 if you want it).
+3. **Male header** for J1 (and J2 if you want it).
 4. **Module sockets: use the modules as jigs.** Cut each socket strip to length (you lose one
-   position at each cut; file it smooth). Push the module's own male header into the strip, drop
-   the strip into the board, and solder **one** pin. Check that the strip is square and flat, then
-   solder the rest. Then solder the male header to the module while it's still plugged in. This
-   keeps every pair aligned. Build each AS5600 rest post the same way, then clip its top pins
-   flush with the plastic.
+   position at each cut; file it smooth) and drop the strips into the board, unsoldered.
+   Push the module's male header **long pins down** through the module's holes and into the
+   sockets, so the black plastic spacer sits on *top* of the module and the module sits flat on
+   the sockets (and on the bare rest-post socket for the AS5600s). Solder **one** socket pin from
+   underneath, check that everything is square and flat, then solder the rest. Solder the header
+   pins on top of the module. Then slide the plastic spacer up and off with pliers, and clip the
+   stubs flush. The MAX98357A's two speaker pins are single header pins fitted the same way.
+   Every module now unplugs and drops back in at exactly the right height.
 5. **Battery.** Stick it to the `BATTERY` area with foam tape and plug its PicoBlade lead into the ProS3.
 6. **X27.** Plug the motor into its two 1×4 sockets, but **don't solder the sockets yet**.
    ASSEMBLY.md §5 uses the board and P1 as a jig to set the gear mesh, then you solder them.

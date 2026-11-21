@@ -40,19 +40,23 @@ Z_HAND, Z_SENSOR, Z_KNOB = 36, 36, 31
 Z_NEEDLE, Z_MOTOR = 19, 38
 
 
+CENTER_SLOP = 0.10   # every gear pair is spaced this much wider than theoretical: room for laser
+                     # tooth error and bearing play without binding (just adds a little backlash)
+
+
 def center_distance(z1: int, z2: int) -> float:
-    return MODULE * (z1 + z2) / 2
+    return MODULE * (z1 + z2) / 2 + CENTER_SLOP
 
 
-R_SENSOR = center_distance(Z_HAND, Z_SENSOR)                 # 25.2
-R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 48.65
+R_SENSOR = center_distance(Z_HAND, Z_SENSOR)                 # 25.3
+R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 48.85
 TRAIN_ANGLES = {"I": 90.0, "II": 180.0, "III": 270.0}        # knob directions (12, 9, 6 o'clock)
 SENSORS = {k: polar(R_SENSOR, a) for k, a in TRAIN_ANGLES.items()}
 
 # Juken X27.168: Ø30.4 body; output shaft 10.0 mm from the body centre (datasheet);
 # four rear pins at ±11.43 across and ±3.81 along the shaft axis (two per coil,
 # same side = same coil); rear bushing boss on the shaft axis and a rear peg.
-X27_SHAFT = (center_distance(Z_NEEDLE, Z_MOTOR), 0.0)       # (19.95, 0)
+X27_SHAFT = (center_distance(Z_NEEDLE, Z_MOTOR), 0.0)       # (20.05, 0); slot-adjustable
 X27_SHAFT_OFFSET = 10.0
 X27_CENTER = (X27_SHAFT[0] + X27_SHAFT_OFFSET, 0.0)
 X27_BODY_D = 30.4
@@ -69,14 +73,15 @@ POSTS = [polar(POST_R, a) for a in (45, 135, 225, 315)]
 # Footprint frames: see hardware/pcb/make_pcb.py. Rotation 0 means the module's
 # header row lies along +x, below the module centre (toward -y).
 # Every module plugs into female sockets so it can be pulled for reflashing or
-# replacement: its own male headers (plastic under the module) sit on 5 mm
-# "short" female headers (Adafruit #3008) soldered to the carrier.
+# replacement. The sockets are 5 mm "short" female headers (Adafruit #3008).
+# Each module's male header is soldered with its black plastic spacer on TOP
+# (long pins down through the module, ~4.4 mm below it), then the spacer is
+# slid off and the stubs clipped, so the module rests directly on its sockets.
 SOCKET_H = 5.0                     # Adafruit #3008 short female header body
-HEADER_PLASTIC_H = 2.54            # standard male header spacer
-MODULE_LIFT = SOCKET_H + HEADER_PLASTIC_H        # module PCB underside above the carrier
-X27_SOCKET_H = 8.5                 # X27 rear pins plug into two standard 1x4 female headers
+MODULE_LIFT = SOCKET_H             # module PCB underside above the carrier
+X27_SOCKET_H = SOCKET_H            # X27 rear pins (4.4 mm) in two 1x4 cuts of the same header
 ADAFRUIT_AS5600 = dict(w=25.4, h=17.78, header_dy=-6.35, chip=(0.0, 0.0),
-                       rest=((-1.27, 6.35), (1.27, 6.35)))   # far-edge rest post (2-pin socket + header)
+                       rest=((-1.27, 6.35), (1.27, 6.35)))   # far-edge rest: a bare 1x2 socket
 AS5600_PLACE = {          # header row toward the dial centre
     "I": dict(c=SENSORS["I"], rot=0.0),
     "II": dict(c=SENSORS["II"], rot=90.0),
@@ -87,5 +92,5 @@ DRV8833_PLACE = dict(c=(28.0, -31.0), rot=0.0)
 MAX98357_PLACE = dict(c=(-32.0, 24.5), rot=0.0)
 BATTERY_BOX = (-37.0, -48.0, -13.2, -13.2)       # x0, y0, x1, y1 (sits on the carrier)
 
-# Carrier board outline: inside the lower tray with 0.6 mm clearance
-CARRIER_CLEAR = 0.6
+# Carrier board outline: inside the lower tray with 1.0 mm clearance
+CARRIER_CLEAR = 1.0

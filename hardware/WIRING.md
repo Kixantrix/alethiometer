@@ -2,7 +2,7 @@
 
 Almost all of this is on the [carrier PCB](pcb/README.md): every module plugs into sockets
 on it and the board makes the connections below. The only wires are to the four off-board parts
-(mic, speaker, crown switch, lid reed), which plug onto labelled pin rows J3–J6, plus the
+(mic, speaker, crown switch, lid reed), which solder to labelled pads J3–J6, plus the
 battery lead and the USB-C FPC extension. This page is the signal reference. For per-pad
 detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 
@@ -79,4 +79,5 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | Wall USB-C | right wall, receptacle centre y = 22.5 | Female end of the FPC extension, epoxied to a 2 mm spacer on P1, flush with the wall |
 
 Make the off-board leads about 10 cm long, enough to lift the upper shell clear and lay it
-beside the base. Dupont female housings on J3–J6 make every part unpluggable.
+beside the base. Solder them into J3–J6; a plug standing up wouldn't fit under P1. An inline
+connector partway along a lead makes that part unpluggable.

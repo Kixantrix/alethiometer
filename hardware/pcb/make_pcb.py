@@ -230,8 +230,8 @@ def fp_std(lib, name):
 PROS3_NETS = {
     1: "VBAT", 2: "GND", 3: "+5V", 4: "+3V3", 5: "H1", 6: "H2", 7: "IO3", 8: "H3", 9: "AIN1",
     10: "BCLK", 11: "IO0", 12: "3V3_SW", 13: "LID", 14: "AMP_SD", 15: "MIC_SD", 16: "DOUT", 17: "WS",
-    18: "IO42", 19: "IO41", 20: "IO40", 21: "IO39", 22: "IO38", 23: "RX", 24: "TX", 25: "GND", 26: "RST",
-    27: "AIN2", 28: "BIN1", 29: "BIN2", 30: "CROWN",
+    22: "IO38", 23: "RX", 24: "TX", 25: "GND", 26: "RST",
+    27: "AIN2", 28: "BIN1", 29: "BIN2", 30: "CROWN", 31: "IO34", 32: "IO36", 33: "IO37", 34: "IO35",
 }
 PROS3_LABELS = {1: "VBAT", 2: "GND", 3: "5V", 4: "3V3", 5: "IO1", 6: "IO2", 7: "IO3", 8: "IO4", 9: "IO5",
                 10: "IO21", 11: "IO0", 12: "LDO2", 13: "IO16", 14: "IO15", 15: "IO14", 16: "IO13", 17: "IO12",
@@ -252,8 +252,8 @@ TEST_PADS = [
 HEADERS = {
     "J1": ("DEBUG", 16.0, 30.5, 2.54, 0.0, [("GND", "GND"), ("+3V3", "3V3"), ("TX", "TX"), ("RX", "RX"),
                                            ("IO0", "IO0"), ("RST", "RST"), ("+5V", "5V"), ("VBAT", "BAT")]),
-    "J2": ("SPARE GPIO", 16.0, 24.5, 2.54, 0.0, [("GND", "GND"), ("IO3", "3"), ("IO38", "38"), ("IO39", "39"),
-                                                 ("IO40", "40"), ("IO41", "41"), ("IO42", "42")]),
+    "J2": ("SPARE GPIO", 16.0, 24.5, 2.54, 0.0, [("GND", "GND"), ("IO3", "3"), ("IO38", "38"), ("IO34", "34"),
+                                                 ("IO35", "35"), ("IO36", "36"), ("IO37", "37")]),
     "J3": ("CROWN SW", 16.0, 18.8, 2.54, 0.0, [("CROWN", "SW"), ("GND", "GND")]),
     "J4": ("MIC", -46.0, -17.0, 0.0, -2.54, [("3V3_SW", "VDD"), ("GND", "GND"), ("BCLK", "SCK"),
                                              ("WS", "WS"), ("MIC_SD", "SD")]),
@@ -399,7 +399,7 @@ def build() -> pcbnew.BOARD:
 
     # ---- corner posts: NPTH + copper keep-out (brass standoffs must not touch copper) ----
     for i, (x, y) in enumerate(L.POSTS):
-        fp = add(fp_std("MountingHole", "MountingHole_2.2mm_M2"), f"H{i + 1}", "M2 post", (x, y))
+        fp = add(fp_std("MountingHole", "MountingHole_2.7mm_M2.5"), f"H{i + 1}", "M2 post", (x, y))
         fp.Reference().SetVisible(False)
         ra = pcbnew.ZONE(board)
         ra.SetIsRuleArea(True)
@@ -477,6 +477,25 @@ def autoroute(board, freerouting: Path | None) -> bool:
                 k.SetOutline(pcbnew.SHAPE_POLY_SET(z.Outline()))
                 board.Add(k)
                 temp.append(k)
+    # Freerouting ignores the copper-to-edge rule: fence the outline with a 0.7 mm keep-out band.
+    w, c = L.octagon_inset(L.CASE_W, L.CASE_CHAMFER, L.T040 + L.CARRIER_CLEAR)
+    pts = L.octagon_pts(w, c)
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]):
+        dx, dy = x1 - x0, y1 - y0
+        n = math.hypot(dx, dy)
+        nx, ny = -dy / n * 0.7, dx / n * 0.7          # inward normal (outline is CCW)
+        k = pcbnew.ZONE(board)
+        k.SetIsRuleArea(True)
+        k.SetDoNotAllowTracks(True)
+        k.SetDoNotAllowVias(True)
+        k.SetLayerSet(pcbnew.LSET.AllCuMask())
+        poly = k.Outline()
+        poly.NewOutline()
+        for x, y in ((x0 - nx, y0 - ny), (x1 - nx, y1 - ny), (x1 + nx, y1 + ny), (x0 + nx, y0 + ny)):
+            v = P(x, y)
+            poly.Append(v.x, v.y)
+        board.Add(k)
+        temp.append(k)
     pcbnew.ExportSpecctraDSN(board, str(dsn))
     for k in temp:
         board.Remove(k)

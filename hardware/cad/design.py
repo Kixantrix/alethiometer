@@ -40,8 +40,17 @@ DENSITY = {"brass": 8.53e-3, "copper": 8.94e-3, "acrylic": 1.19e-3, "steel": 7.9
 # ---------------------------------------------------------------------------
 CASE_W = L.CASE_W
 CASE_CHAMFER = L.CASE_CHAMFER
-SEAM_GAP = 0.20                       # radial gap where upper shell telescopes over lower tray
-PLATE_CLEAR = 0.35                    # internal plates to case wall
+# ---- Tolerance budget --------------------------------------------------------
+# SendCutSend holds about ±0.13 mm on laser-cut features and ±0.25-0.5 mm on bends.
+# Every fit below is sized so worst-case parts still go together without filing.
+SEAM_GAP = 0.45                       # radial gap where upper shell telescopes over lower tray
+PLATE_CLEAR = 1.0                     # internal plates to case wall
+KNOB_NOTCH_SIDE = 1.2                 # thumbwheel to wall-notch edge, each side
+KNOB_NOTCH_BELOW, KNOB_NOTCH_ABOVE = 1.0, 1.5   # notch beyond the wheel stack, below / above
+POST_HOLE = 2.7                       # M2 clearance in case, spiders and PCB (heads/standoffs cover it)
+POST_HOLE_PLATE = 2.5                 # M2 standoff thread through P1/P2
+CRYSTAL_CLEAR = 0.4                   # radial, crystal in its frame pocket
+GEAR_BACKLASH = 0.12                  # tooth thinning per gear (plus layout.CENTER_SLOP)
 LOWER_OUTER = octagon(CASE_W, CASE_CHAMFER)
 LOWER_INNER = offset(LOWER_OUTER, -T040)
 UPPER_OUTER = offset(LOWER_OUTER, SEAM_GAP + T040)
@@ -50,9 +59,10 @@ UPPER_INNER = offset(UPPER_OUTER, -T040)
 # ---------------------------------------------------------------------------
 # Vertical stack (absolute z)
 # ---------------------------------------------------------------------------
-# floor -> 2.5 mm nylon spacers -> carrier PCB -> M2x15 F-F standoffs -> P1 (movement)
-# The bay is tall enough for socketed modules (L.MODULE_LIFT) under the sensor magnets.
-CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 15.0
+# floor -> 2.5 mm nylon spacers -> carrier PCB -> M2x12 F-F standoffs -> P1 (movement)
+# The bay height is set by the AS5600 chain: socket (L.MODULE_LIFT) + module + chip
+# + air gap + sensor magnet + magnet drop below P1.
+CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 12.0
 GEAR_STANDOFF, HAND_STANDOFF = 8.0, 6.0    # M2 hex standoff lengths
 Z_FLOOR_TOP = T040
 Z_CARRIER = Z_FLOOR_TOP + CARRIER_SPACER   # carrier PCB (bottom face)
@@ -86,9 +96,9 @@ KNOB_LAYERS = 5
 X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
-X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 8.5 mm sockets
+X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 5 mm sockets
 X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
-SENSOR_MAGNET_H = 3.0                      # Ø6×3 diametric
+SENSOR_MAGNET_H = 2.5                      # Ø6×2.5 diametric (the usual AS5600 magnet)
 SENSOR_MAGNET_DROP = 0.3                   # sensor shaft pokes below P1 so the magnet can't rub the plate
 
 # K&S Precision Metals telescoping brass (0.014" wall); ID = OD - 0.028"
@@ -100,8 +110,12 @@ def ks_od(frac: str) -> float:
 KS_WALL = 0.014 * IN
 ROD_332, ROD_18 = ks_od("3/32"), ks_od("1/8")
 TUBE_18, TUBE_532, TUBE_316, TUBE_732 = ks_od("1/8"), ks_od("5/32"), ks_od("3/16"), ks_od("7/32")
-FIT = 0.05                                # laser hole over nominal OD for solder/retainer
-BEARING = 0.12                            # running clearance in plate holes
+FIT = 0.15                                # hands, crown etc.: bonded bores that slide on even when cut -0.13
+GEAR_FIT = 0.08                           # gear bores: kept close so each gear runs centred on its arbor
+BUSH_FIT = 0.10                           # plate holes for the K&S tube bushings (Loctite 638 fills the gap)
+# Shafts don't run in the laser-cut holes: each plate hole carries a 1.6 mm K&S tube bushing, and
+# K&S telescoping sizes slide on each other with ~0.08 mm play. That locates every gear precisely
+# without reaming, whatever the laser tolerance.
 
 # The three framing hands. Knobs at 12 (top), 9 (left), 6 (bottom) o'clock.
 TRAINS = [
@@ -221,7 +235,7 @@ def knob_tip_r() -> float:
 def knob_notch_width(wall_plane: float) -> float:
     """Chord of the knob wheel where it crosses a wall at distance wall_plane."""
     d = wall_plane - R_KNOB
-    return 2 * math.sqrt(max(0.0, knob_tip_r() ** 2 - d * d)) + 1.2
+    return 2 * math.sqrt(max(0.0, knob_tip_r() ** 2 - d * d)) + 2 * KNOB_NOTCH_SIDE
 
 
 def wall_point(poly: Polygon, angle_deg: float) -> tuple[float, float]:
@@ -233,11 +247,11 @@ def wall_point(poly: Polygon, angle_deg: float) -> tuple[float, float]:
 
 
 def lower_tray() -> Part:
-    knob_z0 = LEVELS[0] - 0.5
+    knob_z0 = LEVELS[0] - KNOB_NOTCH_BELOW
     cuts = [WallCut(*wall_point(LOWER_OUTER, tr["angle"]), knob_notch_width(CASE_W / 2 - T040),
                     knob_z0, LOWER_H + 1) for tr in TRAINS]
     tray = Tray(LOWER_OUTER, LOWER_H, T040, BEND_IR, K_FACTOR,
-                floor_holes=[(x, y, 2.4) for x, y in POSTS], wall_cuts=cuts)
+                floor_holes=[(x, y, POST_HOLE) for x, y in POSTS], wall_cuts=cuts)
     prof, bends = tray.flat()
     p = Part("case_lower_tray", "scs-bent", "brass .040\"", tray.formed(), [loc()], BRASS,
              "case", prof, bends, "brass .040\", 8 bends 90° up, SCS bend spec", tray=tray)
@@ -276,19 +290,19 @@ def upper_shell() -> Part:
         x0, y0 = polar(SLOT_R0, a)
         x1, y1 = polar(SLOT_R1, a)
         face.append(slot(x0, y0, x1, y1, SLOT_W))
-    holes = [(x, -y, 2.4) for x, y in POSTS]
+    holes = [(x, -y, POST_HOLE) for x, y in POSTS]
 
     cuts = []
-    knob_top = LEVELS[0] - 0.5 + KNOB_LAYERS * T040 + 1.0
+    knob_top = LEVELS[0] + KNOB_LAYERS * T040 + KNOB_NOTCH_ABOVE
     for tr in TRAINS:
         x, y = wall_point(UPPER_OUTER, tr["angle"])
         _, ly, _ = _to_local_upper(x, y, 0)
         cuts.append(WallCut(x, ly, knob_notch_width(CASE_W / 2 + SEAM_GAP),
                             Z_TOP - knob_top, UPPER_H + 1))
     ux, uy = wall_point(UPPER_OUTER, 0.0)[0], USB["y"]
-    cuts.append(WallCut(ux, -uy, 9.8, Z_TOP - USB["z"] - 1.95, Z_TOP - USB["z"] + 1.95, rounded=True))
+    cuts.append(WallCut(ux, -uy, 10.6, Z_TOP - USB["z"] - 2.3, Z_TOP - USB["z"] + 2.3, rounded=True))
     (cx, cy), _ = crown_axis()
-    cuts.append(WallCut(cx, -cy, 2.7, Z_TOP - CROWN_Z - 1.35, Z_TOP - CROWN_Z + 1.35, rounded=True))
+    cuts.append(WallCut(cx, -cy, 3.1, Z_TOP - CROWN_Z - 1.55, Z_TOP - CROWN_Z + 1.55, rounded=True))
     tray = Tray(UPPER_OUTER, UPPER_H, T040, BEND_IR, K_FACTOR, floor_cuts=face,
                 floor_holes=holes, wall_cuts=cuts)
     prof, bends = tray.flat()
@@ -377,13 +391,13 @@ def p1_plate() -> Part:
     for x, y in POSTS:
         ribs += [((x, y), (x * 0.55, y * 0.55)), ((x * 0.55, y * 0.55), (0, 0))]
     p.cut(skeleton(outline, keep, ribs))
-    p.hole(0, 0, ROD_332 + BEARING)
+    p.hole(0, 0, TUBE_18 + BUSH_FIT)                  # 1/8" tube bushing for the 3/32" arbor I
     for tr in TRAINS:
-        p.hole(*sensor_xy(tr), ROD_18 + BEARING)
-        p.hole(*knob_xy(tr), ROD_18 + BEARING)
+        p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)    # 5/32" tube bushings for the 1/8" shafts
+        p.hole(*knob_xy(tr), TUBE_532 + BUSH_FIT)
     for x, y in POSTS:
-        p.hole(x, y, 2.2)
-    p.cut(slot(X27_CENTER[0] - 0.5, 0, X27_CENTER[0] + 0.5, 0, X27_BODY_D + 0.3))  # slide to set gear mesh
+        p.hole(x, y, POST_HOLE_PLATE)
+    p.cut(slot(X27_CENTER[0] - 1.0, 0, X27_CENTER[0] + 1.0, 0, X27_BODY_D + 0.6))  # slide to set gear mesh
     return flat_part("movement_base_plate_P1", p, T063, material="brass .063\"",
                      placements=[loc(z=Z_P1)], spec="brass .063\" (hidden; skeletonised)",
                      color=BRASS_DARK)
@@ -411,10 +425,10 @@ def p2_plate() -> Part:
     p.cut(window.difference(unary_union(keep)))
     p.hole(0, 0, TUBE_732 + FIT * 2)
     for tr in TRAINS:
-        p.hole(*sensor_xy(tr), ROD_18 + BEARING)
-        p.hole(*knob_xy(tr), ROD_18 + BEARING)
+        p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)
+        p.hole(*knob_xy(tr), TUBE_532 + BUSH_FIT)
     for x, y in POSTS:
-        p.hole(x, y, 2.2)
+        p.hole(x, y, POST_HOLE_PLATE)
     # mic port (BL); the speaker (TL) and reed wires use the open outer lattice
     mx, my = MIC["c"]
     p.hole(mx, my, 1.2)
@@ -432,7 +446,7 @@ def spider(name, r_in, t, z) -> Part:
     shape = shape.difference(circle(0, 0, r_in))
     p = Profile(shape)
     for x, y in POSTS:
-        p.hole(x, y, 2.4)
+        p.hole(x, y, POST_HOLE)
     return flat_part(name, p, t, material=f"brass {'.040' if t < 1.2 else '.063'}\"",
                      placements=[loc(z=z)], group="case")
 
@@ -455,7 +469,7 @@ def dial_sticker() -> Part:
 # Gears, hands, arbors
 # ---------------------------------------------------------------------------
 def gear_profile(z, hole, pattern=None) -> Profile:
-    p = Profile(gear_polygon(MODULE, z))
+    p = Profile(gear_polygon(MODULE, z, backlash=GEAR_BACKLASH))
     if pattern:
         p.cut(crossings(z, hole, **pattern))
     p.hole(0, 0, hole)
@@ -514,19 +528,19 @@ def gears() -> list[Part]:
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
         parts.append(flat_part(f"gear_hand_{tr['name']}_36T",
-                               gear_profile(Z_HAND, od + FIT, GEAR_PATTERNS[tr["name"]]), T040,
+                               gear_profile(Z_HAND, od + GEAR_FIT, GEAR_PATTERNS[tr["name"]]), T040,
                                placements=[loc(z=z, rz=mesh_rot(a, Z_HAND))]))
         parts.append(flat_part(f"gear_sensor_{tr['name']}_36T",
-                               gear_profile(Z_SENSOR, ROD_18 + FIT, GEAR_PATTERNS["sensor"]), T040,
+                               gear_profile(Z_SENSOR, ROD_18 + GEAR_FIT, GEAR_PATTERNS["sensor"]), T040,
                                placements=[loc(sx, sy, z, mesh_rot(a + 180, Z_SENSOR, gap=True))]))
-        knob = gear_profile(Z_KNOB, ROD_18 + FIT)
+        knob = gear_profile(Z_KNOB, ROD_18 + GEAR_FIT)
         parts.append(flat_part(f"knob_{tr['name']}_31T_x{KNOB_LAYERS}", knob, T040,
                                placements=[loc(kx, ky, LEVELS[0] + i * T040, mesh_rot(a + 180, Z_KNOB))
                                            for i in range(KNOB_LAYERS)],
                                spec="brass .040\" — 5 identical layers soldered into one thumbwheel"))
-    parts.append(flat_part("gear_needle_19T", gear_profile(Z_NEEDLE, TUBE_316 + FIT), T040,
+    parts.append(flat_part("gear_needle_19T", gear_profile(Z_NEEDLE, TUBE_316 + GEAR_FIT), T040,
                            placements=[loc(z=LEVELS[3], rz=0.0)]))
-    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 1.0 + FIT, GEAR_PATTERNS["motor"]), T040,
+    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 1.0 + GEAR_FIT, GEAR_PATTERNS["motor"]), T040,
                            placements=[loc(*X27_SHAFT, LEVELS[3], mesh_rot(180, Z_MOTOR, gap=True))]))
     return parts
 
@@ -611,6 +625,18 @@ def arbors() -> list[Part]:
     h = Z_NEEDLE_HAND - 0.1 - Z_P2
     parts.append(stock("cannon", cylinder(TUBE_732, h, z=Z_P2, hole=TUBE_732 - 2 * KS_WALL), [loc()],
                        f"K&S 7/32\" brass tube, {h:.2f} mm (soldered into P2)"))
+    # plate bushings (K&S tube, flush with each plate)
+    bush = [(0.0, 0.0, TUBE_18, Z_P1, "1/8")]
+    for tr in TRAINS:
+        for xy in (sensor_xy(tr), knob_xy(tr)):
+            bush += [(*xy, TUBE_532, Z_P1, "5/32"), (*xy, TUBE_532, Z_P2, "5/32")]
+    for size in ("1/8", "5/32"):
+        items = [b for b in bush if b[4] == size]
+        x0, y0, od, z0, _ = items[0]
+        parts.append(stock(f"bushing_{size.replace('/', '_')}",
+                           cylinder(od, T063, x0, y0, z0, hole=od - 2 * KS_WALL),
+                           [loc(x - x0, y - y0, z - z0) for x, y, _, z, _ in items],
+                           f"K&S {size}\" brass tube, {T063:.1f} mm bushing, Loctite 638 into the plate"))
     # sensor and knob shafts
     shaft_h = Z_P2_TOP - Z_P1
     for tr in TRAINS:
@@ -691,14 +717,14 @@ def electronics() -> list[Part]:
     # carrier PCB (ordered from a PCB fab; see hardware/pcb)
     pcb = Profile(carrier_outline())
     for x, y in POSTS:
-        pcb.hole(x, y, 2.4)
+        pcb.hole(x, y, POST_HOLE)
     for x, y in L.X27_PINS.values():
         pcb.hole(x, y, 1.2)
     E.append(Part("pcb_carrier", "pcb", "FR4 1.6 mm, 2 layers", profile_solid(pcb, CARRIER_T),
                   [loc(z=Z_CARRIER)], (0.06, 0.28, 0.14), "electronics", pcb, [],
                   "hardware/pcb (JLCPCB/PCBWay, 2-layer 1.6 mm)", density="fr4"))
 
-    # Sockets: (module placement, [(x, y, along_x, n_pins)] in the module frame, socket height, male plastic)
+    # Sockets: (module placement, [(x, y, along_x, n_pins)] in the module frame)
     def row(x, y, along_x, n):
         return (x, y, along_x, n)
     a = L.ADAFRUIT_AS5600
@@ -711,17 +737,16 @@ def electronics() -> list[Part]:
     for place, rows in sockets:
         for x, y, along_x, n in rows:
             hx, hy = (n * 1.27, 1.27) if along_x else (1.27, n * 1.27)
-            body = box(x - hx, y - hy, 0, x + hx, y + hy, L.SOCKET_H).fuse(
-                box(x - hx, y - hy, L.SOCKET_H, x + hx, y + hy, L.MODULE_LIFT))
+            body = box(x - hx, y - hy, 0, x + hx, y + hy, L.SOCKET_H)
             body = placed(body, place, zt)
             strip = body if strip is None else strip.fuse(body)
     cx = X27_CENTER[0]
-    for sy in (11.43, -11.43):                                # X27: two standard 1x4 female headers
+    for sy in (11.43, -11.43):                                # X27: two 1x4 short female headers
         body = box(cx - 5.08, sy - 1.27, zt, cx + 5.08, sy + 1.27, zt + L.X27_SOCKET_H)
         strip = strip.fuse(body)
-    E.append(Part("module_sockets", "bought", "female header sockets + module male headers", strip, [loc()],
-                  BLACK, "electronics", spec="Adafruit #3008 5 mm female headers (cut to length) + 2x 1x4 "
-                  "8.5 mm female headers for the X27; module male headers on top", density="acrylic"))
+    E.append(Part("module_sockets", "bought", "5 mm female header sockets", strip, [loc()],
+                  BLACK, "electronics", spec="Adafruit #3008 5 mm short female headers, cut to length "
+                  "(modules and X27)", density="acrylic"))
 
     # ProS3 (frame: USB-C toward +y; placed with USB toward +x), on its headers
     pros3 = box(-8.9, -27.76, 0, 8.9, 24.13, 1.0).fuse(box(-6.5, -14, 1.0, 6.5, 14, 2.6)) \
@@ -740,7 +765,7 @@ def electronics() -> list[Part]:
     for tr in TRAINS:
         add(f"sensor_AS5600_{tr['name']}", placed(as5600, L.AS5600_PLACE[tr["name"]], zm),
             "Adafruit AS5600 #6357, plugged into the carrier")
-    # X27.168: rear pins plug into the 8.5 mm sockets, motor gear on the Ø1 shaft
+    # X27.168: rear pins plug into 5 mm sockets, motor gear on the Ø1 shaft
     bx, by = X27_CENTER
     body = cylinder(X27_BODY_D, X27_BODY_H, bx, by, X27_BODY_BOTTOM)
     body = body.fuse(cylinder(2.0, 2.2, *X27_SHAFT, X27_BODY_TOP)).fuse(
@@ -866,7 +891,7 @@ def hinge() -> list[Part]:
 def all_parts() -> list[Part]:
     parts = [lower_tray(), upper_shell(), lid(), lid_overlay(), p1_plate(), p2_plate(),
              spider("crystal_seat_spider", SEAT_R_IN, T040, Z_SEAT),
-             spider("crystal_frame_spider", CRYSTAL_R + 0.1, T063, Z_FRAME),
+             spider("crystal_frame_spider", CRYSTAL_R + CRYSTAL_CLEAR, T063, Z_FRAME),
              crystal(), dial_sticker()]
     parts += gears() + hands() + arbors() + hardware() + electronics() + crown_cap() + hinge()
     return parts
