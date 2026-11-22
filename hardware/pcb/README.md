@@ -4,8 +4,8 @@ One octagonal, two-layer, **all through-hole** board in the bottom of the case. 
 point-to-point wiring. **Every module plugs into sockets**, so you can pull any of them to
 reflash, probe or replace it without desoldering anything. The crown switch and the wall USB-C
 port are mounted on the board too, so their push and plug forces go into the screwed-down
-carrier rather than a glue joint. The few off-board parts (mic, speaker, lid reed) connect to
-labelled pads. Every signal also has a labelled test pad.
+carrier rather than a glue joint. So are the power and mute slide switches and the battery's
+JST-PH socket. The two off-board parts (mic, speaker) connect to labelled pads. Every signal also has a labelled test pad.
 
 ![top](fab/render_top.png)
 
@@ -51,9 +51,11 @@ boards plus shipping.
 | — | Short USB-C cable **with data** (USB 2.0), thin (≤ 3.5 mm) | 1 | Cut to ~6 cm from the plug: ProS3 USB-C → J7. Check D+/D− continuity first; charge-only cables won't work. |
 | R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers |
 | R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) |
-| R7 | 1 MΩ, ¼ W metal film | 1 | Lid pull-up to the always-on 3V3 |
+| R7 | 1 MΩ, ¼ W metal film | 1 | Mute-switch pull-up to the always-on 3V3 |
+| SW2, SW3 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 2 | Power (SW2) and mute (SW3), sliders out through the bottom wall |
+| J8 | **JST S2B-PH-K-S** side-entry 2-pin socket, 2.0 mm | 1 | Battery plug. Polarity is marked on the silkscreen. |
 | C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
-| — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J4–J6 |
+| — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J4 and J5 |
 | — | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | Between the case floor and the board |
 | — | M2 × 12 mm brass hex standoff, female-female | 3 | Board → P1 |
 | — | M2 × 8 mm brass slotted countersunk screw, DIN 963, 90° | 3 | Flush case floor → spacer → board → standoff; length includes head |
@@ -106,7 +108,7 @@ modules flat.
   (outer positions only). The holes are 1.3 mm, so the sockets can float about 0.3 mm. Solder them
   only once the gear mesh is set (below).
 
-**Off-board connections.** Solder the leads for J4–J6 straight into the pads: there's no room
+**Off-board connections.** Solder the leads for J4 and J5 straight into the pads: there's no room
 under P1 for a plug standing up. If you want a part unpluggable, put a small inline connector
 partway along its lead. J1 and J2 take ordinary vertical male headers (8.5 mm fits under P1);
 you only plug into J1 on the bench, with the movement lifted off.
@@ -117,7 +119,6 @@ you only plug into J1 on the bench, with the movement lifted off.
 | J2 SPARE GPIO | GND 3 38 34 35 36 37 | Free ESP32-S3 pins for later ideas (IO39–42 stay free on the ProS3, unrouted) |
 | J4 MIC | VDD GND SCK WS SD | INMP441 (tie its L/R pin to GND at the mic) |
 | J5 SPKR | + − | 28 mm speaker |
-| J6 LID | SW GND | Lid reed switch |
 | J7 USB CABLE | VBUS D− D+ GND | Cut USB-C cable from the ProS3's own port (wire colours on the silkscreen) |
 
 ## Assembly order
@@ -136,7 +137,10 @@ you only plug into J1 on the bench, with the movement lifted off.
    pins on top of the module. Then slide the plastic spacer up and off with pliers, and clip the
    stubs flush. The MAX98357A's two speaker pins are single header pins fitted the same way.
    Every module now unplugs and drops back in at exactly the right height.
-5. **Battery.** Stick it to the `BATTERY` area with foam tape and plug its PicoBlade lead into the ProS3.
+5. **Switches, J8 and battery.** Solder SW2, SW3 and J8 flat on the board. Check with a meter that
+   your battery's red wire meets J8's **+** pin; if not, swap the two crimps in its plug (lift the
+   tabs with a pin). Stick the cell to the `BATTERY` area with foam tape, lead end toward the top,
+   and plug it into J8.
 6. **X27.** Plug the motor into its two 1×4 sockets, but **don't solder the sockets yet**.
    ASSEMBLY.md §5 uses the board and P1 as a jig to set the gear mesh, then you solder them.
 7. **SW1 and U7.** Solder the crown switch flat on the board. Screw U7 down: M2 × 10 screws from
@@ -155,13 +159,13 @@ the **test pads** in the bottom strip and J1. Every pad is labelled with its net
 
 | Step | Fitted | Check |
 |---|---|---|
-| 1 | Bare board + passives | Resistance GND↔`+3V3`, `+5V`, `VBAT`, `3V3_SW` all > 1 kΩ. `H1`/`H2`/`H3` → GND ≈ 47 kΩ. `LID` → `+3V3` ≈ 1 MΩ. |
+| 1 | Bare board + passives | Resistance GND↔`+3V3`, `+5V`, `VBAT`, `3V3_SW` all > 1 kΩ. `H1`/`H2`/`H3` → GND ≈ 47 kΩ. `MUTE` → `+3V3` ≈ 1 MΩ. |
 | 2 | ProS3 only, USB connected | `+5V` ≈ 5.0 V, `+3V3` ≈ 3.3 V, `VBAT` ≈ 4.2 V (charging or battery). Flash the firmware (see [`../../firmware/README.md`](../../firmware/README.md)) and open the serial monitor. |
 | 3 | + AS5600 ×3 | `3V3_SW` ≈ 3.3 V while awake. `hands` prints three angles. Turning a magnet over each chip moves `H1`–`H3` between about 0 and 2.7 V. |
 | 4 | + DRV8833 + X27 | `FLT` reads high (no fault). `home` buzzes the needle against its stop, and `sweep` visits the symbols. You can scope `AIN1`/`AIN2`/`BIN1`/`BIN2`. If it homes the wrong way, set `MOTOR_PHASE_DIR = -1`. |
 | 5 | + MAX98357A + speaker | `tone` (or `tone 440`) beeps. `AMP_SD` is high while it plays. `BCLK`/`WS`/`DOUT` carry I2S. |
 | 6 | + INMP441 on J4 | `rec` records and plays back. `MIC_SD` carries data. |
-| 7 | Crown / lid | Short `CROWN` or `LID` to an adjacent GND pad. `status` shows the change, and a crown press wakes it from `sleep`. |
+| 7 | Crown / mute | Press the crown and flip the mute switch. `status` shows the change, and a crown press wakes it from `sleep`. |
 
 **Firmware iteration.** The ProS3's native USB (CDC serial + the ESP32-S3's built-in USB-JTAG
 auto-reset) reaches the wall port through J7 and U7, so `pio run -t upload` works with

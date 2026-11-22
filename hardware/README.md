@@ -68,10 +68,13 @@ the interpretation aloud.
   ring on the top face. It reads as decoration, and fine mesh behind it hides the interior.
   The microphone listens through a 7-hole port in the dial plate, under the same ring. Nothing
   on the outside says "speaker" or "microphone".
-- **Crown.** A small scalloped brass crown centred on the top-right corner, low on the case. Hold it to speak, release
-  to ask. Triple-click opens Wi-Fi setup; five clicks starts calibration.
-- **Lid.** A magnet and reed switch wake the instrument when you open the lid and send it to
-  sleep when you close it. It opens flat and stops just beyond (about 200°) when the hinge's
+- **Crown.** A small knurled brass crown centred on the top-right corner, low on the case. Press
+  it to wake the instrument; hold it to speak, release to ask. Double-click sends it to sleep (it
+  also sleeps after 2 minutes idle). Triple-click opens Wi-Fi setup; five clicks starts calibration.
+- **Power and mute.** Two small slide switches peek out of the bottom wall. Power off disconnects
+  the battery for storage. Mute makes it silent: it never speaks or chimes, and the needle alone
+  gives the answer.
+- **Lid.** A magnet pair holds it shut. It opens flat and stops just beyond (about 200°) when the hinge's
   own leaves close on each other; on a table it rests on the tabletop. There is no separate
   stop hardware. A USB-C charging port is tucked in the hinge-side wall. Battery is
   a ~350 mAh LiPo, good for roughly 40–55 readings per charge (estimated, not measured).

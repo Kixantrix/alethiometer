@@ -32,7 +32,7 @@ pio device monitor           # 115200 baud, USB CDC
 
 **After assembly — over the air.** OTA is enabled whenever the device is on Wi-Fi, awake, **and
 has a device key** (hostname `alethiometer`, password = the device key; with no key, OTA stays
-off). Open the lid (or press the crown) so it wakes, then:
+off). Press the crown so it wakes, then:
 
 ```powershell
 $env:ALETHIOMETER_KEY = "<device key>"
@@ -89,16 +89,20 @@ Run once after assembly, and again if a gear is re-meshed. **Click the crown 5 t
 
 | Gesture | Action |
 |---|---|
-| Open the lid / press the crown | Wake: the needle homes against its stop, sweeps once around and settles on the Hourglass |
+| Press the crown | Wake: the needle homes against its stop, sweeps once around and settles on the Hourglass |
 | **Hold** the crown | Ask: chime, speak while holding (max 15 s), release to send |
 | Triple-click | Wi-Fi / API setup portal |
 | 5 clicks | Calibration |
 | Press during speech | Stop speaking |
-| Close the lid | Needle parks on the Hourglass, deep sleep |
+| Double-click | Needle parks on the Hourglass, deep sleep now |
 | 120 s without use | Park and deep sleep |
 
-Waking with the lid closed (e.g. the crown is bumped in a pocket) goes straight back to sleep
-without moving the needle.
+**Mute switch** (slide switch beside the power switch): muted, it never speaks or chimes. Ask
+as usual (hold the crown and speak); the needle gives the reading and the LED shows each stage.
+Set `MUTE_SILENCES_CHIMES = false` in `config.h` to keep the chimes while muted.
+
+**Power switch** (slide switch on the bottom wall): off disconnects the battery completely, for
+storage. The battery only charges from USB with the switch **on**.
 
 While the question is considered the needle drifts and trembles; then it sweeps through the
 reading (each stop approached with a dramatic ≥180° sweep where the gearing allows; extra
@@ -123,7 +127,7 @@ started (offline readings only). On USB power these limits are ignored.
 | `cal` | start calibration |
 | `wifi` | open the setup portal |
 | `sleep` | park and deep sleep |
-| `status` | battery, USB, lid, needle position, API/key/calibration state |
+| `status` | battery, USB, mute, needle position, API/key/calibration state |
 
 ## Pin map
 
@@ -140,7 +144,7 @@ All pins are defined in `src/config.h`.
 | I2S DIN ← INMP441 SD | IO14 | INMP441 L/R → GND (left) |
 | MAX98357A SD_MODE | IO15 | HIGH = on (left channel), LOW = shutdown; held LOW in deep sleep |
 | Crown button → GND | IO9 | internal/RTC pull-up, ext1 wake (any-low) |
-| Lid reed → GND | IO16 | 1 MΩ pull-up (R7) to 3V3; LOW = closed; ext0 wake on HIGH |
+| Mute switch → GND | IO16 | 1 MΩ pull-up (R7) to 3V3; LOW = muted |
 | LDO2 enable | IO17 (on-board) | powers AS5600 ×3, INMP441, RGB LED |
 | VBAT sense | IO10 (on-board) | divider 442k/160k |
 | VBUS sense | IO33 (on-board) | |
@@ -176,7 +180,7 @@ python firmware/tools/gen_symbols.py
 
 | State | Estimated current |
 |---|---|
-| Deep sleep | ~25–30 µA (ESP32-S3 + ProS3 regulator ~10 µA, VBAT divider ~7 µA, reed pull-up 3.3 µA when closed, MAX98357A/DRV8833 shutdown ~2 µA; LDO2 loads are off) |
+| Deep sleep | ~25–30 µA (ESP32-S3 + ProS3 regulator ~10 µA, VBAT divider ~7 µA, mute pull-up 3.3 µA when muted, MAX98357A/DRV8833 shutdown ~2 µA; LDO2 loads are off) |
 | Awake, idle on Wi-Fi | ~70 mA (S3 + modem-sleep Wi-Fi ~45 mA, 3 × AS5600 ~20 mA, mic/LED ~3 mA) |
 | Needle moving | +20 mA |
 | Recording | ~75 mA |
@@ -185,6 +189,8 @@ python firmware/tools/gen_symbols.py
 
 A typical session — wake and awakening sweep (5 s), 20 s before asking, 6 s question, 10 s
 thinking, 15 s needle reading, 60 s of speech — uses ≈ 6 mAh; letting it idle out (120 s)
-instead of closing the lid adds ≈ 2.3 mAh. With ~340 mAh usable above the 3.3–3.45 V
-thresholds that is **roughly 40 readings per charge (≈ 55 if the lid is closed afterwards)**.
-Standby in deep sleep alone would last over a year; LiPo self-discharge dominates.
+instead of double-clicking it to sleep adds ≈ 2.3 mAh. With ~340 mAh usable above the 3.3–3.45 V
+thresholds that is **roughly 40 readings per charge (≈ 55 if you double-click it to sleep; more
+muted, since speech is the biggest load)**.
+Standby in deep sleep alone would last over a year; LiPo self-discharge dominates. With the
+power switch off it draws nothing.

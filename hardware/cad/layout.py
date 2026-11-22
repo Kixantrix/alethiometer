@@ -95,6 +95,19 @@ PROS3_PLACE = dict(c=(4.0, 43.7), rot=90.0)      # USB-C end toward -x: short ca
 DRV8833_PLACE = dict(c=(28.0, -31.0), rot=0.0)
 MAX98357_PLACE = dict(c=(-32.0, 24.5), rot=0.0)
 BATTERY_BOX = (-37.0, -48.0, -13.2, -13.2)       # x0, y0, x1, y1 (sits on the carrier)
+# Battery: a stock 1S LiPo with a JST-PH 2.0 lead plugs into J8, a side-entry JST S2B-PH-K
+# socket left of the cell, opening facing +y (lead from the cell's top end).
+BATTERY_JST_ENTRY = (-40.5, -28.5)              # mouth centre (CAD frame)
+BATTERY_JST_BODY = (5.9, 7.6, 4.85)             # across the pins, depth, height
+
+# Power and mute: two C&K OS102011MA1QN1 right-angle slide switches on the carrier, their
+# sliders out through the bottom wall under the DRV8833. Pins 1-2-3 run along +x;
+# slider toward pin 3 (the case corner) = power on / sound on.
+SLIDE_SW_BODY = (8.6, 4.4, 4.7)                 # along x, depth, height (pin 1 at x0 + 2.3)
+SLIDE_SW_ACT = (2.0, 4.0, 1.6, 3.6)             # slider width, reach beyond body, z0, z1 above carrier
+SLIDE_SW_TRAVEL = 2.0
+SLIDE_SW_FRONT_Y = -52.5                        # body front edge, just inside the carrier edge
+SW_MUTE_PIN1_X, SW_POWER_PIN1_X = 19.5, 31.5   # footprints incl. legs are 11.4 wide
 
 # Wall USB-C: Adafruit #4090 USB-C breakout (0.1" header + two M2 holes beside the receptacle),
 # on a 1x8 socket and two 5 mm spacers, receptacle facing the right wall. Frame as the other

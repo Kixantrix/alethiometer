@@ -19,15 +19,12 @@ enum class State { Awakening, Idle, Listening, Thinking, Reading, Calibrating };
 
 State state = State::Awakening;
 uint32_t lastActivityMs = 0;
-uint32_t lidClosedSinceMs = 0;
 bool wifiAllowed = false;
 bool haveWifiCredentials = false;
 bool portalPending = false;
 int askHands[3];
 Reading reading;
 int lastAnnouncedStop = -1;
-
-constexpr uint32_t LID_DEBOUNCE_MS = 300;
 
 void led(State s) {
   switch (s) {
@@ -110,7 +107,7 @@ void speak() {
   powerLed(0, 255, 60);
   String error;
   const bool ok = cloudSpeak(
-      reading.interpretation, [] { return digitalRead(PIN_CROWN) == LOW || powerLidClosed(); }, error);
+      reading.interpretation, [] { return digitalRead(PIN_CROWN) == LOW || powerMuted(); }, error);
   if (!ok) {
     Serial.printf("[app] speech failed: %s\n", error.c_str());
     audioChime(Chime::Error);
@@ -122,7 +119,8 @@ void handleIdle(const CrownSignal &sig) {
     startListening();
   } else if (sig.event == CrownEvent::Clicks) {
     Serial.printf("[app] %d click(s)\n", sig.clicks);
-    if (sig.clicks == CLICKS_PORTAL) appStartPortal();
+    if (sig.clicks == CLICKS_SLEEP) appSleep();
+    else if (sig.clicks == CLICKS_PORTAL) appStartPortal();
     else if (sig.clicks == CLICKS_CALIBRATE) appStartCalibration();
   } else if (millis() - lastActivityMs > IDLE_SLEEP_MS) {
     Serial.println("[app] idle timeout");
@@ -161,18 +159,9 @@ void handleReading() {
     Serial.printf("[app] stop %d: %s (%d swing%s)\n", tag + 1, SYMBOL_NAMES[s.index], s.swings, s.swings > 1 ? "s" : "");
   }
   if (needleBusy()) return;
-  if (reading.fromCloud) speak();
+  if (reading.fromCloud && !powerMuted()) speak();
   else audioChime(Chime::Offline);
   enterIdle();
-}
-
-bool lidClosedDebounced() {
-  if (!powerLidClosed()) {
-    lidClosedSinceMs = 0;
-    return false;
-  }
-  if (lidClosedSinceMs == 0) lidClosedSinceMs = millis();
-  return millis() - lidClosedSinceMs >= LID_DEBOUNCE_MS;
 }
 
 }  // namespace
@@ -182,12 +171,8 @@ void appSetup() {
   powerBegin();
   settingsLoad();
   const WakeReason wake = powerWakeReason();
-  Serial.printf("\n[app] The Alethiometer wakes (reason %d), battery %.2f V%s\n", static_cast<int>(wake),
-                powerBatteryVolts(), powerUsbPresent() ? " (USB)" : "");
-  if (powerLidClosed()) {
-    Serial.println("[app] lid closed - sleeping again");
-    powerDeepSleep();
-  }
+  Serial.printf("\n[app] The Alethiometer wakes (reason %d), battery %.2f V%s%s\n", static_cast<int>(wake),
+                powerBatteryVolts(), powerUsbPresent() ? " (USB)" : "", powerMuted() ? ", muted" : "");
 
   crownBegin();
   handsBegin();
@@ -218,11 +203,6 @@ void appLoop() {
   consoleLoop();
   const CrownSignal sig = crownUpdate();
   if (sig.event != CrownEvent::None) lastActivityMs = millis();
-
-  if (lidClosedDebounced()) {
-    Serial.println("[app] lid closed");
-    appSleep();
-  }
 
   switch (state) {
     case State::Awakening:

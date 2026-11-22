@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "config.h"
+#include "power.h"
 
 namespace {
 
@@ -165,6 +166,7 @@ void audioOff() { ensureMode(Mode::Off); }
 void audioTone(float hz, uint32_t ms, float volume) { playNotes({{hz, static_cast<uint16_t>(ms)}}, volume); }
 
 void audioChime(Chime chime) {
+  if (MUTE_SILENCES_CHIMES && powerMuted()) return;
   const float v = CHIME_VOLUME;
   switch (chime) {
     case Chime::Wake: playNotes({{523, 220}, {659, 220}, {784, 420}}, v * 0.7f); break;

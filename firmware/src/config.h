@@ -22,7 +22,7 @@ constexpr int PIN_I2S_DIN = 14;    // <- INMP441 SD
 constexpr int PIN_AMP_SD = 15;     // MAX98357A SD_MODE: HIGH = on (left channel), LOW = shutdown
 
 constexpr int PIN_CROWN = 9;       // pushbutton to GND, active LOW, RTC GPIO (ext1 wake)
-constexpr int PIN_LID = 16;        // reed to GND, external 1 MOhm pull-up: LOW = closed (ext0 wake)
+constexpr int PIN_MUTE = 16;       // mute slide switch to GND, external 1 MOhm pull-up: LOW = muted
 constexpr int PIN_LDO2 = 17;       // ProS3 LDO2 enable (AS5600s, INMP441, RGB LED)
 constexpr int PIN_VBAT_SENSE = 10; // ProS3 on-board divider
 constexpr int PIN_VBUS_SENSE = 33; // HIGH when USB 5 V present
@@ -36,6 +36,7 @@ constexpr float VBAT_DIVIDER = (442.0f + 160.0f) / 160.0f;  // ProS3 VBAT sense 
 constexpr float VBAT_WARN_V = 3.45f;      // chime warning below this
 constexpr float VBAT_NO_WIFI_V = 3.30f;   // refuse Wi-Fi below this
 constexpr uint32_t IDLE_SLEEP_MS = 120000;
+constexpr bool MUTE_SILENCES_CHIMES = true;  // muted = no speech and no chimes (needle and LED only)
 constexpr uint8_t LED_BRIGHTNESS = 24;    // 0-255; the LED is hidden in the case
 
 // ---------------------------------------------------------------------------
@@ -111,6 +112,7 @@ constexpr size_t SPEAK_RING_BYTES = 64 * 1024;
 constexpr uint32_t CROWN_DEBOUNCE_MS = 25;
 constexpr uint32_t CROWN_HOLD_MS = 450;     // longer press = push-to-talk
 constexpr uint32_t CROWN_CLICK_GAP_MS = 450;
+constexpr int CLICKS_SLEEP = 2;        // double-click: park and sleep now
 constexpr int CLICKS_PORTAL = 3;
 constexpr int CLICKS_CALIBRATE = 5;
 constexpr uint32_t CAL_ABORT_HOLD_MS = 1500;

@@ -14,7 +14,7 @@ Everything is through-hole and every module is socketed: the carrier gets
 0.1" female headers (5 mm "short" ones for the breakouts and the ProS3, two
 standard 1x4 for the X27 motor's rear pins) and each module plugs in on its own
 male headers, so any of them can be pulled to reflash or replace it. Off-board
-parts (mic, speaker, crown switch, lid reed) are wired to labelled pads.
+parts (mic, speaker) are wired to labelled pads; the battery plugs into J8.
 """
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ ORIGIN = (150.0, 100.0)            # where the dial centre lands on the KiCad pa
 
 TRACK_W, CLEARANCE, VIA_D, VIA_DRILL = 0.35, 0.25, 0.8, 0.4
 POWER_TRACK_W = 0.6
-POWER_NETS = {"GND", "VBAT", "+5V", "+3V3", "3V3_SW", "AOUT1", "AOUT2", "BOUT1", "BOUT2", "SPK+", "SPK-",
+POWER_NETS = {"GND", "VBAT", "BAT+", "+5V", "+3V3", "3V3_SW", "AOUT1", "AOUT2", "BOUT1", "BOUT2", "SPK+", "SPK-",
               "USB_VBUS"}
 
 mm = pcbnew.FromMM
@@ -279,7 +279,7 @@ def fp_std(lib, name):
 # ProS3 header pin -> net (pin numbers from Unexpected Maker's ProS3 KiCad symbol)
 PROS3_NETS = {
     1: "VBAT", 2: "GND", 3: "+5V", 4: "+3V3", 5: "H1", 6: "H2", 7: "IO3", 8: "H3", 9: "AIN1",
-    10: "BCLK", 11: "IO0", 12: "3V3_SW", 13: "LID", 14: "AMP_SD", 15: "MIC_SD", 16: "DOUT", 17: "WS",
+    10: "BCLK", 11: "IO0", 12: "3V3_SW", 13: "MUTE", 14: "AMP_SD", 15: "MIC_SD", 16: "DOUT", 17: "WS",
     22: "IO38", 23: "RX", 24: "TX", 25: "GND", 26: "RST",
     27: "AIN2", 28: "BIN1", 29: "BIN2", 30: "CROWN", 31: "IO34", 32: "IO36", 33: "IO37", 34: "IO35",
 }
@@ -294,7 +294,7 @@ AS5600_NETS = {"I": "H1_OUT", "II": "H2_OUT", "III": "H3_OUT"}
 # Test pads: a strip along the bottom edge, two rows, vertical labels above each pad
 TP_X0, TP_PITCH, TP_ROW_Y = -11.4, 2.8, (-40.9, -44.0)   # clear of the battery (x < -13.2)
 TEST_PADS = [
-    "GND", "VBAT", "+5V", "+3V3", "3V3_SW", "H1", "H2", "H3", "CROWN", "LID", "FLT",
+    "GND", "VBAT", "+5V", "+3V3", "3V3_SW", "H1", "H2", "H3", "CROWN", "MUTE", "FLT",
     "GND", "AIN1", "AIN2", "BIN1", "BIN2", "BCLK", "WS", "DOUT", "MIC_SD", "AMP_SD", "GND",
 ]
 
@@ -307,7 +307,6 @@ HEADERS = {
     "J4": ("MIC", -46.0, -17.0, 0.0, -2.54, [("3V3_SW", "VDD"), ("GND", "GND"), ("BCLK", "SCK"),
                                              ("WS", "WS"), ("MIC_SD", "SD")]),
     "J5": ("SPKR", -18.5, 31.0, 0.0, -2.54, [("SPK+", "+"), ("SPK-", "-")]),
-    "J6": ("LID", 44.0, -18.0, 0.0, -2.54, [("LID", "SW"), ("GND", "GND")]),
     # cut-down USB-C cable from the ProS3's own port: red, white, green, black
     "J7": ("USB CABLE", -35.0, 49.3, 0.0, -2.54, [("USB_VBUS", "VBUS red"), ("USB_D-", "D- white"),
                                                  ("USB_D+", "D+ green"), ("GND", "GND black")]),
@@ -318,7 +317,7 @@ RESISTORS = {
     "R1": ("10k", "H1_OUT", "H1", -13.0, 13.5, -90), "R2": ("47k", "H1", "GND", -13.0, 1.0, -90),
     "R3": ("10k", "H2_OUT", "H2", -9.2, 13.5, -90), "R4": ("47k", "H2", "GND", -9.2, 1.0, -90),
     "R5": ("10k", "H3_OUT", "H3", -5.4, 13.5, -90), "R6": ("47k", "H3", "GND", -5.4, 1.0, -90),
-    "R7": ("1M", "LID", "+3V3", -1.6, 13.5, -90),
+    "R7": ("1M", "MUTE", "+3V3", -1.6, 13.5, -90),
 }
 CAP = ("C1", "100uF 10V", "VBAT", "GND", (44.0, -30.0), 90)
 
@@ -418,6 +417,35 @@ def build() -> pcbnew.BOARD:
         {"1": "AOUT1", "2": "AOUT2", "3": "BOUT1", "4": "BOUT2"})
     bx0, by0, bx1, by1 = L.BATTERY_BOX
     text("BATTERY (tape here)", ((bx0 + bx1) / 2, (by0 + by1) / 2), 1.0, angle=90)
+
+    # battery socket J8: side-entry JST-PH, mouth toward the cell's lead (+y)
+    j8 = add(fp_std("Connector_JST", "JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"), "J8", "LiPo JST-PH",
+             (0, 0), 0.0, {"1": "GND", "2": "BAT+"})
+    place_by_feature(j8, (1.0, 6.3), (0.0, 1.0), L.BATTERY_JST_ENTRY, (0.0, 1.0))
+    j8.Reference().SetVisible(False)
+    j8.Value().SetVisible(False)
+    ex, ey = L.BATTERY_JST_ENTRY
+    for pad in j8.Pads():
+        q = pad.GetPosition()
+        mark = "+" if pad.GetNumber() == "2" else "-"
+        board.Add(_text(board, mark, pcbnew.VECTOR2I(q.x, q.y + mm(1.9)), 1.2, pcbnew.F_SilkS, 0.0))
+    text("J8 BAT red=+", (ex - 4.6, ey - 5.5), 0.8, angle=90)
+
+    # power (SW2) and mute (SW3) slide switches: slider out through the bottom wall
+    for ref, px, nets, title, left, right in (
+            ("SW2", L.SW_POWER_PIN1_X, {"2": "BAT+", "3": "VBAT"}, "POWER", "OFF", "ON"),
+            ("SW3", L.SW_MUTE_PIN1_X, {"1": "GND", "2": "MUTE"}, "", "MUTE", "SOUND")):
+        sw_ = add(fp_std("Button_Switch_THT", "SW_Slide_SPDT_Angled_CK_OS102011MA1Q"), ref, title,
+                  (0, 0), 0.0, nets)
+        tip = (px + 1.0, L.SLIDE_SW_FRONT_Y - L.SLIDE_SW_ACT[1])
+        place_by_feature(sw_, (1.0, 6.2), (0.0, 1.0), tip, (0.0, -1.0))
+        sw_.Reference().SetVisible(False)
+        sw_.Value().SetVisible(False)
+        pins = {pad.GetNumber(): pad.GetPosition() for pad in sw_.Pads() if pad.GetNumber()}
+        if pcbnew.ToMM(pins["3"].x) < pcbnew.ToMM(pins["1"].x):
+            raise SystemExit(f"{ref}: pin 3 should face the case corner (+x)")
+        yt = L.SLIDE_SW_FRONT_Y + L.SLIDE_SW_BODY[1] + 1.2
+        text(f"{title} {left}|{right}".strip(), (px + 3.2, yt), 0.8)
 
     # ---- passives ----
     for ref, (val, na, nb, x, y, rot) in RESISTORS.items():

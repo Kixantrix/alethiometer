@@ -239,8 +239,10 @@ little beyond, until the two leaves close on each other.
    applicator). The groove's position gives the 0.3 mm of play.
 2. **Lower tray.** Line the floor with one layer of Kapton. Put the three nylon spacers over the
    floor holes and lower the populated carrier straight in: U7's receptacle lines up with the wall
-   opening and the crown switch drops in just behind the crown's stem. Plug in the
-   battery and connect the reed leads to J6. With the movement standing beside the tray, solder
+   opening, the crown switch drops in just behind the crown's stem, and the power and mute
+   sliders poke out through their two slots in the bottom wall. Plug the battery into J8 (check
+   with a meter first that its red wire lands on the **+** mark: JST-PH polarity isn't
+   standardised). With the movement standing beside the tray, solder
    the speaker leads into J5 (+ −) and the mic leads into J4 (VDD GND SCK WS SD): both pad rows
    sit right under their pass-throughs (see WIRING.md, *Where things go*). Press the crown: you
    should feel the switch click.
@@ -250,8 +252,8 @@ little beyond, until the two leaves close on each other.
    spacers and board into the bay standoffs.
 4. **Upper shell (do this with the shell upside down).**
    - Glue a ring of speaker cloth under the grille slots.
-   - Epoxy the body closure magnet (top-left, between grille and wall) and the reed switch
-     (lower-right) to the underside of the top face.
+   - Epoxy the body closure magnet (top-left, between grille and wall) to the underside of the
+     top face.
    - Drop the crystal into the frame spider, then lay the seat spider on top.
 5. **Hinge, before fitting the shell over the movement.** The shell and lid blanks have no hinge
    holes. The laser-cut `hinge_drill_guide` places all six at once:
@@ -301,7 +303,7 @@ unsupported crown corner. Do not rely on the clearance skirt as rigid bracing.
 
 1. The lid is already hinged (§7 step 5).
 2. Epoxy the pierced overlay inside the lid, keeping the two hinge nuts clear.
-   Epoxy the two lid magnets into the overlay's holes, poles attracting the body magnet.
+   Epoxy the lid magnet into the overlay's hole, its pole attracting the body magnet.
 3. Open the lid through its full travel. It passes flat (180°) and stops a little beyond, about
    200° with the modelled hinge, when the two leaves close face to face. On a table the lid's far
    edge comes to rest on the tabletop first. Check nothing binds anywhere in the travel and the
@@ -326,4 +328,5 @@ unsupported crown corner. Do not rely on the clearance skirt as rigid bracing.
 | Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 1.1 mm under the magnet), then recalibrate. |
 | Something electrical misbehaves | Lift the movement out and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |
 | The needle buzzes at the wrong end on wake | Set `MOTOR_PHASE_DIR = -1` in `firmware/src/config.h`. |
-| Lid doesn't wake it | Move the reed up or nearer the lid magnet, or use a stronger magnet. |
+| Nothing happens on a crown press | Power switch on (slid toward the corner)? Check the battery plug polarity and charge it over USB with the switch on. |
+| It never speaks | The mute switch is toward the centre (muted). |

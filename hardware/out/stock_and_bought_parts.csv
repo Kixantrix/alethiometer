@@ -8,7 +8,7 @@ magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 standoff_bay,bought,3,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
-standoff_hand,bought,4,M2×6+3 M-F brass hex standoff
+standoff_hand,bought,4,M2×5+3 M-F brass hex standoff
 nut_p1_corner,bought,1,M2 brass hex nut (top-right gear standoff under P1; no bay post there)
 spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
 screw_floor,bought,3,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
@@ -28,7 +28,12 @@ speaker_foam_ring,bought,1,"0.2 mm adhesive foam ring, Ø28 × Ø22: seats and s
 mic_foam_tape,bought,1,"0.5 mm double-sided foam tape, Ø14 with a Ø2.5 hole over the mic port: sticks the INMP441 to the underside of P2 and seals the port"
 wire_speaker,bought,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
 wire_mic,bought,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
-reed_switch,bought,1,"Glass reed switch, NO, ~2×14 mm"
+battery_socket,bought,1,"JST S2B-PH-K-S side-entry 2-pin socket (J8), soldered to the carrier"
+battery_plug,bought,1,JST PH 2-pin plug on the LiPo's lead
+wire_battery,bought,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"
+wire_usb,bought,1,"short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7"
+switch_power,bought,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = battery disconnected)
+switch_mute,bought,1,"C&K OS102011MA1QN1 right-angle slide switch (mute: needle only, no speech or chimes)"
 usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
 spacer_usb,bought,1,"M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"
 screw_usb,bought,2,"M2 × 10 brass DIN 84 slotted cheese-head screw (USB breakout, from the top)"
@@ -37,7 +42,6 @@ crown_switch,bought,1,Omron B3F-3150 right-angle tactile switch on the carrier
 crown_eclip,bought,1,"DIN 6799 retaining washer (E-clip) size 1.5, stainless"
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
-magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet
 hinge_leaf_body,bought,1,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_leaf_lid,bought,1,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_pin,bought,1,Included in the purchased hinge; have the supplier retain the pin after cutting

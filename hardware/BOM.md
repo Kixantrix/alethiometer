@@ -22,7 +22,7 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
 
 | Part | Material | Qty | Notes |
 |---|---|---|---|
-| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall) and crown hole (top-right chamfer). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
+| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall), crown hole (top-right chamfer) and two switch slots (bottom wall). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
 | `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 17.2 mm. Knob notches. |
 | `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum). |
 | `lid_overlay` | Brass 260 .040" | 1 | Pierced rosette, fixed inside the lid |
@@ -97,7 +97,7 @@ in a pinch the plain tubes and bushings can still be cut from K&S stock.
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm, and M1.6 DIN 125 washer (Ø4 × 0.3) | 2 each | Check | Inside the lid wall |
 | DIN 6799 retaining washer (E-clip), **size 1.5** (for Ø2–2.5 shafts), stainless | 1 (+ spares) | 2 | Holds the crown in, inside the wall. They fly: buy a pack |
 | Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
-| Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
+| Ø5 × 4 mm N52 axial magnet | 2 | 2 | Lid closure pair |
 
 The external screws use nominal Ø3.8 mm heads
 ([DIN 963 dimensions](https://www.jandesupply.com/reference-metric-machine-screw-dimensions.php)).
@@ -129,14 +129,15 @@ header with part numbers. Summary:
 | Male header strip 0.1", 1×40 | 1 | 1 | Speaker pins, J1/J2 |
 | Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, lid pull-up |
 | 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch, ≤ 11 mm tall | 1 | 0.3 | VBAT bulk cap |
-| LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), PicoBlade 1.25 lead | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits |
+| LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), **JST-PH 2.0** lead (with protection circuit) | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits. Plugs into J8; check the polarity (PCB README) |
+| **C&K OS102011MA1QN1** right-angle slide switch | 2 | 2 | Power and mute, on the carrier |
+| **JST S2B-PH-K-S** side-entry 2-pin socket | 1 | 0.5 | Battery socket J8 on the carrier |
 | **Adafruit USB Type C breakout** (#4090) + 2× M2 × 10 screws, nuts and 5 mm nylon spacers | 1 | 4 | Wall USB-C port, screwed to the carrier |
 | Short USB-C cable with data (thin), cut to ~6 cm | 1 | 3 | ProS3 → carrier J7 |
 | 28 mm, 8 Ω, 0.5–1 W thin speaker (≤ 5 mm) | 1 | 2–4 | e.g. Adafruit #1890 |
 | **INMP441** I2S MEMS microphone module (round, Ø14 mm) | 1 | 3 | |
-| Glass reed switch, normally open, ≈ 2 × 14 mm | 1 | 1 | Lid sensor |
 | **Omron B3F-3150** right-angle tactile switch | 1 | 0.5 | Crown, on the carrier |
-| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape,  | — | 6 | Off-board leads to J4–J6 |
+| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape,  | — | 6 | Off-board leads to J4 and J5 |
 
 ## E. Dial, finish and consumables
 

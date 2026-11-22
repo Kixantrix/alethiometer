@@ -1,9 +1,9 @@
 part,qty,grams,material
-case_lower_tray,1,165.9,"brass .040"""
+case_lower_tray,1,165.7,"brass .040"""
 case_lid,1,126.1,"brass .040"""
 case_upper_shell,1,104.4,"brass .040"""
 dial_plate_P2,1,79.3,"brass .063"""
-lid_overlay,1,48.8,"brass .040"""
+lid_overlay,1,48.9,"brass .040"""
 movement_base_plate_P1,1,44.8,"brass .063"""
 pcb_carrier,1,31.8,"FR4 1.6 mm, 2 layers"
 crystal_seat_spider,1,14.9,"brass .040"""
@@ -33,7 +33,7 @@ gear_hand_I_32T,1,2.0,"brass .040"""
 gear_hand_III_32T,1,2.0,"brass .040"""
 driver_DRV8833,1,2,Adafruit DRV8833 #3297
 amp_MAX98357A,1,2,Adafruit MAX98357A #3006
-standoff_hand,4,1.8,M2×6+3 M-F brass hex standoff
+standoff_hand,4,1.8,M2×5+3 M-F brass hex standoff
 sensor_AS5600_I,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
@@ -47,6 +47,12 @@ speaker_foam_ring,1,1,foam ring
 mic_foam_tape,1,1,foam tape
 wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
 wire_mic,1,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
+battery_socket,1,1,"JST S2B-PH-K-S side-entry 2-pin socket (J8), soldered to the carrier"
+battery_plug,1,1,JST PHR-2 plug
+wire_battery,1,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"
+wire_usb,1,1,"short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7"
+switch_power,1,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = battery disconnected)
+switch_mute,1,1,"C&K OS102011MA1QN1 right-angle slide switch (mute: needle only, no speech or chimes)"
 spacer_usb,1,1,M2 nylon spacer 5 mm
 screw_usb,2,1,M2×10 DIN 84 cheese head
 nut_usb,2,1,M2 hex nut
@@ -64,7 +70,6 @@ magnet_II,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_body,1,0.6,Ø5×4 mm N52 magnet
 magnet_lid_closure,1,0.6,Ø5×4 mm N52 magnet
-magnet_lid_reed,1,0.6,Ø5×4 mm N52 magnet
 dial_sticker,1,0.5,printed vinyl
 hand_cap_rosette,1,0.5,"brass .040"""
 bushing_3_16,6,0.4,brass C360 (CNC turned)
@@ -73,7 +78,6 @@ hand_III,1,0.3,"spring steel .015"""
 arbor_II,1,0.3,brass C360 (CNC turned)
 bushing_5_32,6,0.3,brass C360 (CNC turned)
 sleeve_knob,3,0.3,brass C360 (CNC turned)
-reed_switch,1,0.3,"Glass reed switch, NO, ~2×14 mm"
 hand_I,1,0.2,"spring steel .015"""
 arbor_III,1,0.2,brass C360 (CNC turned)
 arbor_needle,1,0.2,brass C360 (CNC turned)

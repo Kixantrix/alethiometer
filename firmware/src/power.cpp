@@ -10,18 +10,17 @@ void powerBegin() {
   pinMode(PIN_LDO2, OUTPUT);
   digitalWrite(PIN_LDO2, HIGH);
   pinMode(PIN_CROWN, INPUT_PULLUP);
-  pinMode(PIN_LID, INPUT);  // external 1 MOhm pull-up
+  pinMode(PIN_MUTE, INPUT);  // external 1 MOhm pull-up
   pinMode(PIN_VBUS_SENSE, INPUT);
   analogSetPinAttenuation(PIN_VBAT_SENSE, ADC_2_5db);
   // Release any RTC pad config left over from deep sleep so the digital GPIOs work again.
   rtc_gpio_deinit(static_cast<gpio_num_t>(PIN_CROWN));
-  rtc_gpio_deinit(static_cast<gpio_num_t>(PIN_LID));
   rtc_gpio_hold_dis(static_cast<gpio_num_t>(PIN_AMP_SD));
   rtc_gpio_deinit(static_cast<gpio_num_t>(PIN_AMP_SD));
   pinMode(PIN_AMP_SD, OUTPUT);
   digitalWrite(PIN_AMP_SD, LOW);
   pinMode(PIN_CROWN, INPUT_PULLUP);
-  pinMode(PIN_LID, INPUT);
+  pinMode(PIN_MUTE, INPUT);
   delay(LDO2_SETTLE_MS);
 }
 
@@ -32,7 +31,6 @@ WakeReason powerWakeReason() {
   const uint32_t causes = 1u << esp_sleep_get_wakeup_cause();
 #endif
   if (causes & (1u << ESP_SLEEP_WAKEUP_EXT1)) return WakeReason::Crown;
-  if (causes & (1u << ESP_SLEEP_WAKEUP_EXT0)) return WakeReason::Lid;
   if (causes == 0 || causes == (1u << ESP_SLEEP_WAKEUP_UNDEFINED)) return WakeReason::PowerOn;
   return WakeReason::Other;
 }
@@ -45,7 +43,7 @@ float powerBatteryVolts() {
 
 bool powerUsbPresent() { return digitalRead(PIN_VBUS_SENSE) == HIGH; }
 
-bool powerLidClosed() { return digitalRead(PIN_LID) == LOW; }
+bool powerMuted() { return digitalRead(PIN_MUTE) == LOW; }
 
 bool powerBatteryLow() { return !powerUsbPresent() && powerBatteryVolts() < VBAT_WARN_V; }
 
@@ -71,13 +69,6 @@ void powerDeepSleep() {
   rtc_gpio_pulldown_dis(crown);
   esp_sleep_enable_ext1_wakeup_io(1ULL << PIN_CROWN, ESP_EXT1_WAKEUP_ANY_LOW);
 
-  // Lid: wake when it opens (reed releases -> HIGH), armed only while it is closed.
-  if (powerLidClosed()) {
-    const auto lid = static_cast<gpio_num_t>(PIN_LID);
-    rtc_gpio_pullup_dis(lid);
-    rtc_gpio_pulldown_dis(lid);
-    esp_sleep_enable_ext0_wakeup(lid, 1);
-  }
   esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
 
   // The amplifier runs from VBAT, so hold its SD_MODE low through sleep.

@@ -168,13 +168,18 @@ SPK_WIRE_HOLE = (-18.5, 29.75)             # leads drop through the seat's open 
 SPK_SEAT_OPEN = SPEAKER["d"] - 6.0         # Ø22: the seat ring carries only the speaker's rim
 SPK_WIRE_D, MIC_WIRE_D = 1.6, 2.4          # bundle envelopes: 2 and 5 × 30 AWG silicone
 J4_PAD_MID, J5_PAD_MID = (-46.0, -22.08), (-18.5, 29.73)
-REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
 USB_BOARD_Z = Z_CARRIER_TOP + L.MODULE_LIFT               # Adafruit #4090 underside (on its socket)
 USB_SCREW_LEN, USB_SCREW_HEAD = 10.0, (3.8, 1.3)           # DIN 84 M2: head Ø3.8 × 1.3
 USB = dict(y=L.USBC_PLACE["c"][1], z=USB_BOARD_Z + 1.6 + 1.63)   # receptacle centre, right wall
 CROWN_Z = Z_CARRIER_TOP + L.CROWN_SW_ACT_H                # crown axis = switch actuator height
+SLIDE_SLOT_CLEAR = 0.6                                    # slider to slot edge, every side
+SLIDE_SW_ON_OFFSET = L.SLIDE_SW_TRAVEL                    # slider x from pin 1 in the "on" position
+SLIDE_SLOT = (L.SLIDE_SW_TRAVEL / 2 + L.SLIDE_SW_ACT[0] / 2,                 # centre x from pin 1
+              L.SLIDE_SW_ACT[0] + L.SLIDE_SW_TRAVEL + 2 * SLIDE_SLOT_CLEAR,  # width
+              L.SLIDE_SW_ACT[3] - L.SLIDE_SW_ACT[2] + 2 * SLIDE_SLOT_CLEAR)  # height
+SLIDE_SLOT_Z = Z_CARRIER_TOP + (L.SLIDE_SW_ACT[2] + L.SLIDE_SW_ACT[3]) / 2
 # Guden BR05050404-72: .040 sheet, .091 pin, .500 knuckle pitch.
 # Curl clearance and slot width are illustrative, not manufacturer dimensions.
 HINGE_KNUCKLES, KNUCKLE_GAP = 5, 0.1
@@ -321,6 +326,9 @@ def lower_tray() -> Part:
     cuts.append(WallCut(ux, USB["y"], 12.6, USB["z"] - 3.3, USB["z"] + 3.3, rounded=True))
     (cx, cy), _ = crown_axis()
     cuts.append(WallCut(cx, cy, 3.1, CROWN_Z - 1.55, CROWN_Z + 1.55, rounded=True))
+    for px in (L.SW_MUTE_PIN1_X, L.SW_POWER_PIN1_X):        # power and mute sliders
+        cuts.append(WallCut(px + SLIDE_SLOT[0], wall_point(LOWER_OUTER, 270.0)[1], SLIDE_SLOT[1],
+                            SLIDE_SLOT_Z - SLIDE_SLOT[2] / 2, SLIDE_SLOT_Z + SLIDE_SLOT[2] / 2, rounded=True))
     tray = Tray(LOWER_OUTER, LOWER_H, T040, BEND_IR, K_FACTOR,
                 floor_holes=[(x, y, POST_HOLE) for x, y in L.BAY_POSTS], wall_cuts=cuts)
     prof, bends = tray.flat()
@@ -421,7 +429,7 @@ def lid_overlay() -> Part:
         for k, rr in enumerate((49.0, 54.0, 59.0)):
             arc = annulus(rr, rr + 3.0).intersection(Polygon([(0, 0), polar(90, a - 14 + k * 2), polar(90, a + 14 - k * 2)]))
             cells.append(arc)
-    magnets = [(x, -y) for x, y in (LID_MAGNET_L, REED["c"])]
+    magnets = [(x, -y) for x, y in (LID_MAGNET_L,)]
     pads = unary_union([circle(x, y, MAGNET_D / 2 + 2.2) for x, y in magnets])
     cut = unary_union(cells).intersection(border.buffer(-0.01)).difference(pads)
     p.cut(cut)
@@ -803,7 +811,7 @@ def hardware() -> list[Part]:
     for name, h, z, spec in (("standoff_bay", CARRIER_STANDOFF, Z_CARRIER_TOP,
                               f"M2×{CARRIER_STANDOFF:g} F-F brass hex standoff"),
                              ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, "M2×8+3 M-F brass hex standoff"),
-                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×6+3 M-F brass hex standoff")):
+                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×5+3 M-F brass hex standoff")):
         posts = L.BAY_POSTS if name == "standoff_bay" else POSTS
         (x0, y0) = posts[0]
         sol = hexagon(4.0, h, x0, y0, z, 2.0)
@@ -955,12 +963,34 @@ def electronics() -> list[Part]:
         MIC_WIRE_D, (0.35, 0.38, 0.45),
         "mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 "
         "(VDD GND SCK WS SD; tie L/R to GND at the mic)")
-    rx, ry = REED["c"]
-    reed = cq.Solid.makeCylinder(REED["d"] / 2, REED["len"], cq.Vector(-REED["len"] / 2, 0, 0),
-                                 cq.Vector(1, 0, 0))
-    reed = reed.rotate(cq.Vector(), cq.Vector(0, 0, 1), REED["angle"]).translate(
-        cq.Vector(rx, ry, Z_TOPFACE - 0.2 - REED["d"] / 2))
-    add("reed_switch", reed, "Glass reed switch, NO, ~2×14 mm", GLASS)
+    # Battery: JST-PH socket J8 left of the cell, lead from the cell's top end into it
+    ex, ey = L.BATTERY_JST_ENTRY
+    jw, jd, jh = L.BATTERY_JST_BODY
+    add("battery_socket", box(ex - jw / 2, ey - jd, zt, ex + jw / 2, ey, zt + jh),
+        "JST S2B-PH-K-S side-entry 2-pin socket (J8), soldered to the carrier", (0.93, 0.92, 0.86))
+    plug = box(ex - 2.25, ey, zt + 0.3, ex + 2.25, ey + 2.5, zt + 4.5)
+    E.append(Part("battery_plug", "bought", "JST PHR-2 plug", plug, [loc()], (0.93, 0.92, 0.86),
+                  "electronics", spec="JST PH 2-pin plug on the LiPo's lead", density="acrylic"))
+    zb = zt + 2.4
+    run("wire_battery", [(ex, ey + 2.5, zb), (ex, ey + 5.0, zb), (-40.0, -20.0, zb), (-37.5, -15.5, zb),
+                         (-34.0, -13.5, zb), (-34.0, -14.5, zb)], 2.0, (0.75, 0.12, 0.10),
+        "LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8")
+    # USB-C cable: ProS3 plug -> a loop clear of the corner post -> J7 pads
+    j7 = (-35.0, 45.49)
+    zu = zm + 2.8
+    run("wire_usb", [(-33.0, 43.7, zu), (-36.5, 43.7, zu), (-38.0, 46.0, zt + 5.0), (-37.0, 46.5, zt + 2.5),
+                     (j7[0], j7[1], zt + 1.6), (j7[0], j7[1], zt + 0.05)], 3.0, (0.12, 0.12, 0.13),
+        "short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7")
+    # Power and mute slide switches (C&K OS102011MA1QN1), sliders out through the bottom wall
+    bw, bd, bh = L.SLIDE_SW_BODY
+    aw, reach, az0, az1 = L.SLIDE_SW_ACT
+    fy = L.SLIDE_SW_FRONT_Y
+    for name, px, use in (("switch_power", L.SW_POWER_PIN1_X, "power: off = battery disconnected"),
+                          ("switch_mute", L.SW_MUTE_PIN1_X, "mute: needle only, no speech or chimes")):
+        body = box(px - 2.3, fy, zt, px - 2.3 + bw, fy + bd, zt + bh)
+        on = px + SLIDE_SW_ON_OFFSET
+        body = body.fuse(box(on, fy - reach, zt + az0, on + aw, fy, zt + az1))
+        add(name, body, f"C&K OS102011MA1QN1 right-angle slide switch ({use})", BLACK)
     # Wall USB-C: Adafruit #4090 on its socket + two 5 mm spacers, receptacle mouth toward the wall
     hw, hh = u["w"] / 2, u["h"] / 2
     usb = box(-hw, -hh, 0, hw, hh, 1.6).fuse(
@@ -1020,8 +1050,8 @@ def electronics() -> list[Part]:
     for x, y in (LID_MAGNET_L,):
         E.append(stock("magnet_body", cylinder(MAGNET_D, MAGNET_H, x, y, Z_TOPFACE - MAGNET_H), [loc()],
                        magnet_spec, STEEL, "case", "steel", "bought"))
-    for x, y in (LID_MAGNET_L, REED["c"]):
-        E.append(stock(f"magnet_lid_{'closure' if x < 0 else 'reed'}",
+    for x, y in (LID_MAGNET_L,):
+        E.append(stock("magnet_lid_closure",
                        cylinder(MAGNET_D, MAGNET_H, x, y, Z_TOP + LID_H - T040 - MAGNET_H), [loc()],
                        magnet_spec, STEEL, "lid", "steel", "bought"))
     return E
@@ -1247,6 +1277,8 @@ ALLOWED = [
     ("screw_floor", "standoff_bay"), ("screw_top", "standoff_hand"),
     ("standoff_gear", "standoff_bay"), ("standoff_hand", "standoff_gear"),
     ("crown_turned", "crown_eclip"),
+    ("wire_battery", "battery"), ("wire_battery", "battery_plug"), ("battery_plug", "battery_socket"),
+    ("wire_usb", "mcu_ProS3"),
     ("screw_usb", "usb_c_breakout"), ("screw_usb", "spacer_usb"), ("screw_usb", "nut_usb"),
     ("magnet_lid", "lid_overlay"), ("module_sockets", "motor_X27"),   # X27 pins inside their sockets
 ]

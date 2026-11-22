@@ -28,8 +28,8 @@ void printHands() {
 }
 
 void status() {
-  Serial.printf("battery %.2f V, USB %s, lid %s, needle %.1f deg (motor %.1f), offset %.1f\n",
-                powerBatteryVolts(), powerUsbPresent() ? "yes" : "no", powerLidClosed() ? "closed" : "open",
+  Serial.printf("battery %.2f V, USB %s, %s, needle %.1f deg (motor %.1f), offset %.1f\n",
+                powerBatteryVolts(), powerUsbPresent() ? "yes" : "no", powerMuted() ? "muted" : "sound on",
                 needleAngleDeg(), needleMotorDeg(), settings.needleOffset);
   Serial.printf("api %s, device key %s, hands %scalibrated, needle %scalibrated\n", settings.apiBase.c_str(),
                 settings.deviceKey.length() ? "set" : "MISSING", settings.handsCalibrated ? "" : "NOT ",

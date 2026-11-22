@@ -1,10 +1,10 @@
 # Wiring
 
 Almost all of this is on the [carrier PCB](pcb/README.md): every module plugs into sockets
-on it and the board makes the connections below. The only wires are to the three off-board parts
-(mic, speaker, lid reed), which solder to labelled pads J4–J6, plus the battery lead and a
-short USB-C cable from the ProS3's port to J7. The crown switch and the wall USB-C port are on
-the carrier. This page is the signal reference. For per-pad
+on it and the board makes the connections below. The only wires are to the two off-board parts
+(mic, speaker), which solder to labelled pads J4 and J5, plus a short USB-C cable from the ProS3's
+port to J7. The battery plugs into J8. The crown, power and mute switches and the wall USB-C port
+are all on the carrier. This page is the signal reference. For per-pad
 detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 
 > The pin numbers are the single source of truth in [`firmware/src/config.h`](../firmware/src/config.h).
@@ -12,7 +12,7 @@ detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 
 ```mermaid
 flowchart LR
-  BAT[(LiPo 1S<br/>402535)] -- PicoBlade --> MCU
+  BAT[(LiPo 1S<br/>402535)] -- JST-PH J8 --> PWR[Power switch SW2] -- VBAT --> MCU
   USBC[Wall USB-C U7<br/>via carrier + J7 cable] -- USB data + 5 V --> MCU
   subgraph MCU[ProS3 ESP32-S3]
     direction TB
@@ -28,14 +28,15 @@ flowchart LR
   MCU -- IO21 BCLK / IO12 WS --> MIC
   LDO2 -- 3V3 --> MIC
   CROWN[Crown switch] -- IO9 --> MCU
-  REED[Lid reed] -- IO16 --> MCU
+  MUTE[Mute switch SW3] -- IO16 --> MCU
 ```
 
 ## Connection table
 
 | From | Pin | To | Notes |
 |---|---|---|---|
-| LiPo + / − | — | ProS3 battery (PicoBlade 1.25) | Use a cell with a PicoBlade lead, or crimp one. ProS3 charges it from USB. |
+| LiPo + / − | — | **J8** (JST-PH 2.0) → SW2 → VBAT | Any 1S LiPo with a JST-PH lead; check red lands on **+**. Reaches the ProS3 through its VBAT header pin, so the ProS3's own PicoBlade socket stays empty. It charges from USB only with the power switch on. |
+| Power switch SW2 | — | BAT+ ↔ VBAT | Off disconnects the battery completely. C&K OS102011MA1QN1: rated 100 mA switching at 12 V; it carries the ~0.3 A speaking load at 3.7 V without trouble. |
 | Wall USB-C (U7) | VBUS, D+, D−, GND | J7 → short cable → ProS3 USB-C | Charging, serial console and flashing with the case closed. OTA also works. |
 | ProS3 | **3V3 (LDO2)** | AS5600 ×3 VCC, INMP441 VDD | LDO2 is switched by IO17 and turns off in deep sleep. |
 | ProS3 | GND | AS5600 ×3 GND, INMP441 GND + L/R, DRV8833 GND, MAX98357A GND | INMP441 **L/R → GND** (left channel). |
@@ -57,7 +58,7 @@ flowchart LR
 | ProS3 | VBAT | MAX98357A VIN | |
 | MAX98357A | + / − | **J5** → speaker | Through the amp's two speaker-pin sockets. GAIN is unconnected (9 dB). |
 | Crown switch SW1 | — | IO9 ↔ GND (on the carrier) | Internal pull-up; also the deep-sleep wake button. |
-| Lid reed switch | — | **J6**: IO16 ↔ GND | R7 (1 MΩ) pulls IO16 up to the always-on 3V3 (not LDO2). LOW = lid closed. |
+| Mute switch SW3 | — | IO16 ↔ GND | R7 (1 MΩ) pulls IO16 up to the always-on 3V3. LOW = muted. |
 | INMP441 | VDD GND SCK WS SD | **J4** | Tie the mic's L/R pin to GND at the mic. |
 
 ## Where things go
@@ -72,13 +73,13 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | DRV8833 | centre (28, −31) | 1×8 + 1×6 sockets |
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
 | X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier; located sideways by P1's slot (slide to set mesh) |
-| LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area; PicoBlade lead to the ProS3 |
+| LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area, lead end toward the top; plugs into **J8** just to its left |
+| Power / mute switches | carrier bottom edge, x 31.5 / 19.5, sliders through the bottom wall | Soldered to the carrier; slide toward the corner = on / sound on |
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. P1's seat is a ring (Ø22 opening) so the speaker's back vents into the bay. Two leads from its back tabs drop through that opening onto **J5**, directly below. |
 | INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −17 … −27). |
-| Reed switch | under the top face at r 53.6 mm, 300° | Epoxy; its lid magnet sits directly above it. Leads to J6. |
 | Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |
 | Wall USB-C | right wall, receptacle centre y = 23.5 | Adafruit #4090 on a socket, screwed to the carrier on two spacers |
 
 Make the off-board leads about 10 cm long, enough to lift the upper shell clear and lay it
-beside the base. Solder them into J4–J6; a plug standing up wouldn't fit under P1. An inline
+beside the base. Solder them into J4 and J5; a plug standing up wouldn't fit under P1. An inline
 connector partway along a lead makes that part unpluggable.
