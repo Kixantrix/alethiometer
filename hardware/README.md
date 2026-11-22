@@ -22,7 +22,7 @@ the interpretation aloud.
 | [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
 | [`pcb/`](pcb/README.md) | **Carrier PCB**: all through-hole, every module socketed, test pads; Gerbers ready for JLCPCB/PCBWay |
 | [`viewer/`](viewer/README.md) | Local 3D viewer: toggle layers and parts, explode, open the lid, section cut |
-| [`out/sendcutsend/`](out/sendcutsend) | **Ready-to-upload** DXFs, one per part, with material and quantity in the filename, plus formed STEP files for the three bent parts |
+| [`out/sendcutsend/`](out/sendcutsend) | DXFs and formed STEP blanks; **hinge-related fabrication is on hold** pending the commercial hinge fit check below |
 | `out/alethiometer_open.glb` | Colour 3D assembly (lid open) for any glTF viewer (Windows 3D Viewer, Blender, Fusion) |
 | `out/step/`, `out/alethiometer_*.step` | Full STEP for every part and the assemblies. They're too big for git (hundreds of MB), so `python cad/build.py` generates them locally. |
 | [`out/renders/`](out/renders), [`out/flats/`](out/flats) | Renders and flat-pattern previews |
@@ -34,7 +34,7 @@ the interpretation aloud.
 ## The instrument
 
 - **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 38.0 mm tall,
-  45.6 mm with the lid closed. Weight is about **815 g**, almost all of it brass.
+  45.6 mm with the lid closed. Weight is about **840 g**, almost all of it brass.
 - **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
   3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
   reflash or swap. The board has labelled test pads for every signal. The wall USB-C port and the
@@ -43,12 +43,15 @@ the interpretation aloud.
   over Wi-Fi.
 - **Case.** Three bent .040" brass shells: a lower tray, an upper shell that telescopes over it
   like a watch case, and a hinged lid with a pierced rosette inside. The upper shell's top face
-  carries the crystal window and a ring of 90 radial slots.
+  carries the crystal window and a ring of 90 radial slots. Three bottom and four top DIN 963
+  countersunk screws sit flush in hand-machined 90° seats; the rim is not a press-fit retainer.
+  The purchased hinge is screw-mounted through backing strips, with a removable stop assembly.
 - **Dial.** A printed sticker on a brass dial plate: a cream ring with 36 sepia symbols in the
   website's order, Hourglass at 12. It uses Myth Made's hand-drawn, film-style symbols, which you
   generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
   window shows the gear train underneath. Acrylic crystal.
-- **Three framing hands, set by hand.** Each thumbwheel (five stacked 31-tooth brass gears)
+- **Three framing hands, set by hand.** Each thumbwheel (five 31-tooth brass layers clamped
+  by three flush-bottom through-bolts, with only its base soldered to the shaft)
   drives a 36-tooth sensor gear, which drives a 36-tooth gear on that hand's arbor. The arbors
   are nested K&S tubes, like the hour and minute pipes of a clock. The sensor gear turns
   **1:1** with its hand and carries a magnet over an **AS5600** angle sensor. The firmware
@@ -66,7 +69,8 @@ the interpretation aloud.
 - **Crown.** A small scalloped brass crown centred on the top-right corner, low on the case. Hold it to speak, release
   to ask. Triple-click opens Wi-Fi setup; five clicks starts calibration.
 - **Lid.** A magnet and reed switch wake the instrument when you open the lid and send it to
-  sleep when you close it. A USB-C charging port is tucked in the hinge-side wall. Battery is
+  sleep when you close it. A brass cross-pin on two screwed end brackets stops the hinge at
+  **135°**, against the lid hinge leaf; it does not rely on pin friction. A USB-C charging port is tucked in the hinge-side wall. Battery is
   a ~350 mAh LiPo, good for roughly 40–55 readings per charge (estimated, not measured).
 
 ```mermaid
@@ -104,11 +108,22 @@ buys a build where nothing needs desoldering to reflash, probe or replace a part
 
 ## Ordering
 
+**Hinge fit must be resolved first.** The Guden hinge in CAD is a reference using published
+sheet, pin and pitch dimensions, with assumed curl and slot clearances. Obtain the actual
+cross-section/sample and update the pivot, mounting stack and stop before ordering related
+parts or drilling the shells ([ASSEMBLY.md §0](ASSEMBLY.md#0-before-you-order)).
+Nominal motion checks do not establish commercial-part compatibility.
+
 1. **SendCutSend.** Upload everything in `out/sendcutsend/` (see [BOM.md §A](BOM.md)).
    - For the three bent parts (`case_*`), upload the `__formed.step` file. SendCutSend
      reads the bends from it. Check in the 3D preview that all eight flanges bend 90° to
      the same side. The model uses SendCutSend's .040" brass spec
-     (inside radius .040", K-factor 0.38).
+     (inside radius .040", K-factor 0.38). These supplier STEPs are bent blanks with plain
+     screw holes; hand-countersink the top and bottom case holes afterwards
+     ([ASSEMBLY.md §1](ASSEMBLY.md#1-prepare-the-laser-cut-parts)). Individual-part and assembly
+     STEPs show the finished countersinks.
+     The supplier blanks also omit hinge sidewall holes: transfer-drill those after the
+     purchased hinge has been checked. Finished assembly STEPs show nominal mounting holes.
    - Everything else is a flat DXF in millimetres. Choose the material from the filename
      (`brass-040in`, `brass-063in`, `copper-032in`, `clear-acrylic-063in`) and the quantity.
 2. **Carrier PCB:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` to JLCPCB/PCBWay
@@ -132,13 +147,33 @@ The carrier PCB is generated from the same `cad/layout.py` positions by
 Every dimension lives in [`cad/design.py`](cad/design.py): case size, stack heights, gear
 module and tooth counts, hand lengths, and component positions. `build.py` runs a full pairwise
 **interference check** across the assembled parts (gear teeth included) and fails if anything
-collides. It also checks SendCutSend's minimum part size, thin webs, holes left floating in
+collides, including lid travel in 5° steps through its 135° stop. It also checks SendCutSend's minimum part size, thin webs, holes left floating in
 voids, and the minimum flange length.
+
+The focused checks exercise hinge travel in 1° steps, verify contact at 135° and blocked
+overtravel, and check flush head envelopes, seat thickness and screw engagement:
+
+```sh
+python -m unittest discover -s hardware/cad -p 'test_*.py'
+```
 
 ## Known risks and open questions
 
 - **Not yet built.** The geometry is checked in CAD but no physical prototype exists yet.
   Plan for a second SendCutSend order for small parts.
+- **Hinge procurement, stop and chassis stiffness.** The purchased hinge cross-section
+  remains unverified. The reference stop uses screwed blocks/backing strips and a
+  cross-drilled rod retained by washers and split pins, with no mechanical solder joints.
+  Dry-fit and check actual clip/washer clearances, angle, screw security and deflection.
+  The laser-cut backing strip requires a directly related clearance relief in P2.
+  The shells are screw-fastened through the plate/standoff stack, not retained by a press fit
+  (see [ASSEMBLY.md §7](ASSEMBLY.md#what-holds-the-two-shells-together)). Verify stiffness at
+  the crown corner, where the fourth floor post is omitted. Fit checks are not a load test.
+- **Remaining permanent mechanical joints.** Knob bases, gear/arbor joints, crown and cannon
+  still use the earlier soldered construction; hands and bushings still use retaining
+  compound. These have not yet been converted to removable hubs. Avoid unsupported set
+  screws on nested thin-wall arbors, which could bind them. See the joint-status table in
+  [ASSEMBLY.md §3](ASSEMBLY.md#3-sub-assemblies). Electrical soldering remains necessary.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
 - **Laser-cut module-0.7 gears** in .040" brass are fine at hand-setting speeds and for a gauge
   motor, but expect some backlash. Every pair is spaced 0.1 mm wider than theoretical and the
@@ -157,7 +192,7 @@ voids, and the minimum flange length.
   flex antenna under the crystal can be dropped in if needed.
 - **Cloud voice** needs two extra Azure OpenAI deployments. The endpoints exist in `api/` but
   haven't been exercised against real Azure yet.
-- **Weight.** About 815 g, because brass is dense. P1 can be cut from aluminium to save about
+- **Weight.** About 840 g, because brass is dense. P1 can be cut from aluminium to save about
   45 g; it's fully hidden.
 
 ## Credits

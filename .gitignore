@@ -3,4 +3,6 @@ local.settings.json
 *.zip
 .DS_Store
 __pycache__/
+.venv/
+.local/
 hardware/dial/local/

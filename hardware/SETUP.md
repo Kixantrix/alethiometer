@@ -13,6 +13,70 @@ cd alethiometer
 git checkout kixantrix-brass-alethiometer-hardware
 ```
 
+## macOS quick start
+
+From the repository root, use an isolated Python environment for CAD, the dial and
+firmware. KiCad uses its own bundled Python instead:
+
+```sh
+uv venv --python 3.13 .venv
+source .venv/bin/activate
+uv pip install -r hardware/requirements.txt
+python hardware/dial/make_dial.py --art "$HOME/Downloads/Alethiometer Symbols.svg"
+python hardware/viewer/export_viewer.py
+python -m http.server 8765 --bind 127.0.0.1 --directory hardware/viewer
+```
+
+Open <http://127.0.0.1:8765> for the editable design's 3D preview. After changing
+`cad/design.py`, rerun the exporter and reload the page. The environment, local tools,
+downloaded-art outputs and viewer assets are git-ignored; do not commit the symbol art.
+
+In another terminal, with the environment activated:
+
+```sh
+(cd hardware/cad && python build.py --check)
+pio run -d firmware -e pros3
+```
+
+If a fresh PlatformIO build fails with `FRAMEWORK_DIR` set to `None`, explicitly
+install the framework archives used by the pinned platform, then rerun the build:
+
+```sh
+pio pkg install -d firmware -e pros3 --no-save \
+  --tool https://github.com/espressif/arduino-esp32/releases/download/3.3.13/esp32-core-3.3.13.tar.xz \
+  --tool https://github.com/espressif/arduino-esp32/releases/download/3.3.13/esp32-core-3.3.13-libs.tar.xz
+```
+
+### KiCad and PCB generation on macOS
+
+Install KiCad 10 and Java 17:
+
+```sh
+brew install --cask kicad
+brew install openjdk@17
+```
+
+If the KiCad cask needs administrator access, open the official KiCad disk image
+and copy its `KiCad` folder into `~/Applications` instead. On this Mac it is installed
+there. The PCB generator resolves its CLI and standard footprints from the app bundle.
+For a system-wide install, use `/Applications/KiCad/KiCad.app` below.
+
+```sh
+KICAD_APP="$HOME/Applications/KiCad/KiCad.app"
+export PATH="$(brew --prefix openjdk@17)/bin:$PATH"
+mkdir -p .local/tools
+gh release download v1.9.0 --repo freerouting/freerouting \
+  --pattern freerouting-1.9.0.jar --dir .local/tools
+export FREEROUTING="$PWD/.local/tools/freerouting-1.9.0.jar"
+"$KICAD_APP/Contents/Frameworks/Python.framework/Versions/3.9/bin/python3" \
+  hardware/pcb/make_pcb.py --freerouting "$FREEROUTING"
+```
+
+The download command is needed only once. To edit the existing board without
+regenerating it, open `hardware/pcb/alethiometer_carrier.kicad_pcb` in KiCad's
+PCB Editor. Regeneration replaces the board, so put lasting layout changes in the
+generator and shared `cad/layout.py`.
+
 ## 1. CAD model (CadQuery)
 
 Last built with Python 3.12, CadQuery 2.8, shapely 2.1, ezdxf 1.4 and VTK 9.6.

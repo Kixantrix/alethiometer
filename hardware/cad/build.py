@@ -52,30 +52,40 @@ def allowed(a: str, b: str) -> bool:
     return False
 
 
-def interference(parts) -> list[str]:
+def interference(parts, lid_angles=(0.0,)) -> list[str]:
     items = []
     for p, i, s in placed_solids(parts):
         if p.name == "dial_sticker":
             continue
-        bb = s.BoundingBox()
-        items.append((p.name, i, s, bb))
+        items.append((p, i, s))
     problems = []
-    for a in range(len(items)):
-        na, ia, sa, ba = items[a]
-        for b in range(a + 1, len(items)):
-            nb, ib, sb, bbb = items[b]
-            if na == nb or allowed(na, nb):
-                continue
-            if (ba.xmax < bbb.xmin or bbb.xmax < ba.xmin or ba.ymax < bbb.ymin or bbb.ymax < ba.ymin
-                    or ba.zmax < bbb.zmin or bbb.zmax < ba.zmin):
-                continue
-            try:
-                v = sa.intersect(sb).Volume()
-            except Exception as exc:  # pragma: no cover - OCC edge cases
-                problems.append(f"{na}[{ia}] × {nb}[{ib}]: boolean failed ({exc})")
-                continue
-            if v > 0.01:
-                problems.append(f"{na}[{ia}] × {nb}[{ib}]: {v:.3f} mm³")
+    for angle_index, angle in enumerate(lid_angles):
+        opening = D.lid_open_location(angle)
+        positioned = []
+        for p, i, s in items:
+            shape = s.moved(opening) if p.group == "lid" else s
+            positioned.append((p, i, shape, shape.BoundingBox()))
+        for a in range(len(positioned)):
+            pa, ia, sa, ba = positioned[a]
+            for b in range(a + 1, len(positioned)):
+                pb, ib, sb, bbb = positioned[b]
+                # Relative positions within the lid or within the body never change.
+                if angle_index and (pa.group == "lid") == (pb.group == "lid"):
+                    continue
+                na, nb = pa.name, pb.name
+                if na == nb or allowed(na, nb):
+                    continue
+                if (ba.xmax < bbb.xmin or bbb.xmax < ba.xmin or ba.ymax < bbb.ymin or bbb.ymax < ba.ymin
+                        or ba.zmax < bbb.zmin or bbb.zmax < ba.zmin):
+                    continue
+                context = f"lid {angle:g}°: {na}[{ia}] × {nb}[{ib}]"
+                try:
+                    v = sa.intersect(sb).Volume()
+                except Exception as exc:  # pragma: no cover - OCC edge cases
+                    problems.append(f"{context}: boolean failed ({exc})")
+                    continue
+                if v > 0.01:
+                    problems.append(f"{context}: {v:.3f} mm³")
     return problems
 
 
@@ -131,7 +141,9 @@ def export_fabrication(parts) -> list[dict]:
             fname = f"{p.name}__{mat}__qty{qty}.dxf"
             write_dxf(scs_dir / fname, p.profile, p.bends)
             if p.kind == "scs-bent":
-                cq.exporters.export(cq.Workplane().add(p.solid), str(scs_dir / f"{p.name}__formed.step"))
+                # Order the bent blank; the case countersinks are a post-process.
+                blank = p.tray.formed() if p.tray is not None else p.solid
+                cq.exporters.export(cq.Workplane().add(blank), str(scs_dir / f"{p.name}__formed.step"))
             w, h = p.profile.bbox
             rows.append(dict(file=fname, part=p.name, material=p.material, qty=qty,
                              size_mm=f"{w:.1f} x {h:.1f}", bends=len(p.bends),
@@ -329,7 +341,8 @@ def main() -> int:
         log("  ! " + n)
 
     t1 = time.time()
-    problems = interference(parts)
+    angles = [*range(0, math.ceil(D.LID_OPEN_ANGLE), 5), D.LID_OPEN_ANGLE]
+    problems = interference(parts, lid_angles=angles)
     log(f"interference check ({time.time() - t1:.0f}s): " + ("none" if not problems else ""))
     for pr in problems:
         log("  X " + pr)
@@ -348,6 +361,7 @@ def main() -> int:
         w.writeheader()
         w.writerows(sorted(rows, key=lambda r: -r["grams"]))
     report = dict(summary=D.summary(), weight_g=round(grams), interference=problems,
+                  lid_check_angles=angles,
                   manufacturability=notes, sendcutsend_files=len(order))
     (OUT / "build_report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     log(f"exported {len(order)} SendCutSend files")

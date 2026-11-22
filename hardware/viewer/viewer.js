@@ -63,7 +63,7 @@ const clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
 // ---------------------------------------------------------------- state
 const state = {
   explode: 0, explodeTarget: 0,
-  lid: 180, lidTarget: 180,
+  lid: 0, lidTarget: 0,
   section: false, sectionPos: 0,
   selected: null,
 };
@@ -128,6 +128,9 @@ async function load() {
   manifest = await res.json();
   hinge.point.fromArray(manifest.hinge.point);
   hinge.axis.fromArray(manifest.hinge.axis).normalize();
+  $('lid').max = manifest.hinge.open_deg;
+  state.lid = manifest.hinge.open_deg;
+  setLid(manifest.hinge.open_deg);
 
   const v = `?v=${manifest.generated ?? Date.now()}`;
   const [gltf, dialTex] = await Promise.all([
@@ -163,12 +166,15 @@ async function load() {
   }
 
   buildSidebar();
+  $('lid').disabled = false;
+  $('lidToggle').disabled = false;
   updateMatrices();
   setView('iso', false);
   status('');
   const pieces = parts.reduce((n, r) => n + r.meshes.length, 0);
   const tris = parts.reduce((n, r) => n + r.meta.triangles * r.meshes.length, 0);
   $('stats').textContent = `${parts.length} part types, ${pieces} pieces, ${(tris / 1000).toFixed(0)}k triangles`
+    + ` · lid stop: ${manifest.hinge.open_deg}°`
     + (manifest.dial.source ? ` · dial: ${manifest.dial.source}` : ' · no dial texture');
 }
 
@@ -394,9 +400,10 @@ function setView(view, animate = true) {
 // ---------------------------------------------------------------- controls wiring
 function setExplode(v) { state.explodeTarget = v; $('explode').value = v; }
 function setLid(deg) {
-  state.lidTarget = deg;
-  $('lid').value = deg;
-  $('lidToggle').textContent = deg > 90 ? 'Close' : 'Open';
+  const angle = THREE.MathUtils.clamp(deg, 0, manifest.hinge.open_deg);
+  state.lidTarget = angle;
+  $('lid').value = angle;
+  $('lidToggle').textContent = angle > 90 ? 'Close' : 'Open';
 }
 function setSection(on, pos = state.sectionPos) {
   state.section = on;
@@ -415,7 +422,10 @@ $('explode').addEventListener('input', (e) => setExplode(+e.target.value));
 $('explode').addEventListener('change', () => setView());
 $('lid').addEventListener('input', (e) => setLid(+e.target.value));
 $('lid').addEventListener('change', () => setView());
-$('lidToggle').addEventListener('click', () => { setLid(state.lidTarget > 90 ? 0 : 180); setView(); });
+$('lidToggle').addEventListener('click', () => {
+  setLid(state.lidTarget > 90 ? 0 : manifest.hinge.open_deg);
+  setView();
+});
 $('section').addEventListener('change', (e) => setSection(e.target.checked));
 $('sectionPos').addEventListener('input', (e) => setSection(true, +e.target.value));
 document.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));

@@ -1,0 +1,6 @@
+-r cad/requirements.txt
+fonttools
+pymupdf
+pillow
+numpy
+platformio>=6.2

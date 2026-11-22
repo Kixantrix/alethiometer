@@ -39,7 +39,12 @@ back to a built-in studio environment.
 - **Explode:** lifts each layer by its place in the stack: tray, electronics, P1, gear train (each
   gear level slightly apart), P2 and dial, hands, crystal, upper shell, lid.
 - **Lid:** the slider sets the lid angle about the real hinge axis. The button animates it open
-  or closed.
+  or closed. Its maximum comes from the CAD's `LID_OPEN_ANGLE` (135°), matching the fixed
+  stop pin and two brackets shown on the hinge.
+  The hinge halves are a **purchased-part reference**, not verified vendor CAD. Their part
+  descriptions and the fabrication hold in `../ASSEMBLY.md` identify the missing dimensions.
+  Screws, backing strips, mounting blocks and split-pin-retained stop replace the soldered
+  hinge assembly; this is still an unbuilt prototype.
 - **Section cut:** a clip plane through the middle (the XZ plane). The slider moves it front to back.
 - **Views:** Iso, Top / dial, Side, Under. The camera re-frames when you explode or move the lid.
 - **Click a part** to see its name, layer, kind, material, spec, quantity, and Z range. From the

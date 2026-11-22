@@ -56,7 +56,7 @@ boards plus shipping.
 | — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J4–J6 |
 | — | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | Between the case floor and the board |
 | — | M2 × 12 mm brass hex standoff, female-female | 3 | Board → P1 |
-| — | M2 × 8 mm brass cheese-head screw | 3 | Floor → spacer → board → standoff |
+| — | M2 × 8 mm brass slotted countersunk screw, DIN 963, 90° | 3 | Flush case floor → spacer → board → standoff; length includes head |
 | — | Kapton tape | | One layer on the case floor under the board |
 
 ## How it goes together
@@ -143,8 +143,10 @@ you only plug into J1 on the bench, with the movement lifted off.
    the top through U7, the 5 mm spacers and the board, with nuts underneath. Cut a USB-C cable
    about 6 cm from the plug, strip the four wires and solder them into J7 by colour. Plug it into
    the ProS3.
-8. **Kapton** on the case floor. Spacers, board, then the standoffs, fixed with M2 × 8 screws
-   from below.
+8. **Kapton** on the case floor. Spacers, board, then the standoffs, fixed with M2 × 8
+   countersunk screws from below. Machine the flush seats in the brass case beforehand
+   ([ASSEMBLY.md §1](../ASSEMBLY.md#1-prepare-the-laser-cut-parts)); do not countersink the PCB
+   or nylon spacers.
 
 ## Bring-up checklist
 

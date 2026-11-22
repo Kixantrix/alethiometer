@@ -34,9 +34,14 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "cad"))
 import layout as L  # noqa: E402
 
-KICAD = Path(sys.executable).resolve().parents[1]
-KICAD_CLI = KICAD / "bin" / "kicad-cli.exe"
-STD_FP = KICAD / "share" / "kicad" / "footprints"
+if sys.platform == "darwin":
+    KICAD = next(p for p in Path(pcbnew.__file__).resolve().parents if p.name == "Contents")
+    KICAD_CLI = KICAD / "MacOS" / "kicad-cli"
+    STD_FP = KICAD / "SharedSupport" / "footprints"
+else:
+    KICAD = Path(sys.executable).resolve().parents[1]
+    KICAD_CLI = KICAD / "bin" / "kicad-cli.exe"
+    STD_FP = KICAD / "share" / "kicad" / "footprints"
 LOCAL_LIB = HERE / "alethiometer.pretty"
 BOARD_FILE = HERE / "alethiometer_carrier.kicad_pcb"
 FAB = HERE / "fab"

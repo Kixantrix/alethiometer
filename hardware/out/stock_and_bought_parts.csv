@@ -27,8 +27,14 @@ standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
 standoff_hand,bought,4,M2×6+3 M-F brass hex standoff
 nut_p1_corner,bought,1,M2 brass hex nut (top-right gear standoff under P1; no bay post there)
 spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
-screw_floor,bought,3,M2×8 brass slotted cheese head screw
-screw_top,bought,4,M2×5 brass slotted cheese head screw
+screw_floor,bought,3,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
+screw_top,bought,4,"M2×6 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
+knob_I_clamp_screw,bought,3,M2 DIN 963 slotted countersunk screw; shorten M2x8 to 7 mm including head
+knob_I_clamp_nut,bought,3,"M2 brass hex nut, 4 mm AF x 1.6 mm"
+knob_II_clamp_screw,bought,3,M2 DIN 963 slotted countersunk screw; shorten M2x8 to 7 mm including head
+knob_II_clamp_nut,bought,3,"M2 brass hex nut, 4 mm AF x 1.6 mm"
+knob_III_clamp_screw,bought,3,M2 DIN 963 slotted countersunk screw; shorten M2x8 to 7 mm including head
+knob_III_clamp_nut,bought,3,"M2 brass hex nut, 4 mm AF x 1.6 mm"
 module_sockets,bought,1,"Adafruit #3008 5 mm short female headers, cut to length (modules and X27)"
 mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 battery,bought,1,LiPo 1S 402535 (~350 mAh)
@@ -49,6 +55,26 @@ crown_collar,stock,1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside th
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet
-hinge_knuckle_body,stock,3,"K&S 3/16"" tube, 11.6 mm"
-hinge_knuckle_lid,stock,2,"K&S 3/16"" tube, 11.6 mm"
-hinge_pin,stock,1,"K&S 5/32"" brass rod, 60 mm"
+hinge_leaf_body,bought,1,"Guden BR05050404-72 hinge, fixed half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_leaf_lid,bought,1,"Guden BR05050404-72 hinge, moving half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_pin,bought,1,Included in the ONE purchased hinge; have supplier retain pin after cutting
+hinge_backing_lid,stock,1,"brass .063"" hinge load-spreading strip, 63.5 x 5 mm; hand-cut (below laser service minimum width)"
+hinge_mount_block_a,stock,1,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
+hinge_mount_block_b,stock,1,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
+hinge_stop_washer_a,stock,1,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
+hinge_stop_split_pin_a,bought,1,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting
+hinge_stop_washer_b,stock,1,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
+hinge_stop_split_pin_b,bought,1,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting
+hinge_stop_pin,stock,1,"K&S 1/8"" brass rod, 72.13 mm; cross-drill ends for split pins"
+hinge_body_screw_1,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
+hinge_body_screw_2,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
+hinge_body_screw_3,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
+hinge_body_screw_4,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
+hinge_bracket_screw_a_1,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
+hinge_bracket_screw_a_2,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
+hinge_bracket_screw_b_1,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
+hinge_bracket_screw_b_2,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
+hinge_lid_screw_1,bought,1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
+hinge_lid_nut_1,bought,1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
+hinge_lid_screw_2,bought,1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
+hinge_lid_nut_2,bought,1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
