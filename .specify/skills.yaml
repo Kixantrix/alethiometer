@@ -1,0 +1,26 @@
+project: alethiometer
+acquired_at: 2026-11-22T05:45:00Z
+skills:
+  - id: dfma
+    source: kerrigan
+    path: .github/skills/dfma/SKILL.md
+    trust: trusted
+    phase: both
+    notes: Mandatory for hardware/ (see hardware/AGENTS.md)
+  - id: ui-design-perspective
+    source: kerrigan
+    path: .github/skills/ui-design-perspective/SKILL.md
+    trust: trusted
+    phase: both
+    notes: Website and the 3D viewer
+  - id: smoke-test
+    source: kerrigan
+    path: .github/skills/smoke-test/SKILL.md
+    trust: trusted
+    phase: implementation
+  - id: scenario-test
+    source: kerrigan
+    path: .github/skills/scenario-test/SKILL.md
+    trust: trusted
+    phase: implementation
+    notes: Physical fit-up and the built instrument are manual-human attestations
