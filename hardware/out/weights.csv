@@ -3,8 +3,8 @@ case_lower_tray,1,165.9,"brass .040"""
 case_lid,1,126.1,"brass .040"""
 case_upper_shell,1,107.9,"brass .040"""
 dial_plate_P2,1,79.3,"brass .063"""
-movement_base_plate_P1,1,49.9,"brass .063"""
 lid_overlay,1,48.8,"brass .040"""
+movement_base_plate_P1,1,44.8,"brass .063"""
 pcb_carrier,1,31.8,"FR4 1.6 mm, 2 layers"
 crystal_seat_spider,1,14.9,"brass .040"""
 knob_I_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
@@ -45,7 +45,7 @@ module_sockets,1,1,5 mm female header sockets
 mic_INMP441,1,1,INMP441 I2S MEMS mic module
 speaker_foam_ring,1,1,foam ring
 mic_foam_tape,1,1,foam tape
-wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through P1's Ø3.5 hole to J5 (+/−)"
+wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
 wire_mic,1,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 spacer_usb,1,1,M2 nylon spacer 5 mm
 crown_switch,1,1,Omron B3F-3150 right-angle tactile switch on the carrier

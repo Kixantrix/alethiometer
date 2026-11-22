@@ -148,7 +148,8 @@ POSTS = L.POSTS
 SPEAKER = dict(c=(-28.5, 28.5), d=28.0, h=5.0)
 MIC = dict(c=(-32.0, -32.0), d=14.0, h=3.0)
 # Speaker and mic leads run down to their carrier pads (J5, J4; positions from pcb/make_pcb.py)
-SPK_WIRE_HOLE = (-18.5, 29.75)             # Ø3.5 in P1's speaker seat, right above J5
+SPK_WIRE_HOLE = (-18.5, 29.75)             # leads drop through the seat's open centre, right above J5
+SPK_SEAT_OPEN = SPEAKER["d"] - 6.0         # Ø22: the seat ring carries only the speaker's rim
 SPK_WIRE_D, MIC_WIRE_D = 1.6, 2.4          # bundle envelopes: 2 and 5 × 30 AWG silicone
 J4_PAD_MID, J5_PAD_MID = (-46.0, -22.08), (-18.5, 29.73)
 REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
@@ -453,7 +454,9 @@ def p1_plate() -> Part:
     for x, y in POSTS:
         p.hole(x, y, POST_HOLE_PLATE)
     p.cut(slot(X27_CENTER[0] - 1.0, 0, X27_CENTER[0] + 1.0, 0, X27_BODY_D + 0.6))  # slide to set gear mesh
-    p.hole(*SPK_WIRE_HOLE, 3.5)                       # speaker leads down to J5 (deburr the edge)
+    # Open the speaker seat: its back vents into the bay (more back volume, better sound)
+    # and its leads drop straight through to J5
+    p.cut(circle(*SPEAKER["c"], SPK_SEAT_OPEN / 2))
     return flat_part("movement_base_plate_P1", p, T063, material="brass .063\"",
                      placements=[loc(z=Z_P1)], spec="brass .063\" (hidden; skeletonised)",
                      color=BRASS_DARK)
@@ -861,7 +864,7 @@ def electronics() -> list[Part]:
     # What holds them: a foam ring under the speaker, a foam tape pad between the mic and P2
     sx_, sy_ = SPEAKER["c"]
     E.append(Part("speaker_foam_ring", "bought", "foam ring", cylinder(SPEAKER["d"], 0.2, sx_, sy_, Z_P1_TOP,
-                  hole=SPEAKER["d"] - 6.0), [loc()], BLACK, "electronics",
+                  hole=SPK_SEAT_OPEN), [loc()], BLACK, "electronics",
                   spec="0.2 mm adhesive foam ring, Ø28 × Ø22: seats and seals the speaker on P1",
                   density="acrylic"))
     mx_, my_ = MIC["c"]
@@ -883,8 +886,8 @@ def electronics() -> list[Part]:
     zp = Z_CARRIER_TOP + 0.05
     hx, hy = SPK_WIRE_HOLE
     run("wire_speaker", [(hx, hy, Z_P1_TOP + 0.2), (hx, hy, zp + 2.0), (*J5_PAD_MID, zp + 1.0), (*J5_PAD_MID, zp)], SPK_WIRE_D,
-        (0.75, 0.12, 0.10), "speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through P1's "
-        "Ø3.5 hole to J5 (+/−)")
+        (0.75, 0.12, 0.10), "speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open "
+        "centre of P1's speaker seat to J5 (+/−)")
     mz = Z_P2 - 0.5 - MIC["h"]
     run("wire_mic", [(-37.5, -28.5, mz), (-37.5, -28.5, mz - 1.6), (-42.5, -25.5, Z_P1_TOP + 1.0),
                      (-43.5, -24.5, Z_P1 - 3.0), (*J4_PAD_MID, zp + 1.5), (*J4_PAD_MID, zp)],

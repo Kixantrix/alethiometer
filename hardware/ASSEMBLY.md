@@ -200,8 +200,8 @@ little beyond, until the two leaves close on each other.
    - the three sensor shafts, each with its sleeve or washer below the gear;
    - the three knob shafts, each with a 0.5 mm washer below the wheel and a 2.5 mm sleeve above it;
    - the **speaker**: solder ~6 cm of 2-core 30 AWG to its back tabs, thread the pair down through
-     P1's Ø3.5 mm hole (top-left, beside the speaker seat's edge; deburr it first) and seat the
-     speaker on a foam ring with its tabs over the hole;
+     the open centre of P1's speaker seat (top-left) and seat the speaker on its foam ring;
+     the seat is a ring so the speaker's back can breathe into the bay below;
    - the **mic**: solder ~8 cm of 5-core 30 AWG to the INMP441 (VDD GND SCK WS SD, with L/R
      bridged to GND at the mic) and stick it under P2's 7-hole mic port, port up, with
      foam tape that has a hole over the port. Its leads hang down through P1's open lattice
