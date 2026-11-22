@@ -51,16 +51,16 @@ the interpretation aloud.
   website's order, Hourglass at 12. It uses Myth Made's hand-drawn, film-style symbols, which you
   generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
   window shows the gear train underneath. Acrylic crystal.
-- **Three framing hands, set by hand.** Each thumbwheel (five 31-tooth brass layers clamped
-  by three flush-bottom through-bolts, with only its base soldered to the shaft)
-  drives a 36-tooth sensor gear, which drives a 36-tooth gear on that hand's arbor. The arbors
+- **Three framing hands, set by hand.** Each thumbwheel (one bought solid brass 26-tooth
+  gear, module 0.8) drives a 32-tooth sensor gear, which drives a 32-tooth gear on that hand's
+  arbor. The arbors
   are nested K&S tubes, like the hour and minute pipes of a clock. The sensor gear turns
   **1:1** with its hand and carries a magnet over an **AS5600** angle sensor. The firmware
   therefore always knows exactly where every hand points: no homing, no lost counts, and it
   works even if the knobs were turned while the instrument slept. The wheels protrude about
   4 mm through the top, left, and bottom walls, as on the BBC prop.
 - **The answering needle** (copper) is driven by an **X27.168** automotive gauge stepper through
-  a 38:19 brass gear pair. The motor's internal stop is kept and used to home the needle on
+  a 34:17 brass gear pair. The motor's internal stop is kept and used to home the needle on
   every wake. The 2:1 ratio turns its 315° of travel into about 630° of needle sweep, so every
   symbol is reachable with room for theatre.
 - **Hidden voice.** The speaker sits under the dial plate and sounds out through the grille
@@ -77,15 +77,15 @@ the interpretation aloud.
 
 ```mermaid
 flowchart LR
-  knob[Thumbwheel 31T] --> sensor[Sensor gear 36T<br/>+ magnet over AS5600]
-  sensor --> handgear[Hand gear 36T<br/>on nested arbor]
+  knob[Thumbwheel 26T] --> sensor[Sensor gear 32T<br/>+ magnet over AS5600]
+  sensor --> handgear[Hand gear 32T<br/>on nested arbor]
   handgear --> hand[Framing hand]
   crown[Crown: hold & speak] --> esp[ProS3 ESP32-S3]
   mic[INMP441] --> esp
   sensor -. angle .-> esp
   esp -- WAV + 3 symbols --> api[/api/ask-voice/]
   api -- reading --> esp
-  esp --> drv[DRV8833] --> x27[X27.168] --> ng[38T → 19T] --> needle[Needle]
+  esp --> drv[DRV8833] --> x27[X27.168] --> ng[34T → 17T] --> needle[Needle]
   esp -- interpretation --> speak[/api/speak/] -- PCM --> amp[MAX98357A] --> spk[Speaker]
 ```
 
@@ -177,7 +177,7 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
   screws on nested thin-wall arbors, which could bind them. See the joint-status table in
   [ASSEMBLY.md §3](ASSEMBLY.md#3-sub-assemblies). Electrical soldering remains necessary.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
-- **Laser-cut module-0.7 gears** in .040" brass are fine at hand-setting speeds and for a gauge
+- **Laser-cut module-0.8 gears** in .040" brass are fine at hand-setting speeds and for a gauge
   motor, but expect some backlash. Every pair is spaced 0.1 mm wider than theoretical and the
   teeth are thinned, so a worst-case cut still turns freely. Shafts run in K&S tube bushings,
   which locate them to about 0.05 mm. The firmware approaches every needle target from the
@@ -186,7 +186,7 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
 - **Fit tolerances** are collected at the top of `cad/design.py` (*Tolerance budget*). They're
   sized for SendCutSend's ±0.13 mm cuts and ±0.25–0.5 mm bends, so parts should assemble
   without filing.
-- **X27 shaft length.** The 38T motor gear is pressed onto the Ø1 output shaft about 6.3 mm
+- **X27 shaft length.** The 34T motor gear is pressed onto the Ø1 output shaft about 5.5 mm
   above the motor body. Check your motor's shaft before cutting gears.
 - **Wi-Fi through brass.** The ProS3's antenna sits inside a metal case. Radio leaks out through
   the crystal window, the grille slots and the skeletonised plates, but range will be shorter

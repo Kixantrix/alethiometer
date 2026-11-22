@@ -15,7 +15,7 @@ not an inspected commercial hinge.
 ## A. SendCutSend: laser-cut and bent parts
 
 Upload every file in [`out/sendcutsend/`](out/sendcutsend). Each filename carries the material
-and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is in
+and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is in
 [`out/sendcutsend_order.csv`](out/sendcutsend_order.csv).
 
 | Part | Material | Qty | Notes |
@@ -29,17 +29,17 @@ and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is 
 | `crystal_seat_spider` | Brass 260 .040" | 1 | |
 | `crystal_frame_spider` | Brass 260 .063" | 1 | Crystal pocket |
 | `crystal` | **Clear cast acrylic .063"** | 1 | Ø88 mm. Upgrade: any Ø88 × 1.5 mm flat mineral watch/clock glass. |
-| `gear_hand_I/II/III_36T` | Brass 260 .040" | 1 each | Module 0.7, 20° PA. Bores differ (3/32", 1/8", 5/32") |
-| `gear_sensor_I/II/III_36T` | Brass 260 .040" | 1 each | Bore 1/8" |
-| `knob_I/II/III_31T_base` | Brass 260 .040" | 1 each | Bottom layer; hand-countersink clamp holes after cutting |
-| `knob_I/II/III_31T_layers` | Brass 260 .040" | 4 each | Removable upper layers, three through-bolts per wheel |
-| `gear_needle_19T` | Brass 260 .040" | 1 | Bore 3/16" |
-| `gear_motor_38T` | Brass 260 .040" | 1 | Press fit on the X27's Ø1 shaft |
+| `gear_hand_I/II/III_32T` | Brass 260 .040" | 1 each | Module 0.8, 20° PA. Bores differ (3/32", 1/8", 5/32") |
+| `gear_sensor_I/II/III_32T` | Brass 260 .040" | 1 each | Bore 1/8" |
+| `gear_needle_17T` | Brass 260 .040" | 1 | Bore 3/16" |
+| `gear_motor_34T` | Brass 260 .040" | 1 | Press fit on the X27's Ø1 shaft |
 | `hand_I`, `hand_II`, `hand_III` | Brass 260 .040" | 1 each | Darken after cutting |
 | `hand_needle` | **Copper 110 .032"** | 1 | The answering needle |
 | `hand_cap_rosette` | Brass 260 .040" | 1 | Ø10 centre cap |
 | `crown_cap_disc` | Brass 260 .040" | 3 | Scalloped crown |
 | `hinge_backing_body` | Brass 260 .063" | 1 | Load-spreading strip inside the upper shell |
+| `hinge_drill_guide` | Brass 260 .040" | 1 | **Tool**, one 90° bend: hooks over the closed lid and drills all six hinge holes. Upload `hinge_drill_guide__formed.step`. |
+| `hinge_trim_gauge` | Brass 260 .063" | 1 | **Tool**: marks the hinge's cut-to-length and the lid-leaf trim line |
 
 **Ordering notes**
 - Add **deburring** to the plates if offered for that thickness. The case parts will be hand-finished anyway.
@@ -47,13 +47,13 @@ and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is 
   4-sided boxes, so an 8-flange tray may go to manual review. Myth Made's published case is
   also an 8-bend folded tray. If it's rejected, ask for a custom quote. As a last resort, order the DXF
   flat and bend it yourself on a small box-and-pan brake.
-- Order a spare set of the small gears (`gear_*`, one extra `knob_*` layer each). They're cheap,
-  and laser-cut module-0.7 teeth sometimes need a second try.
+- Order a spare set of the small gears (`gear_*`). They're cheap, and laser-cut teeth sometimes
+  need a second try. The thumbwheels are bought gears (§C).
 - Fits are sized for SendCutSend's ±0.13 mm. Shafts run in K&S tube bushings, not in the cut
   holes, so nothing needs reaming (ASSEMBLY.md §1).
 - **Gear precision upgrade (optional).** The laser-cut gears are fine for this slow, hand-turned
   mechanism: expect about a degree of play at the hands, and calibration absorbs any fixed offset.
-  If you want tighter meshing, send the same `gear_*` and `knob_*` DXFs to a wire-EDM service
+  If you want tighter meshing, send the same `gear_*` DXFs to a wire-EDM service
   (e.g. Xometry, PCBWay) for about ±0.01 mm teeth. No design change is needed.
 
 ## B. K&S Precision Metals brass stock (hobby shops, Amazon)
@@ -61,8 +61,7 @@ and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is 
 | Item | Qty | ≈ $ | Used for |
 |---|---|---|---|
 | Round brass tube, .014" wall, 12": **1/8", 5/32", 3/16", 7/32"** (or the K&S #3400 telescoping assortment) | 1 each | 15–25 | Hand arbors, needle arbor, cannon, sleeves and crown collar |
-| Round brass rod, 12": **3/32", 1/8"** | 1 each | Check | Arbor I, sensor/knob shafts, crown plunger |
-| .063" brass strip/sheet | 63.5 × 5 mm | Check | Hand-cut lid backing strip; below laser-service minimum width |
+| Round brass rod, 12": **3/32", 1/8", 5/32"** | 1 each | Check | Arbor I and crown plunger, sensor shafts, knob shafts |
 
 Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 
@@ -77,13 +76,13 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 | M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
 | M2 × 8 brass slotted **countersunk** screw, DIN 963, 90° | 3 | 2 | Flush in the floor → spacer → PCB → bay standoff; length includes head |
 | M2 × 6 brass slotted **countersunk** screw, DIN 963, 90° | 4 | | Flush in the top face; length includes head |
-| M2 × 8 DIN 963 countersunk screw, **shorten to 7 mm including head** | 9 | Check | Three through-bolts per thumbwheel; full-length screws hit P2 |
-| M2 brass hex nut, 4 mm AF × 1.6 mm | 9 | Check | Thumbwheel clamp nuts; not taller locknuts |
-| Purchased brass hinge, **Guden BR05050404-72** | One 63.5 mm cut length | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width; retained pin and trimmed leaves by supplier. CAD body/lid/pin entries are components of **one** hinge, not three purchases. |
+| **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, Loctite 638 on its 5/32" shaft (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |
+| Brass hinge, **Guden BR05050404-72** (72" stock length) | 1 | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width. Cut your 5-knuckle piece with a Dremel and trim the lid leaf, using `hinge_trim_gauge` (ASSEMBLY.md §3). Plenty left over for spares. |
 | M2 × 6 DIN 963 countersunk screw, 90°, Ø3.8 mm head + M2 hex nut | 4 each | Check | Flush in the fixed hinge leaf → shell → body backing strip → nut |
-| M1.6 × 6 DIN 963 countersunk screw, 90°, Ø3.2 mm head | 2 | Check | Flush in moving hinge leaf |
-| M1.6 hex nut, 3.2 mm AF × 1.3 mm | 2 | Check | Inside lid backing strip |
-| M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 4 | 2 | Shaft spacers |
+| M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.2 mm head | 2 | Check | Flush in the lid hinge leaf |
+| M1.6 hex nut, 3.2 mm AF × 1.3 mm, and M1.6 DIN 125 washer (Ø4 × 0.3) | 2 each | Check | Inside the lid wall |
+| M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 1 | 2 | Sensor-I shaft spacer |
+| M4 brass shim washer 0.5 mm (Ø8 × Ø4.2) | 3 | 2 | Under each thumbwheel |
 | Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
 | Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
 
@@ -96,9 +95,9 @@ plain pilot holes; do not request countersinking from the laser-cut/bending serv
 
 The hinge is a **procurement candidate with a fabrication hold**, not a dimensionally verified
 drop-in. Source: [Guden product and drawing](https://www.guden.com/itemdetail/BR05050404-72).
-The narrower [K&S 90000 miniature hinge](https://precisioncutkits.com/product/miniature-piano-hinge/)
-is another candidate, but only its 1/2" width and 10" length are published there; it is **not**
-the hinge modelled in CAD. Do not substitute it without measuring and updating the design.
+Guden's 1.06" width is its narrowest solid-brass continuous hinge, hence the lid-leaf trim.
+Narrower miniature hinges (e.g. K&S 90000, 1/2") are usually brass-*plated* and not the hinge
+modelled in CAD. Don't substitute one without measuring it and updating the design.
 
 ## D. Electronics
 

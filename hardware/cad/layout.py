@@ -35,9 +35,10 @@ def polar(r: float, deg: float) -> tuple[float, float]:
 
 
 # ---- gear train --------------------------------------------------------------
-MODULE = 0.7
-Z_HAND, Z_SENSOR, Z_KNOB = 36, 36, 31
-Z_NEEDLE, Z_MOTOR = 19, 38
+# Module 0.8 is a stock size: the thumbwheels are bought gears; the thin gears are laser-cut.
+MODULE = 0.8
+Z_HAND, Z_SENSOR, Z_KNOB = 32, 32, 26
+Z_NEEDLE, Z_MOTOR = 17, 34
 
 
 CENTER_SLOP = 0.10   # every gear pair is spaced this much wider than theoretical: room for laser
@@ -48,15 +49,15 @@ def center_distance(z1: int, z2: int) -> float:
     return MODULE * (z1 + z2) / 2 + CENTER_SLOP
 
 
-R_SENSOR = center_distance(Z_HAND, Z_SENSOR)                 # 25.3
-R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 48.85
+R_SENSOR = center_distance(Z_HAND, Z_SENSOR)                 # 25.7
+R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 49.0
 TRAIN_ANGLES = {"I": 90.0, "II": 180.0, "III": 270.0}        # knob directions (12, 9, 6 o'clock)
 SENSORS = {k: polar(R_SENSOR, a) for k, a in TRAIN_ANGLES.items()}
 
 # Juken X27.168: Ø30.4 body; output shaft 10.0 mm from the body centre (datasheet);
 # four rear pins at ±11.43 across and ±3.81 along the shaft axis (two per coil,
 # same side = same coil); rear bushing boss on the shaft axis and a rear peg.
-X27_SHAFT = (center_distance(Z_NEEDLE, Z_MOTOR), 0.0)       # (20.05, 0); slot-adjustable
+X27_SHAFT = (center_distance(Z_NEEDLE, Z_MOTOR), 0.0)       # (20.5, 0); slot-adjustable
 X27_SHAFT_OFFSET = 10.0
 X27_CENTER = (X27_SHAFT[0] + X27_SHAFT_OFFSET, 0.0)
 X27_BODY_D = 30.4
@@ -90,7 +91,7 @@ AS5600_PLACE = {          # header row toward the dial centre
     "II": dict(c=SENSORS["II"], rot=90.0),
     "III": dict(c=SENSORS["III"], rot=180.0),
 }
-PROS3_PLACE = dict(c=(4.0, 43.4), rot=90.0)      # USB-C end toward -x: short cable to J7
+PROS3_PLACE = dict(c=(4.0, 43.7), rot=90.0)      # USB-C end toward -x: short cable to J7
 DRV8833_PLACE = dict(c=(28.0, -31.0), rot=0.0)
 MAX98357_PLACE = dict(c=(-32.0, 24.5), rot=0.0)
 BATTERY_BOX = (-37.0, -48.0, -13.2, -13.2)       # x0, y0, x1, y1 (sits on the carrier)

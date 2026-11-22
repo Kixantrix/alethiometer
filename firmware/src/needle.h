@@ -1,4 +1,4 @@
-// The answer needle: X27.168 stepper -> 38T:19T gears -> needle.
+// The answer needle: X27.168 stepper -> 34T:17T gears -> needle.
 // Motion runs in a 2 kHz esp_timer callback; callers only queue segments.
 #pragma once
 

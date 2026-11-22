@@ -157,7 +157,7 @@ DRC. Before ordering, check these against real parts:
 
 - **USB-C opening.** The receptacle sits about 1.5 mm inside the wall. Hold a real cable up
   to the 12.6 × 6.6 mm opening (`lower_tray()` in `design.py`).
-- **X27.168 shaft.** The 38T motor gear sits 5.5 mm above the motor's front face. Check your
+- **X27.168 shaft.** The 34T motor gear sits 5.5 mm above the motor's front face. Check your
   motor's shaft length.
 - **Crown switch.** The Omron B3F-3150's button is modelled 3.75 mm above the board
   (`CROWN_SW_ACT_H` in `layout.py`). Check it against the datasheet or a sample.

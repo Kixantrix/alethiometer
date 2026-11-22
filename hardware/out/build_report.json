@@ -3,7 +3,7 @@
   "case_outer": "112.9 \u00d7 112.9 mm",
   "body_height": 37.95,
   "closed_height": 45.57,
-  "knob_protrusion": 3.93,
+  "knob_protrusion": 3.73,
   "levels": [
    19.216,
    21.216,
@@ -22,12 +22,12 @@
    19.72
   ],
   "as5600_magnet_gap": 1.1,
-  "lid_open_angle": 201.33788660848705,
+  "lid_open_angle": 204.35163803420676,
   "hinge_fabrication_hold": "Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering.",
   "needle_ratio": 2.0,
-  "knob_turns_per_rev": 1.1612903225806452
+  "knob_turns_per_rev": 1.2307692307692308
  },
- "weight_g": 823,
+ "weight_g": 814,
  "interference": [],
  "lid_check_angles": [
   0,
@@ -71,8 +71,8 @@
   190,
   195,
   200,
-  201.33788660848705
+  204.35163803420676
  ],
  "manufacturability": [],
- "sendcutsend_files": 30
+ "sendcutsend_files": 26
 }

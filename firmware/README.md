@@ -159,7 +159,7 @@ averaged (16 samples), smoothed along the shortest arc and snapped to the neares
 ### Needle
 
 X27.168 (315° travel, 1/3° per partial step) driven with sine/cosine microstepping from a 2 kHz
-`esp_timer`, so motion never blocks audio or networking. The 38T→19T external mesh gives
+`esp_timer`, so motion never blocks audio or networking. The 34T→17T external mesh gives
 `needle = −2 × motor + offset`, about 630° of needle travel. Targets are always finished with a
 small move in the + motor direction to take up backlash. Coils are de-energised 0.4 s after the
 needle comes to rest (the X27 gear train holds position).

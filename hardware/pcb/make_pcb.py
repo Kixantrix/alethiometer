@@ -292,7 +292,7 @@ PROS3_LABELS = {1: "VBAT", 2: "GND", 3: "5V", 4: "3V3", 5: "IO1", 6: "IO2", 7: "
 AS5600_NETS = {"I": "H1_OUT", "II": "H2_OUT", "III": "H3_OUT"}
 
 # Test pads: a strip along the bottom edge, two rows, vertical labels above each pad
-TP_X0, TP_PITCH, TP_ROW_Y = -11.4, 2.8, (-40.5, -43.6)   # clear of the battery (x < -13.2)
+TP_X0, TP_PITCH, TP_ROW_Y = -11.4, 2.8, (-40.9, -44.0)   # clear of the battery (x < -13.2)
 TEST_PADS = [
     "GND", "VBAT", "+5V", "+3V3", "3V3_SW", "H1", "H2", "H3", "CROWN", "LID", "FLT",
     "GND", "AIN1", "AIN2", "BIN1", "BIN2", "BCLK", "WS", "DOUT", "MIC_SD", "AMP_SD", "GND",

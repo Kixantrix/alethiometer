@@ -87,16 +87,19 @@ STICKER_T = 0.15
 CRYSTAL_T = T063
 
 # ---------------------------------------------------------------------------
-# Gear train (module 0.7, 20° PA, laser-cut .040 brass) — shared with the PCB via layout.py
+# Gear train (module 0.8, 20° PA): thin gears laser-cut in .040 brass, thumbwheels bought.
+# Shared with the PCB via layout.py
 # ---------------------------------------------------------------------------
 MODULE = L.MODULE
 Z_HAND, Z_SENSOR, Z_KNOB = L.Z_HAND, L.Z_SENSOR, L.Z_KNOB
 Z_NEEDLE, Z_MOTOR = L.Z_NEEDLE, L.Z_MOTOR
 R_SENSOR = L.R_SENSOR                      # 25.2
 R_KNOB = L.R_KNOB                          # 48.65
-KNOB_LAYERS = 5
-KNOB_CLAMP_XY = [polar(6.0, a) for a in (0, 120, 240)]
-KNOB_CLAMP_CLEAR, KNOB_CLAMP_LENGTH = 2.4, 7.0
+# Thumbwheel: one stock gear, thick enough to grip and to span the three sensor-gear levels.
+# Misumi configurable spur gear, module 0.8, brass, shape A (no hub), 26 teeth, 5 mm face, 4 mm bore.
+KNOB_FACE, KNOB_BORE = 5.0, 4.0
+KNOB_GEAR_SPEC = ("Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, "
+                  "face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32\" shaft")
 X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
@@ -112,7 +115,7 @@ def ks_od(frac: str) -> float:
 
 
 KS_WALL = 0.014 * IN
-ROD_332, ROD_18 = ks_od("3/32"), ks_od("1/8")
+ROD_332, ROD_18, ROD_532 = ks_od("3/32"), ks_od("1/8"), ks_od("5/32")
 TUBE_18, TUBE_532, TUBE_316, TUBE_732 = ks_od("1/8"), ks_od("5/32"), ks_od("3/16"), ks_od("7/32")
 FIT = 0.15                                # hands, crown etc.: bonded bores that slide on even when cut -0.13
 GEAR_FIT = 0.08                           # gear bores: kept close so each gear runs centred on its arbor
@@ -156,12 +159,16 @@ HINGE_KNUCKLES, KNUCKLE_GAP = 5, 0.1
 KNUCKLE_LEN = 0.5 * IN - KNUCKLE_GAP
 HINGE_PIN_D = 0.091 * IN
 HINGE_BARREL_D = HINGE_PIN_D + 0.1 + 2 * T040
-HINGE_BODY_DEPTH, HINGE_LID_HEIGHT = 13.0, 6.4
+HINGE_BODY_DEPTH = 1.060 / 2 * IN               # fixed leaf left at full width (pivot to edge)
+HINGE_LID_HEIGHT = LID_H - BEND_IR - T040       # lid leaf trimmed to the lid wall's flat (~5.6 mm)
 HINGE_BODY_MOUNTS = (-25.4, -9.5, 9.5, 25.4)   # along the hinge; M2 countersunk from outside, nuts inside
 HINGE_BODY_MOUNT_Z = -8.0                      # below the pivot
 HINGE_LID_MOUNTS = (-12.7, 12.7)
-HINGE_LID_MOUNT_Z = 3.5
+HINGE_LID_MOUNT_Z = 3.6
 HINGE_NUT_H, HINGE_BODY_SCREW_LEN, HINGE_LID_SCREW_HEAD_D = 1.6, 6.0, 3.2
+HINGE_LID_SCREW_LEN, HINGE_LID_NUT_H = 4.0, 1.3
+HINGE_LID_WASHER_D, HINGE_LID_WASHER_T = 4.0, 0.3          # DIN 125 M1.6 washer under each lid nut
+GUIDE_PAD, GUIDE_HALF_LEN, GUIDE_LIP = 3.0, 37.0, 8.0      # drill guide: margin, half length, lid lip
 HINGE_MOUNT_CLEAR = 2.4
 HINGE_LID_CLEAR = 1.8
 HINGE_REFERENCE_NOTE = (
@@ -333,7 +340,7 @@ def upper_shell() -> Part:
     holes = [(x, -y, POST_HOLE) for x, y in POSTS]
 
     cuts = []
-    knob_top = LEVELS[0] + KNOB_LAYERS * T040 + KNOB_NOTCH_ABOVE
+    knob_top = LEVELS[0] + KNOB_FACE + KNOB_NOTCH_ABOVE
     for tr in TRAINS:
         x, y = wall_point(UPPER_OUTER, tr["angle"])
         _, ly, _ = _to_local_upper(x, y, 0)
@@ -438,7 +445,7 @@ def p1_plate() -> Part:
     p.hole(0, 0, TUBE_18 + BUSH_FIT)                  # 1/8" tube bushing for the 3/32" arbor I
     for tr in TRAINS:
         p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)    # 5/32" tube bushings for the 1/8" shafts
-        p.hole(*knob_xy(tr), TUBE_532 + BUSH_FIT)
+        p.hole(*knob_xy(tr), TUBE_316 + BUSH_FIT)    # 3/16" tube bushings for the 5/32" knob shafts
     for x, y in POSTS:
         p.hole(x, y, POST_HOLE_PLATE)
     p.cut(slot(X27_CENTER[0] - 1.0, 0, X27_CENTER[0] + 1.0, 0, X27_BODY_D + 0.6))  # slide to set gear mesh
@@ -472,7 +479,7 @@ def p2_plate() -> Part:
     p.hole(0, 0, TUBE_732 + FIT * 2)
     for tr in TRAINS:
         p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)
-        p.hole(*knob_xy(tr), TUBE_532 + BUSH_FIT)
+        p.hole(*knob_xy(tr), TUBE_316 + BUSH_FIT)
     for x, y in POSTS:
         p.hole(x, y, POST_HOLE_PLATE)
     # mic port (BL); the speaker (TL) and reed wires use the open outer lattice
@@ -573,30 +580,19 @@ def gears() -> list[Part]:
         a = tr["angle"]
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
-        parts.append(flat_part(f"gear_hand_{tr['name']}_36T",
+        parts.append(flat_part(f"gear_hand_{tr['name']}_{Z_HAND}T",
                                gear_profile(Z_HAND, od + GEAR_FIT, GEAR_PATTERNS[tr["name"]]), T040,
                                placements=[loc(z=z, rz=mesh_rot(a, Z_HAND))]))
-        parts.append(flat_part(f"gear_sensor_{tr['name']}_36T",
+        parts.append(flat_part(f"gear_sensor_{tr['name']}_{Z_SENSOR}T",
                                gear_profile(Z_SENSOR, ROD_18 + GEAR_FIT, GEAR_PATTERNS["sensor"]), T040,
                                placements=[loc(sx, sy, z, mesh_rot(a + 180, Z_SENSOR, gap=True))]))
-        knob = gear_profile(Z_KNOB, ROD_18 + GEAR_FIT)
-        for x, y in KNOB_CLAMP_XY:
-            knob.hole(x, y, KNOB_CLAMP_CLEAR)
-        base = flat_part(f"knob_{tr['name']}_31T_base", knob, T040,
-                         placements=[loc(kx, ky, LEVELS[0], mesh_rot(a + 180, Z_KNOB))],
-                         spec="brass .040\"; hand-countersink three clamp holes on underside; "
-                         "only this base layer remains soldered to the shaft")
-        for x, y in KNOB_CLAMP_XY:
-            base.solid = base.solid.cut(cq.Solid.makeCone(CASE_SCREW_HEAD_D / 2, 0,
-                                       CASE_SCREW_HEAD_D / 2, cq.Vector(x, y, 0)))
-        parts.append(base)
-        parts.append(flat_part(f"knob_{tr['name']}_31T_layers", knob, T040,
-                               placements=[loc(kx, ky, LEVELS[0] + i * T040, mesh_rot(a + 180, Z_KNOB))
-                                           for i in range(1, KNOB_LAYERS)],
-                               spec="brass .040\"; four removable upper layers, three M2 through-bolts"))
-    parts.append(flat_part("gear_needle_19T", gear_profile(Z_NEEDLE, TUBE_316 + GEAR_FIT), T040,
+        knob = profile_solid(Profile(gear_polygon(MODULE, Z_KNOB)).hole(0, 0, KNOB_BORE), KNOB_FACE)
+        parts.append(stock(f"knob_{tr['name']}_{Z_KNOB}T", knob,
+                           [loc(kx, ky, LEVELS[0], mesh_rot(a + 180, Z_KNOB))], KNOB_GEAR_SPEC,
+                           kind="bought"))
+    parts.append(flat_part(f"gear_needle_{Z_NEEDLE}T", gear_profile(Z_NEEDLE, TUBE_316 + GEAR_FIT), T040,
                            placements=[loc(z=LEVELS[3], rz=0.0)]))
-    parts.append(flat_part("gear_motor_38T", gear_profile(Z_MOTOR, 1.0 + GEAR_FIT, GEAR_PATTERNS["motor"]), T040,
+    parts.append(flat_part(f"gear_motor_{Z_MOTOR}T", gear_profile(Z_MOTOR, 1.0 + GEAR_FIT, GEAR_PATTERNS["motor"]), T040,
                            placements=[loc(*X27_SHAFT, LEVELS[3], mesh_rot(180, Z_MOTOR, gap=True))]))
     return parts
 
@@ -684,9 +680,9 @@ def arbors() -> list[Part]:
     # plate bushings (K&S tube, flush with each plate)
     bush = [(0.0, 0.0, TUBE_18, Z_P1, "1/8")]
     for tr in TRAINS:
-        for xy in (sensor_xy(tr), knob_xy(tr)):
-            bush += [(*xy, TUBE_532, Z_P1, "5/32"), (*xy, TUBE_532, Z_P2, "5/32")]
-    for size in ("1/8", "5/32"):
+        for xy, od, size in ((sensor_xy(tr), TUBE_532, "5/32"), (knob_xy(tr), TUBE_316, "3/16")):
+            bush += [(*xy, od, Z_P1, size), (*xy, od, Z_P2, size)]
+    for size in ("1/8", "5/32", "3/16"):
         items = [b for b in bush if b[4] == size]
         x0, y0, od, z0, _ = items[0]
         parts.append(stock(f"bushing_{size.replace('/', '_')}",
@@ -701,17 +697,17 @@ def arbors() -> list[Part]:
         sh = shaft_h + SENSOR_MAGNET_DROP
         parts.append(stock(f"shaft_sensor_{tr['name']}", cylinder(ROD_18, sh, sx, sy, Z_P1 - SENSOR_MAGNET_DROP),
                            [loc()], f"K&S 1/8\" brass rod, {sh:.1f} mm"))
-        parts.append(stock(f"shaft_knob_{tr['name']}", cylinder(ROD_18, shaft_h, kx, ky, Z_P1), [loc()],
-                           f"K&S 1/8\" brass rod, {shaft_h:.1f} mm"))
+        parts.append(stock(f"shaft_knob_{tr['name']}", cylinder(ROD_532, shaft_h, kx, ky, Z_P1), [loc()],
+                           f"K&S 5/32\" brass rod, {shaft_h:.1f} mm"))
         zl = LEVELS[tr["level"]]
         sl = cylinder(TUBE_532, zl - Z_P1_TOP, sx, sy, Z_P1_TOP, hole=TUBE_532 - 2 * KS_WALL)
         parts.append(stock(f"sleeve_sensor_{tr['name']}", sl, [loc()],
                            f"K&S 5/32\" tube, {zl - Z_P1_TOP:.2f} mm"))
-        k0, k1 = LEVELS[0], LEVELS[0] + KNOB_LAYERS * T040
+        k0, k1 = LEVELS[0], LEVELS[0] + KNOB_FACE
         parts.append(stock(f"sleeve_knob_{tr['name']}",
-                           cylinder(TUBE_532, k0 - Z_P1_TOP, kx, ky, Z_P1_TOP, hole=TUBE_532 - 2 * KS_WALL)
-                           .fuse(cylinder(TUBE_532, Z_P2 - k1, kx, ky, k1, hole=TUBE_532 - 2 * KS_WALL)),
-                           [loc()], f"K&S 5/32\" tube, {k0 - Z_P1_TOP:.2f} + {Z_P2 - k1:.2f} mm"))
+                           cylinder(TUBE_316, k0 - Z_P1_TOP, kx, ky, Z_P1_TOP, hole=TUBE_316 - 2 * KS_WALL)
+                           .fuse(cylinder(TUBE_316, Z_P2 - k1, kx, ky, k1, hole=TUBE_316 - 2 * KS_WALL)),
+                           [loc()], f"K&S 3/16\" tube, {k0 - Z_P1_TOP:.2f} + {Z_P2 - k1:.2f} mm"))
         parts.append(stock(f"magnet_{tr['name']}",
                            cylinder(6.0, SENSOR_MAGNET_H, sx, sy, Z_P1 - SENSOR_MAGNET_DROP - SENSOR_MAGNET_H),
                            [loc()],
@@ -760,18 +756,6 @@ def hardware() -> list[Part]:
         spec = f"M2×{length:g} brass slotted countersunk screw, DIN 963, 90° (length includes head)"
         parts.append(Part(name, "bought", spec, solid, [loc(x, y) for x, y in posts],
                           BRASS_DARK, "hardware", spec=spec))
-    for tr in TRAINS:
-        kx, ky = knob_xy(tr)
-        a = math.radians(mesh_rot(tr["angle"] + 180, Z_KNOB))
-        xy = [(kx + x * math.cos(a) - y * math.sin(a), ky + x * math.sin(a) + y * math.cos(a))
-              for x, y in KNOB_CLAMP_XY]
-        parts.append(stock(f"knob_{tr['name']}_clamp_screw", countersunk_screw(KNOB_CLAMP_LENGTH),
-                           [loc(x, y, LEVELS[0]) for x, y in xy],
-                           "M2 DIN 963 slotted countersunk screw; shorten M2x8 to 7 mm including head",
-                           color=BRASS_DARK, kind="bought"))
-        parts.append(stock(f"knob_{tr['name']}_clamp_nut", hexagon(4.0, 1.6, 0, 0, 0, hole=2.0),
-                           [loc(x, y, LEVELS[0] + KNOB_LAYERS * T040) for x, y in xy],
-                           "M2 brass hex nut, 4 mm AF x 1.6 mm", color=BRASS_DARK, kind="bought"))
     return parts
 
 
@@ -1007,10 +991,10 @@ def hinge() -> list[Part]:
                        "Included in the purchased hinge; have the supplier retain the pin after cutting",
                        group="case", kind="bought"))
 
-    # Backing strips inside the walls spread the screw load into the .040" sheet
+    # A backing strip inside the case wall spreads the body screws' load into the .040" sheet
+    # (and is the drilling pattern); the two lid screws use washers.
     for name, height, z, seats, group, kind in (
         ("hinge_backing_body", 11.0, HINGE_BODY_MOUNT_Z, body_seats, "case", "scs"),
-        ("hinge_backing_lid", 5.0, 2.7, lid_seats, "lid", "stock"),
     ):
         profile = Profile(rect(0, z, total, height))
         for y, z_, hole, _ in seats:
@@ -1021,11 +1005,12 @@ def hinge() -> list[Part]:
                                spec=f"brass .063\" hinge backing strip, {total:.1f} x {height:g} mm"
                                + ("; hand-cut (below laser service minimum width)" if kind == "stock" else "")))
 
-    # Flush countersunk screws from outside, hex nuts on the backing strips inside
-    inside = HINGE_X - T040 - T063
-    for prefix, seats, length, d, head, nut_af, nut_h, group in (
-        ("hinge_body", body_seats, HINGE_BODY_SCREW_LEN, 2.0, CASE_SCREW_HEAD_D, 4.0, HINGE_NUT_H, "case"),
-        ("hinge_lid", lid_seats, 6, 1.6, HINGE_LID_SCREW_HEAD_D, 3.2, 1.3, "lid"),
+    # Flush countersunk screws from outside; nuts on the backing strip (case) or washers (lid) inside
+    for prefix, seats, length, d, head, nut_af, nut_h, group, inside in (
+        ("hinge_body", body_seats, HINGE_BODY_SCREW_LEN, 2.0, CASE_SCREW_HEAD_D, 4.0, HINGE_NUT_H, "case",
+         HINGE_X - T040 - T063),
+        ("hinge_lid", lid_seats, HINGE_LID_SCREW_LEN, 1.6, HINGE_LID_SCREW_HEAD_D, 3.2, HINGE_LID_NUT_H, "lid",
+         HINGE_X - T040 - HINGE_LID_WASHER_T),
     ):
         size = f"M{d:g}"
         for index, (y, z, _, _) in enumerate(seats):
@@ -1037,9 +1022,87 @@ def hinge() -> list[Part]:
             nut = hexagon(nut_af, nut_h, 0, 0, 0, d).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
                 .translate(cq.Vector(inside, y, az + z))
             parts.append(stock(f"{prefix}_nut_{index + 1}", nut, [loc()],
-                               f"{size} brass hex nut, {nut_af:g} mm AF, inside on the backing strip",
+                               f"{size} brass hex nut, {nut_af:g} mm AF, inside the wall",
                                group=group, kind="bought"))
+            if group == "lid":
+                washer = cylinder(HINGE_LID_WASHER_D, HINGE_LID_WASHER_T, 0, 0, 0, 1.7) \
+                    .rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
+                    .translate(cq.Vector(HINGE_X - T040, y, az + z))
+                parts.append(stock(f"{prefix}_washer_{index + 1}", washer, [loc()],
+                                   "M1.6 DIN 125 brass washer, Ø4 × 0.3 mm", group=group, kind="bought"))
     return parts
+
+
+# ---------------------------------------------------------------------------
+# Hinge tooling (laser-cut with the case; not part of the instrument)
+# ---------------------------------------------------------------------------
+def _barrel_slot_width(t: float) -> float:
+    """Width a plate of thickness t lying on the leaves needs to pass the hinge barrel."""
+    r = HINGE_BARREL_D / 2
+    a, b = -r + T040, -r + T040 + t            # plate faces relative to the pivot (x)
+    near = 0.0 if a <= 0 <= b else min(abs(a), abs(b))
+    return 2 * math.sqrt(r * r - near * near) + 0.25
+
+
+def _on_hinge(t_offset: float) -> cq.Location:
+    """Leaf-style frame (x = along hinge, y = height above pivot, z = thickness) on the leaves."""
+    stand = cq.Location(cq.Vector(HINGE_X, 0, 0), cq.Vector(0, 0, 1), 90) * \
+        cq.Location(cq.Vector(), cq.Vector(1, 0, 0), 90)
+    return cq.Location(cq.Vector(t_offset, 0, Z_TOP)) * stand
+
+
+def hinge_drill_guide() -> Part:
+    """Bent plate that hooks over the closed lid and fits round the barrel. Clamped on the
+    closed case with the hinge in place, its six holes drill leaf and wall together."""
+    t, ir, L = T040, BEND_IR, GUIDE_HALF_LEN
+    v_bot = -(HINGE_BODY_DEPTH + GUIDE_PAD)
+    v_tan = LID_H - ir                          # bend tangent, just under the lid's top face
+    slot_w, slot_l = _barrel_slot_width(t), hinge_span() + 0.3
+
+    def drill(prof, w_axis):
+        prof.cut(rect(0, w_axis, slot_l, slot_w))
+        for y, z in hinge_body_mounts():
+            prof.hole(y, w_axis + z, HINGE_MOUNT_CLEAR)
+        for y in HINGE_LID_MOUNTS:
+            prof.hole(y, w_axis + HINGE_LID_MOUNT_Z, HINGE_LID_CLEAR)
+        return prof
+
+    plate = drill(Profile(rect(0, (v_bot + v_tan) / 2, 2 * L, v_tan - v_bot)), 0.0)
+    solid = profile_solid(plate, t).moved(_on_hinge(T040))
+    x0, zt = HINGE_X + T040, Z_TOP + LID_H      # plate inner face, lip inner face
+    cx, cz = x0 - ir, zt - ir
+    ring = cq.Solid.makeCylinder(ir + t, 2 * L, cq.Vector(cx, -L, cz), cq.Vector(0, 1, 0)).cut(
+        cq.Solid.makeCylinder(ir, 2 * L, cq.Vector(cx, -L, cz), cq.Vector(0, 1, 0)))
+    bend = ring.intersect(box(cx, -L, cz, cx + ir + t, L, cz + ir + t))
+    lip = box(cx - GUIDE_LIP, -L, zt, cx, L, zt + t)
+    solid = solid.fuse(bend, lip).clean()
+
+    ba = math.pi / 2 * (ir + K_FACTOR * t)
+    flat_len = (v_tan - v_bot) + ba + GUIDE_LIP
+    flat = drill(Profile(rect(0, flat_len / 2, 2 * L, flat_len)), -v_bot)
+    bend_w = (v_tan - v_bot) + ba / 2
+    return Part("hinge_drill_guide", "scs-bent", "brass .040\"", solid, [loc()], BRASS_DARK, "tools",
+                flat, [((-L, bend_w), (L, bend_w))],
+                "brass .040\", one 90° bend: drill guide for all six hinge holes (lip rests on the closed "
+                "lid, the barrel passes through its slot)")
+
+
+def hinge_trim_gauge() -> Part:
+    """Flat gauge laid over the hinge (barrel through its slot) on the bench: the slot ends mark
+    the two cuts to length, the top edge is the lid-leaf trim line."""
+    t = T063
+    slot_w, span = _barrel_slot_width(t), hinge_span()
+    half = span / 2 + 6.0
+    prof = Profile(rect(0, (HINGE_LID_HEIGHT - 12.0) / 2, 2 * half, HINGE_LID_HEIGHT + 12.0))
+    prof.cut(rect(0, 0, span + 0.1, slot_w))
+    solid = profile_solid(prof, t).moved(_on_hinge(T040))
+    return Part("hinge_trim_gauge", "scs", "brass .063\"", solid, [loc()], BRASS_DARK, "tools",
+                prof, [], "brass .063\": slot ends = cuts to length (5 knuckles), top edge = lid-leaf "
+                f"trim line {HINGE_LID_HEIGHT:.2f} mm from the pivot")
+
+
+def tooling() -> list[Part]:
+    return [hinge_drill_guide(), hinge_trim_gauge()]
 
 
 # ---------------------------------------------------------------------------

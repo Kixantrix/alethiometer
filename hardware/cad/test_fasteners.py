@@ -43,25 +43,6 @@ class FlushFastenerTests(unittest.TestCase):
                 self.assertGreaterEqual(engagement, D.CASE_SCREW_D)
                 self.assertLess(engagement, post_h)
 
-    def test_knob_clamps_clear_plates_and_engage_nuts(self):
-        gears = {p.name: p for p in D.gears()}
-        hardware = {p.name: p for p in D.hardware()}
-        for train in D.TRAINS:
-            name = train["name"]
-            base = gears[f"knob_{name}_31T_base"].placed()[0]
-            layers = gears[f"knob_{name}_31T_layers"].placed()
-            screws = hardware[f"knob_{name}_clamp_screw"].placed()
-            nuts = hardware[f"knob_{name}_clamp_nut"].placed()
-            for screw, nut in zip(screws, nuts):
-                with self.subTest(train=name):
-                    bounds = screw.BoundingBox()
-                    self.assertAlmostEqual(bounds.zmin, D.LEVELS[0], places=6)
-                    self.assertGreater(bounds.zmin - D.Z_P1_TOP, 0.4)
-                    self.assertGreater(D.Z_P2 - bounds.zmax, 0.4)
-                    self.assertGreater(bounds.zmax - nut.BoundingBox().zmax, 0.25)
-                    for sheet in [base, *layers, nut]:
-                        self.assertLess(sheet.intersect(screw).Volume(), 1e-6)
-
 
 if __name__ == "__main__":
     unittest.main()

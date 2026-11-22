@@ -335,7 +335,8 @@ def main() -> int:
     log(f"built {len(parts)} part types in {time.time() - t0:.1f}s")
     log(json.dumps(D.summary(), indent=1))
 
-    notes = manufacturability(parts)
+    tools = D.tooling()
+    notes = manufacturability(parts + tools)
     log("manufacturability: " + ("OK" if not notes else ""))
     for n in notes:
         log("  ! " + n)
@@ -353,7 +354,7 @@ def main() -> int:
         return 1 if problems else 0
 
     OUT.mkdir(exist_ok=True)
-    order = export_fabrication(parts)
+    order = export_fabrication(parts + tools)
     export_stock_list(parts)
     export_assembly(parts)
     with open(OUT / "weights.csv", "w", newline="", encoding="utf-8") as f:

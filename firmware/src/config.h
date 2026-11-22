@@ -69,8 +69,8 @@ constexpr float BACKLASH_DEG = 1.5f;            // motor deg of overshoot before
 constexpr uint16_t BACKLASH_TAKEUP_MS = 90;
 constexpr uint32_t COIL_RELEASE_MS = 400;       // de-energise after the needle is at rest
 
-// Gear train: X27 shaft 38T drives 19T needle gear (external mesh reverses direction).
-constexpr float NEEDLE_GEAR_RATIO = 38.0f / 19.0f;
+// Gear train: X27 shaft 34T drives 17T needle gear (external mesh reverses direction).
+constexpr float NEEDLE_GEAR_RATIO = 34.0f / 17.0f;
 constexpr int NEEDLE_DIR = -1;                  // needle = DIR * RATIO * motor + offset
 constexpr float NEEDLE_OFFSET_DEFAULT = 0.0f;   // overwritten by calibration step 3
 
