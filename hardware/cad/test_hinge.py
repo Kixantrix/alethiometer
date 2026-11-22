@@ -74,7 +74,7 @@ class HingeToolingTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.guide, cls.gauge = D.tooling()
+        cls.guide, cls.gauge = D.hinge_drill_guide(), D.hinge_trim_gauge()
         cls.fixed = D.hinge() + [D.upper_shell(), D.lid(), D.lid_overlay()]
 
     def test_guide_and_gauge_fit_over_the_mounted_hinge(self):

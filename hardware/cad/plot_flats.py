@@ -45,10 +45,14 @@ def plot(part, path: Path) -> None:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for p in D.all_parts():
-        if p.kind in ("scs", "scs-bent") and p.profile is not None:
-            plot(p, OUT / f"{p.name}.png")
-            print("plotted", p.name)
+    flats = [p for p in D.all_parts() + D.tooling() if p.kind in ("scs", "scs-bent") and p.profile is not None]
+    keep = {f"{p.name}.png" for p in flats}
+    for old in OUT.glob("*.png"):          # parts that no longer exist
+        if old.name not in keep:
+            old.unlink()
+    for p in flats:
+        plot(p, OUT / f"{p.name}.png")
+        print("plotted", p.name)
 
 
 if __name__ == "__main__":

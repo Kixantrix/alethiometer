@@ -54,7 +54,8 @@ the interpretation aloud.
 - **Three framing hands, set by hand.** Each thumbwheel (one bought solid brass 26-tooth
   gear, module 0.8) drives a 32-tooth sensor gear, which drives a 32-tooth gear on that hand's
   arbor. The arbors
-  are nested K&S tubes, like the hour and minute pipes of a clock. The sensor gear turns
+  are nested brass tubes, like the hour and minute pipes of a clock, CNC-turned to exact length
+  with their shoulders so every gear and hand just pushes on until it stops. The sensor gear turns
   **1:1** with its hand and carries a magnet over an **AS5600** angle sensor. The firmware
   therefore always knows exactly where every hand points: no homing, no lost counts, and it
   works even if the knobs were turned while the instrument slept. The wheels protrude about
@@ -127,11 +128,14 @@ Nominal motion checks do not establish commercial-part compatibility.
      The supplier blanks also omit hinge sidewall holes: transfer-drill those after the
      purchased hinge has been checked. Finished assembly STEPs show nominal mounting holes.
    - Everything else is a flat DXF in millimetres. Choose the material from the filename
-     (`brass-040in`, `brass-063in`, `copper-032in`, `clear-acrylic-063in`) and the quantity.
+     (`brass-040in`, `brass-063in`, `copper-032in`, `spring-steel-015in`, `clear-acrylic-063in`)
+     and the quantity.
 2. **Carrier PCB:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` to JLCPCB/PCBWay
    (2 layers, 1.6 mm; see [`pcb/README.md`](pcb/README.md)).
-3. **K&S tube and rod, fasteners, electronics:** [BOM.md](BOM.md) §B–D.
-4. **Dial sticker:** [`dial/README.md`](dial/README.md).
+3. **Turned-parts kit:** upload `out/turned/` (STEP files plus its README, which is the drawing)
+   to a CNC-turning service ([BOM.md](BOM.md) §B).
+4. **Fasteners, electronics:** [BOM.md](BOM.md) §C–D.
+5. **Dial sticker:** [`dial/README.md`](dial/README.md).
 
 ## Regenerating
 
@@ -171,15 +175,17 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
   The shells are screw-fastened through the plate/standoff stack, not retained by a press fit
   (see [ASSEMBLY.md §7](ASSEMBLY.md#what-holds-the-two-shells-together)). Verify stiffness at
   the crown corner, where the fourth floor post is omitted. Fit checks are not a load test.
-- **Remaining permanent mechanical joints.** Knob bases, gear/arbor joints, crown and cannon
-  still use the earlier soldered construction; hands and bushings still use retaining
-  compound. These have not yet been converted to removable hubs. Avoid unsupported set
-  screws on nested thin-wall arbors, which could bind them. See the joint-status table in
+- **Permanent mechanical joints.** Gears, hands, bushings and the cannon are fixed with
+  Loctite 638 against turned shoulders and flush ends; nothing in the movement is soldered.
+  These are not designed to come apart. The crown is removable (E-clip). Avoid set screws on
+  the nested thin-wall arbors, which could bind them. See the joint-status table in
   [ASSEMBLY.md §3](ASSEMBLY.md#3-sub-assemblies). Electrical soldering remains necessary.
+- **Turned-parts kit** needs a quote. Its plain tubes have 0.36 mm walls (K&S telescoping sizes);
+  a shop may prefer precision tube cut to length.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
 - **Laser-cut module-0.8 gears** in .040" brass are fine at hand-setting speeds and for a gauge
   motor, but expect some backlash. Every pair is spaced 0.1 mm wider than theoretical and the
-  teeth are thinned, so a worst-case cut still turns freely. Shafts run in K&S tube bushings,
+  teeth are thinned, so a worst-case cut still turns freely. Shafts run in turned bushings,
   which locate them to about 0.05 mm. The firmware approaches every needle target from the
   same direction to hide the backlash. Wire-EDM gears from the same DXFs are a drop-in
   upgrade (BOM.md §A).

@@ -30,6 +30,8 @@ IN = 25.4
 T040 = 0.040 * IN            # 1.016  brass 260
 T063 = 0.063 * IN            # 1.600  brass 260 / clear acrylic
 T032 = 0.032 * IN            # 0.813  copper 110
+T_HAND = 0.015 * IN          # 0.381  1075 blue-tempered spring steel (SendCutSend's only thickness)
+HAND_MATERIAL = "spring steel .015\""
 BEND_IR = 0.040 * IN         # SendCutSend inside radius, brass .040
 K_FACTOR = 0.38
 MIN_FLANGE = 0.292 * IN
@@ -106,7 +108,6 @@ X27_CENTER = L.X27_CENTER
 X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 5 mm sockets
 X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
 SENSOR_MAGNET_H = 2.5                      # Ø6×2.5 diametric (the usual AS5600 magnet)
-SENSOR_MAGNET_DROP = 0.3                   # sensor shaft pokes below P1 so the magnet can't rub the plate
 
 # K&S Precision Metals telescoping brass (0.014" wall); ID = OD - 0.028"
 def ks_od(frac: str) -> float:
@@ -120,9 +121,24 @@ TUBE_18, TUBE_532, TUBE_316, TUBE_732 = ks_od("1/8"), ks_od("5/32"), ks_od("3/16
 FIT = 0.15                                # hands, crown etc.: bonded bores that slide on even when cut -0.13
 GEAR_FIT = 0.08                           # gear bores: kept close so each gear runs centred on its arbor
 BUSH_FIT = 0.10                           # plate holes for the K&S tube bushings (Loctite 638 fills the gap)
-# Shafts don't run in the laser-cut holes: each plate hole carries a 1.6 mm K&S tube bushing, and
-# K&S telescoping sizes slide on each other with ~0.08 mm play. That locates every gear precisely
-# without reaming, whatever the laser tolerance.
+# Shafts don't run in the laser-cut holes: each plate hole carries a 1.6 mm turned bushing, and the
+# concentric arbors keep K&S telescoping sizes (~0.08 mm diametral play). That locates every gear
+# precisely without reaming, whatever the laser tolerance.
+#
+# Turned-parts kit (CNC lathe, brass C360): every arbor, shaft, bushing, sleeve and the crown is made
+# to exact length with its shoulders, so assembly is "push it on until it stops" plus a drop of
+# Loctite. Nothing is cut or measured by hand.
+TURNED_TOL = ("ODs 0/-0.02 mm, bores +0.02/0 mm, lengths and shoulder positions ±0.03 mm, "
+              "ends square and lightly deburred (0.05 mm max chamfer)")
+COLLAR_I_D = ks_od("5/32")                # arbor I seat: rests on its P1 bushing, gear I sits on it
+ARBOR_I_PIN = 1.8                         # arbor I top: hand I rests on the shoulder, cap flush on top
+SENSOR_PIN_D = 2.5                        # sensor-shaft tip that the magnet cup is pressed on
+CUP_OD, CUP_POCKET, CUP_BASE = 7.0, 6.05, 0.4
+CUP_GAP = 0.3                             # cup top below P1 = the sensor shaft's endshake
+KNOB_ENDSHAKE = 0.2                       # knob sleeve top to P2
+CANNON_FLANGE_D = 7.5
+ECLIP = dict(size=1.5, od=4.0, t=0.4, groove_d=1.5, groove_w=0.44)   # DIN 6799 retaining washer
+CROWN_CAP_D, CROWN_CAP_L, CROWN_PLAY = 10.0, 3.0, 0.3
 
 # The three framing hands. Knobs at 12 (top), 9 (left), 6 (bottom) o'clock.
 TRAINS = [
@@ -156,6 +172,7 @@ REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
 USB_BOARD_Z = Z_CARRIER_TOP + L.MODULE_LIFT               # Adafruit #4090 underside (on its socket)
+USB_SCREW_LEN, USB_SCREW_HEAD = 10.0, (3.8, 1.3)           # DIN 84 M2: head Ø3.8 × 1.3
 USB = dict(y=L.USBC_PLACE["c"][1], z=USB_BOARD_Z + 1.6 + 1.63)   # receptacle centre, right wall
 CROWN_Z = Z_CARRIER_TOP + L.CROWN_SW_ACT_H                # crown axis = switch actuator height
 # Guden BR05050404-72: .040 sheet, .091 pin, .500 knuckle pitch.
@@ -191,7 +208,7 @@ LID_OPEN_ANGLE = 180.0 + 2 * math.degrees(math.atan(_LEAF_OFFSET / HINGE_LID_HEI
 @dataclass
 class Part:
     name: str
-    kind: str                       # "scs" (laser cut), "scs-bent", "stock" (K&S), "bought"
+    kind: str                       # "scs" (laser cut), "scs-bent", "turned" (CNC kit), "stock", "bought"
     material: str
     solid: cq.Shape                 # in its own local frame
     placements: list = field(default_factory=lambda: [cq.Location()])
@@ -204,6 +221,7 @@ class Part:
     density: str = "brass"
     allow: tuple = ()               # names of parts this may legitimately touch/overlap
     tray: Tray | None = None
+    drawing: dict | None = None     # turned parts: segments (OD, bore, length) from the bottom up
 
     @property
     def qty(self) -> int:
@@ -484,7 +502,7 @@ def p2_plate() -> Part:
     # decorative inner ring that the spokes cross
     keep.append(annulus(15.0, 16.6))
     p.cut(window.difference(unary_union(keep)))
-    p.hole(0, 0, TUBE_732 + FIT * 2)
+    p.hole(0, 0, TUBE_732 + BUSH_FIT)
     for tr in TRAINS:
         p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)
         p.hole(*knob_xy(tr), TUBE_316 + BUSH_FIT)
@@ -611,7 +629,7 @@ def hand_shape(length, width, hub_r, tail=5.0, pierce=True) -> Polygon:
                      (w * 0.42, hub_r - 0.6), (w, length * 0.60)])
     shape = blade.union(circle(0, 0, hub_r))
     shape = shape.union(Polygon([(0, -tail), (-w * 0.8, -hub_r * 0.6), (w * 0.8, -hub_r * 0.6)]))
-    if pierce and width >= 3.2:
+    if pierce:
         shape = shape.difference(circle(0, length * 0.60, w * 0.38))
     return shape
 
@@ -630,20 +648,21 @@ Z_HANDS = {}
 _z = Z_NEEDLE_HAND + T032 + HAND_GAP
 for _tr in reversed(TRAINS):           # III lowest, I on top
     Z_HANDS[_tr["name"]] = _z
-    _z += T040 + HAND_GAP
-Z_CAP = Z_HANDS["I"] + T040
+    _z += T_HAND + HAND_GAP
+Z_CAP = Z_HANDS["I"] + T_HAND
 DEMO_SYMBOLS = {"I": 1, "II": 10, "III": 23, "needle": 29}   # Sun, Moon, Elephant, Owl
 
 
 def hands() -> list[Part]:
     parts = []
-    for tr, od in zip(TRAINS, [ROD_332, TUBE_18, TUBE_532]):
+    for tr, od in zip(TRAINS, [ARBOR_I_PIN, TUBE_18, TUBE_532]):
         hub = max(od / 2 + 1.5, 3.25)      # also keeps the part above SCS minimum size
         p = Profile(hand_shape(tr["length"], tr["width"], hub))
         p.hole(0, 0, od + FIT)
-        parts.append(flat_part(f"hand_{tr['name']}", p, T040, group="hands", color=BLUED,
+        parts.append(flat_part(f"hand_{tr['name']}", p, T_HAND, material=HAND_MATERIAL, group="hands",
+                               color=BLUED, density="steel",
                                placements=[loc(z=Z_HANDS[tr["name"]], rz=-10 * DEMO_SYMBOLS[tr["name"]])],
-                               spec="brass .040\" (blue/black patina or paint)"))
+                               spec="1075 blue-tempered spring steel .015\" (comes blued; no finishing)"))
     hub = TUBE_316 / 2 + 1.5
     p = Profile(needle_shape(hub))
     p.hole(0, 0, TUBE_316 + FIT)
@@ -655,7 +674,7 @@ def hands() -> list[Part]:
     for i in range(8):
         cap = cap.union(circle(*polar(4.0, 45 * i + 22.5), 1.25))
     p = Profile(cap)
-    p.hole(0, 0, ROD_332 + FIT)
+    p.hole(0, 0, ARBOR_I_PIN + FIT)
     for i in range(8):
         p.hole(*polar(3.1, 45 * i + 22.5), 0.9)
     parts.append(flat_part("hand_cap_rosette", p, T040, group="hands", placements=[loc(z=Z_CAP)]))
@@ -666,61 +685,103 @@ def stock(name, solid, placements, spec, color=BRASS, group="movement", density=
     return Part(name, kind, spec, solid, placements, color, group, None, [], spec, density=density)
 
 
+def turned_solid(segments) -> cq.Shape:
+    """Stack of (OD, bore, length) segments from z=0 upward (bore 0 = solid)."""
+    z, solid = 0.0, None
+    for od, bore, h in segments:
+        c = cylinder(od, h, z=z, hole=bore)
+        solid = c if solid is None else solid.fuse(c)
+        z += h
+    return solid.clean()
+
+
+def turned(name, segments, placements, use, color=BRASS, group="movement") -> Part:
+    length = sum(h for *_, h in segments)
+    dims = "; ".join(f"Ø{od:.3f}" + (f" bore Ø{bore:.3f}" if bore else "") + f" × {h:.3f}"
+                     for od, bore, h in segments)
+    spec = f"Turned brass C360, {length:.2f} mm overall ({dims}, bottom up). {use}"
+    return Part(name, "turned", "brass C360 (CNC turned)", turned_solid(segments), placements, color,
+                group, None, [], spec, drawing=dict(segments=segments, length=length, use=use))
+
+
+def tube_bore(od: float) -> float:
+    return od - 2 * KS_WALL
+
+
 def arbors() -> list[Part]:
+    """The turned-parts kit: every length and shoulder is made to size, so nothing is cut by hand.
+
+    Gears sit flush with the bottom end of each tube (stand it on a flat surface) or on a collar;
+    hands sit flush with the top end (pressed with hand_setting_tool) or on a shoulder.
+    """
     parts = []
-    # framing-hand arbors: 3/32 rod (I), 1/8 tube (II), 5/32 tube (III); needle 3/16 tube; cannon 7/32
-    tops = {tr["name"]: Z_HANDS[tr["name"]] + T040 for tr in TRAINS}
-    tops["I"] = Z_CAP + T040
-    specs = [(TRAINS[0], ROD_332, 0.0, Z_P1, "K&S 3/32\" brass rod"),
-             (TRAINS[1], TUBE_18, TUBE_18 - 2 * KS_WALL, LEVELS[1], "K&S 1/8\" brass tube"),
-             (TRAINS[2], TUBE_532, TUBE_532 - 2 * KS_WALL, LEVELS[2], "K&S 5/32\" brass tube")]
-    for tr, od, idia, z0, spec in specs:
-        h = tops[tr["name"]] - z0
-        parts.append(stock(f"arbor_{tr['name']}", cylinder(od, h, z=z0, hole=idia), [loc()],
-                           f"{spec}, {h:.1f} mm"))
+    tops = {tr["name"]: Z_HANDS[tr["name"]] + T_HAND for tr in TRAINS}
+    l0 = LEVELS[0]
+    parts.append(turned("arbor_I", [
+        (ROD_332, 0.0, T063),                           # in its P1 bushing
+        (COLLAR_I_D, 0.0, l0 - Z_P1_TOP),               # rests on the bushing; gear I sits on it
+        (ROD_332, 0.0, Z_HANDS["I"] - l0),
+        (ARBOR_I_PIN, 0.0, Z_CAP + T040 - Z_HANDS["I"]),  # hand I on the shoulder, cap flush on top
+    ], [loc(z=Z_P1)], "Drop into the P1 bushing; gear I on the collar, hand I on the shoulder, "
+                      "cap flush with the top."))
+    for tr, od in ((TRAINS[1], TUBE_18), (TRAINS[2], TUBE_532)):
+        z0 = LEVELS[tr["level"]]
+        parts.append(turned(f"arbor_{tr['name']}", [(od, tube_bore(od), tops[tr["name"]] - z0)],
+                            [loc(z=z0)], f"Gear {tr['name']} flush with the bottom end, hand "
+                                         f"{tr['name']} flush with the top end."))
     zn = LEVELS[3]
-    h = Z_NEEDLE_HAND + T032 - zn
-    parts.append(stock("arbor_needle", cylinder(TUBE_316, h, z=zn, hole=TUBE_316 - 2 * KS_WALL), [loc()],
-                       f"K&S 3/16\" brass tube, {h:.1f} mm"))
-    h = Z_NEEDLE_HAND - 0.1 - Z_P2
-    parts.append(stock("cannon", cylinder(TUBE_732, h, z=Z_P2, hole=TUBE_732 - 2 * KS_WALL), [loc()],
-                       f"K&S 7/32\" brass tube, {h:.2f} mm (soldered into P2)"))
-    # plate bushings (K&S tube, flush with each plate)
+    parts.append(turned("arbor_needle", [(TUBE_316, tube_bore(TUBE_316), Z_NEEDLE_HAND + T032 - zn)],
+                        [loc(z=zn)], "Needle gear flush with the bottom end, needle flush with the top."))
+    parts.append(turned("cannon", [
+        (TUBE_732, tube_bore(TUBE_732), T063),
+        (CANNON_FLANGE_D, tube_bore(TUBE_732), Z_NEEDLE_HAND - 0.1 - Z_P2_TOP),
+    ], [loc(z=Z_P2)], "Push into P2 from the top until the flange stops; Loctite 638."))
+    # plate bushings: exactly the plate thickness, flush both faces
     bush = [(0.0, 0.0, TUBE_18, Z_P1, "1/8")]
     for tr in TRAINS:
         for xy, od, size in ((sensor_xy(tr), TUBE_532, "5/32"), (knob_xy(tr), TUBE_316, "3/16")):
             bush += [(*xy, od, Z_P1, size), (*xy, od, Z_P2, size)]
     for size in ("1/8", "5/32", "3/16"):
-        items = [b for b in bush if b[4] == size]
-        x0, y0, od, z0, _ = items[0]
-        parts.append(stock(f"bushing_{size.replace('/', '_')}",
-                           cylinder(od, T063, x0, y0, z0, hole=od - 2 * KS_WALL),
-                           [loc(x - x0, y - y0, z - z0) for x, y, _, z, _ in items],
-                           f"K&S {size}\" brass tube, {T063:.1f} mm bushing, Loctite 638 into the plate"))
-    # sensor and knob shafts
-    shaft_h = Z_P2_TOP - Z_P1
+        items = [it for it in bush if it[4] == size]
+        od = items[0][2]
+        parts.append(turned(f"bushing_{size.replace('/', '_')}", [(od, tube_bore(od), T063)],
+                            [loc(x, y, z) for x, y, _, z, _ in items],
+                            "Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; "
+                            "it is flush both sides."))
+    zc = Z_P1 - CUP_GAP                       # sensor-shaft shoulder = magnet cup top
+    cups, knobs, sleeves = [], [], []
+    k1 = l0 + KNOB_FACE
     for tr in TRAINS:
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
-        sh = shaft_h + SENSOR_MAGNET_DROP
-        parts.append(stock(f"shaft_sensor_{tr['name']}", cylinder(ROD_18, sh, sx, sy, Z_P1 - SENSOR_MAGNET_DROP),
-                           [loc()], f"K&S 1/8\" brass rod, {sh:.1f} mm"))
-        parts.append(stock(f"shaft_knob_{tr['name']}", cylinder(ROD_532, shaft_h, kx, ky, Z_P1), [loc()],
-                           f"K&S 5/32\" brass rod, {shaft_h:.1f} mm"))
         zl = LEVELS[tr["level"]]
-        sl = cylinder(TUBE_532, zl - Z_P1_TOP, sx, sy, Z_P1_TOP, hole=TUBE_532 - 2 * KS_WALL)
-        parts.append(stock(f"sleeve_sensor_{tr['name']}", sl, [loc()],
-                           f"K&S 5/32\" tube, {zl - Z_P1_TOP:.2f} mm"))
-        k0, k1 = LEVELS[0], LEVELS[0] + KNOB_FACE
-        parts.append(stock(f"sleeve_knob_{tr['name']}",
-                           cylinder(TUBE_316, k0 - Z_P1_TOP, kx, ky, Z_P1_TOP, hole=TUBE_316 - 2 * KS_WALL)
-                           .fuse(cylinder(TUBE_316, Z_P2 - k1, kx, ky, k1, hole=TUBE_316 - 2 * KS_WALL)),
-                           [loc()], f"K&S 3/16\" tube, {k0 - Z_P1_TOP:.2f} + {Z_P2 - k1:.2f} mm"))
+        parts.append(turned(f"shaft_sensor_{tr['name']}", [
+            (SENSOR_PIN_D, 0.0, CUP_BASE),            # magnet cup pressed on, up to the shoulder
+            (ROD_18, 0.0, Z_P1_TOP - zc),
+            (TUBE_532, 0.0, zl - Z_P1_TOP),           # collar: rests on the P1 bushing, gear on top
+            (ROD_18, 0.0, Z_P2_TOP - zl),
+        ], [loc(sx, sy, zc - CUP_BASE)], "Drop into P1 from above; sensor gear on the collar; "
+                                         "magnet cup on the bottom tip."))
+        cups.append(loc(sx, sy, zc - CUP_BASE - SENSOR_MAGNET_H))
+        knobs.append(loc(kx, ky, Z_P1))
+        sleeves.append(loc(kx, ky, k1))
         parts.append(stock(f"magnet_{tr['name']}",
-                           cylinder(6.0, SENSOR_MAGNET_H, sx, sy, Z_P1 - SENSOR_MAGNET_DROP - SENSOR_MAGNET_H),
+                           cylinder(6.0, SENSOR_MAGNET_H, sx, sy, zc - CUP_BASE - SENSOR_MAGNET_H),
                            [loc()],
                            f"Ø6×{SENSOR_MAGNET_H:g} mm diametric NdFeB (AS5600 magnet)", STEEL,
                            density="steel", kind="bought"))
+    parts.append(turned("magnet_cup", [
+        (CUP_OD, CUP_POCKET, SENSOR_MAGNET_H),
+        (CUP_OD, SENSOR_PIN_D + 0.02, CUP_BASE),
+    ], cups, "Magnet pushed into the pocket until it bottoms (epoxy); cup pushed onto the sensor-shaft "
+             "tip until it stops (Loctite 638)."))
+    parts.append(turned("shaft_knob", [
+        (ROD_532, 0.0, T063),
+        (TUBE_316, 0.0, l0 - Z_P1_TOP),               # collar: thumbwheel sits on it
+        (ROD_532, 0.0, Z_P2_TOP - l0),
+    ], knobs, "Drop into P1 from above; thumbwheel on the collar, sleeve on the thumbwheel."))
+    parts.append(turned("sleeve_knob", [(TUBE_316, tube_bore(TUBE_316), Z_P2 - KNOB_ENDSHAKE - k1)],
+                        sleeves, "Slides on the knob shaft down onto the thumbwheel (keeps it in mesh)."))
     return parts
 
 
@@ -912,7 +973,19 @@ def electronics() -> list[Part]:
         sp = c_ if sp is None else sp.fuse(c_)
     E.append(Part("spacer_usb", "bought", "M2 nylon spacer 5 mm", placed(sp, L.USBC_PLACE, Z_CARRIER_TOP),
                   [loc()], IVORY, "electronics",
-                  spec="M2 nylon round spacer 5 mm ×2 + M2×10 screws and nuts (USB breakout)"))
+                  spec="M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"))
+    # M2×10 cheese-head screws from the top through board, spacer and carrier; nuts underneath
+    top = USB_BOARD_Z + 1.6
+    hx0, hy0 = _place_pt(u["holes"][0], L.USBC_PLACE)
+    screw = cylinder(USB_SCREW_HEAD[0], USB_SCREW_HEAD[1], hx0, hy0, top).fuse(
+        cylinder(2.0, USB_SCREW_LEN, hx0, hy0, top - USB_SCREW_LEN))
+    others = [_place_pt(h, L.USBC_PLACE) for h in u["holes"]]
+    E.append(Part("screw_usb", "bought", "M2×10 DIN 84 cheese head", screw,
+                  [loc(x - hx0, y - hy0) for x, y in others], BRASS_DARK, "electronics",
+                  spec="M2 × 10 brass DIN 84 slotted cheese-head screw (USB breakout, from the top)"))
+    E.append(Part("nut_usb", "bought", "M2 hex nut", hexagon(4.0, 1.6, hx0, hy0, Z_CARRIER - 1.6, 2.0),
+                  [loc(x - hx0, y - hy0) for x, y in others], BRASS_DARK, "electronics",
+                  spec="M2 brass hex nut (USB breakout screws, under the carrier)"))
     # crown: right-angle tactile switch on the carrier, plunger through the lower tray chamfer
     (cx, cy), (dx, dy) = crown_axis()
     ang = math.degrees(math.atan2(dy, dx))
@@ -926,15 +999,23 @@ def electronics() -> list[Part]:
     sw = box(front - bd, -bw / 2, -L.CROWN_SW_ACT_H, front, bw / 2, bh - L.CROWN_SW_ACT_H).fuse(
         box(front, -1.45, -1.45, tip, 1.45, 1.45))
     add("crown_switch", along(sw), "Omron B3F-3150 right-angle tactile switch on the carrier")
-    pl_len = -tip - 0.2 + 0.6 + 3 * T040
-    plunger = cq.Solid.makeCylinder(ROD_332 / 2, pl_len, cq.Vector(tip + 0.2, 0, 0), cq.Vector(1, 0, 0))
-    E.append(stock("crown_plunger", along(plunger), [loc()], f"K&S 3/32\" brass rod, {pl_len:.1f} mm",
-                   group="electronics"))
-    c0, cl = -T040 - 0.3 - 1.5, 1.5
-    collar = cq.Solid.makeCylinder(TUBE_532 / 2, cl, cq.Vector(c0, 0, 0), cq.Vector(1, 0, 0)).cut(
-        cq.Solid.makeCylinder(TUBE_532 / 2 - KS_WALL, cl, cq.Vector(c0, 0, 0), cq.Vector(1, 0, 0)))
-    E.append(stock("crown_collar", along(collar), [loc()],
-                   "K&S 5/32\" tube, 1.5 mm, soldered on the plunger inside the wall", group="electronics"))
+    # one turned piece: stem from the switch out through the wall, knurled cap outside
+    clip_in = -T040 - CROWN_PLAY - ECLIP["t"]        # E-clip inner face (axis x, outer face at 0)
+    g0 = clip_in - (ECLIP["groove_w"] - ECLIP["t"]) / 2
+    stem0, cap0 = tip + 0.2, 0.6
+    segs = [(ROD_332, 0.0, g0 - stem0), (ECLIP["groove_d"], 0.0, ECLIP["groove_w"]),
+            (ROD_332, 0.0, cap0 - g0 - ECLIP["groove_w"]), (CROWN_CAP_D, 0.0, CROWN_CAP_L)]
+    to_axis = cq.Location(cq.Vector(stem0, 0, 0), cq.Vector(0, 1, 0), 90)
+    crown = turned("crown_turned", segs, [loc()],
+                   "Stem through the case wall from outside, E-clip in the groove inside; knurl the cap "
+                   "(straight or diamond, 0.5 mm pitch).", group="electronics")
+    crown.solid = along(crown.solid.moved(to_axis))
+    E.append(crown)
+    clip = cq.Solid.makeCylinder(ECLIP["od"] / 2, ECLIP["t"], cq.Vector(clip_in, 0, 0), cq.Vector(1, 0, 0)).cut(
+        cq.Solid.makeCylinder(ECLIP["groove_d"] / 2, ECLIP["t"], cq.Vector(clip_in, 0, 0), cq.Vector(1, 0, 0)))
+    E.append(stock("crown_eclip", along(clip), [loc()],
+                   f"DIN 6799 retaining washer (E-clip) size {ECLIP['size']:g}, stainless", STEEL,
+                   group="electronics", density="steel", kind="bought"))
     magnet_spec = f"Ø{MAGNET_D:g}×{MAGNET_H:g} mm N52 magnet"
     for x, y in (LID_MAGNET_L,):
         E.append(stock("magnet_body", cylinder(MAGNET_D, MAGNET_H, x, y, Z_TOPFACE - MAGNET_H), [loc()],
@@ -944,24 +1025,6 @@ def electronics() -> list[Part]:
                        cylinder(MAGNET_D, MAGNET_H, x, y, Z_TOP + LID_H - T040 - MAGNET_H), [loc()],
                        magnet_spec, STEEL, "lid", "steel", "bought"))
     return E
-
-
-def crown_cap() -> list[Part]:
-    (cx, cy), (dx, dy) = crown_axis()
-    ang = math.degrees(math.atan2(dy, dx))
-    shape = circle(0, 0, 4.2)
-    for i in range(12):
-        shape = shape.union(circle(*polar(4.2, 30 * i), 0.9))
-    p = Profile(shape)
-    p.hole(0, 0, ROD_332 + FIT)
-    sol = profile_solid(p, T040)
-    locs = []
-    for i in range(3):   # discs stacked outward from the wall, normal along the crown axis
-        locs.append(cq.Location(cq.Vector(cx + dx * (0.6 + i * T040), cy + dy * (0.6 + i * T040), CROWN_Z),
-                                cq.Vector(0, 0, 1), ang) * cq.Location(cq.Vector(), cq.Vector(0, 1, 0), 90))
-    cap = flat_part("crown_cap_disc", p, T040, placements=locs, group="case",
-                    spec="brass .040\" ×3 soldered onto the plunger")
-    return [cap]
 
 
 # ---------------------------------------------------------------------------
@@ -1142,8 +1205,31 @@ def hinge_trim_gauge() -> Part:
                 f"trim line {HINGE_LID_HEIGHT:.2f} mm from the pivot")
 
 
+HAND_TOOL_HOLES = [                       # (hole, clears, bears on): used in this order
+    (4.30, TUBE_532, TUBE_316),            # needle: over arbor III, onto the needle arbor's rim
+    (3.45, TUBE_18, TUBE_532),             # hand III: over arbor II, onto arbor III's rim
+    (2.70, ROD_332, TUBE_18),              # hand II: over arbor I, onto arbor II's rim
+]
+
+
+def hand_setting_tool() -> Part:
+    """Flat paddle: press each hand down until the paddle bottoms on its own arbor's top end, so the
+    hand ends flush with it. Dots count the order of use; the plain end presses the cap flush."""
+    t = T063
+    prof = Profile(rect(0, 0, 70.0, 16.0))
+    for i, (d, _, _) in enumerate(HAND_TOOL_HOLES):
+        x = -24.0 + 14.0 * i
+        prof.hole(x, -1.0, d)
+        for j in range(i + 1):
+            prof.hole(x - 1.6 * i + 3.2 * j, 5.2, 1.0)
+    return Part("hand_setting_tool", "scs", "brass .063\"", profile_solid(prof, t),
+                [loc(0, -120, 0)], BRASS_DARK, "tools", prof, [],
+                "brass .063\": holes (1, 2, 3 dots) set the needle, hand III and hand II flush with their "
+                "arbors; the plain end presses the cap flush with arbor I")
+
+
 def tooling() -> list[Part]:
-    return [hinge_drill_guide(), hinge_trim_gauge()]
+    return [hinge_drill_guide(), hinge_trim_gauge(), hand_setting_tool()]
 
 
 # ---------------------------------------------------------------------------
@@ -1152,7 +1238,7 @@ def all_parts() -> list[Part]:
              spider("crystal_seat_spider", SEAT_R_IN, T040, Z_SEAT),
              spider("crystal_frame_spider", CRYSTAL_R + CRYSTAL_CLEAR, T063, Z_FRAME),
              crystal(), dial_sticker()]
-    parts += gears() + hands() + arbors() + hardware() + electronics() + crown_cap() + hinge()
+    parts += gears() + hands() + arbors() + hardware() + electronics() + hinge()
     return parts
 
 
@@ -1160,7 +1246,8 @@ def all_parts() -> list[Part]:
 ALLOWED = [
     ("screw_floor", "standoff_bay"), ("screw_top", "standoff_hand"),
     ("standoff_gear", "standoff_bay"), ("standoff_hand", "standoff_gear"),
-    ("crown_plunger", "crown_"),
+    ("crown_turned", "crown_eclip"),
+    ("screw_usb", "usb_c_breakout"), ("screw_usb", "spacer_usb"), ("screw_usb", "nut_usb"),
     ("magnet_lid", "lid_overlay"), ("module_sockets", "motor_X27"),   # X27 pins inside their sockets
 ]
 
@@ -1178,7 +1265,7 @@ def summary() -> dict:
         levels=[round(z, 3) for z in LEVELS], hands=Z_HANDS, cap=round(Z_CAP, 3),
         crystal_clearance=round(Z_FRAME - (Z_CAP + T040), 3),
         x27_body=(round(X27_BODY_TOP - X27_BODY_H, 2), round(X27_BODY_TOP, 2)),
-        as5600_magnet_gap=round(Z_P1 - SENSOR_MAGNET_DROP - SENSOR_MAGNET_H - (Z_CARRIER_TOP + L.MODULE_LIFT + 3.1), 2),
+        as5600_magnet_gap=round(Z_P1 - CUP_GAP - CUP_BASE - SENSOR_MAGNET_H - (Z_CARRIER_TOP + L.MODULE_LIFT + 3.1), 2),
         lid_open_angle=LID_OPEN_ANGLE,
         hinge_fabrication_hold=HINGE_REFERENCE_NOTE,
         needle_ratio=Z_MOTOR / Z_NEEDLE, knob_turns_per_rev=Z_SENSOR / Z_KNOB,

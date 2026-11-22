@@ -19,6 +19,7 @@ battery,1,7,LiPo 1S 402535 (~350 mAh)
 mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
 hinge_leaf_lid,1,4.2,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+shaft_knob,3,3.6,brass C360 (CNC turned)
 standoff_bay,3,3.3,M2×12 F-F brass hex standoff
 gear_sensor_I_32T,1,3.1,"brass .040"""
 gear_sensor_II_32T,1,3.1,"brass .040"""
@@ -28,19 +29,18 @@ gear_hand_II_32T,1,2.5,"brass .040"""
 hinge_pin,1,2.3,Included in the purchased hinge; have the supplier retain the pin after cutting
 gear_motor_34T,1,2.2,"brass .040"""
 standoff_hand,4,2.2,M2×6+3 M-F brass hex standoff
+crown_turned,1,2.1,brass C360 (CNC turned)
 gear_hand_I_32T,1,2.0,"brass .040"""
 gear_hand_III_32T,1,2.0,"brass .040"""
 driver_DRV8833,1,2,Adafruit DRV8833 #3297
 amp_MAX98357A,1,2,Adafruit MAX98357A #3006
-crown_cap_disc,3,1.7,"brass .040"""
 sensor_AS5600_I,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 usb_c_breakout,1,1.5,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
-shaft_knob_I,1,1.2,"K&S 5/32"" brass rod, 11.2 mm"
-shaft_knob_II,1,1.2,"K&S 5/32"" brass rod, 11.2 mm"
-shaft_knob_III,1,1.2,"K&S 5/32"" brass rod, 11.2 mm"
 gear_needle_17T,1,1.0,"brass .040"""
+shaft_sensor_III,1,1.0,brass C360 (CNC turned)
+magnet_cup,3,1.0,brass C360 (CNC turned)
 module_sockets,1,1,5 mm female header sockets
 mic_INMP441,1,1,INMP441 I2S MEMS mic module
 speaker_foam_ring,1,1,foam ring
@@ -48,18 +48,17 @@ mic_foam_tape,1,1,foam tape
 wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
 wire_mic,1,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 spacer_usb,1,1,M2 nylon spacer 5 mm
+screw_usb,2,1,M2×10 DIN 84 cheese head
+nut_usb,2,1,M2 hex nut
 crown_switch,1,1,Omron B3F-3150 right-angle tactile switch on the carrier
-hand_III,1,0.8,"brass .040"""
-shaft_sensor_I,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
-shaft_sensor_II,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
-shaft_sensor_III,1,0.8,"K&S 1/8"" brass rod, 11.5 mm"
+crown_eclip,1,1,"DIN 6799 retaining washer (E-clip) size 1.5, stainless"
+shaft_sensor_II,1,0.9,brass C360 (CNC turned)
+shaft_sensor_I,1,0.8,brass C360 (CNC turned)
 spacer_carrier,3,0.8,M2 nylon spacer 2.5 mm
-hand_I,1,0.7,"brass .040"""
-hand_II,1,0.7,"brass .040"""
 hand_needle,1,0.7,"copper .032"""
-arbor_I,1,0.7,"K&S 3/32"" brass rod, 17.6 mm"
 screw_floor,3,0.7,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 screw_top,4,0.7,"M2×6 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
+arbor_I,1,0.6,brass C360 (CNC turned)
 magnet_I,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_II,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
@@ -68,25 +67,22 @@ magnet_lid_closure,1,0.6,Ø5×4 mm N52 magnet
 magnet_lid_reed,1,0.6,Ø5×4 mm N52 magnet
 dial_sticker,1,0.5,printed vinyl
 hand_cap_rosette,1,0.5,"brass .040"""
-bushing_3_16,6,0.4,"K&S 3/16"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
-arbor_II,1,0.3,"K&S 1/8"" brass tube, 11.1 mm"
-arbor_III,1,0.3,"K&S 5/32"" brass tube, 7.7 mm"
-bushing_5_32,6,0.3,"K&S 5/32"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
+bushing_3_16,6,0.4,brass C360 (CNC turned)
+hand_II,1,0.3,"spring steel .015"""
+hand_III,1,0.3,"spring steel .015"""
+arbor_II,1,0.3,brass C360 (CNC turned)
+bushing_5_32,6,0.3,brass C360 (CNC turned)
+sleeve_knob,3,0.3,brass C360 (CNC turned)
 reed_switch,1,0.3,"Glass reed switch, NO, ~2×14 mm"
-crown_plunger,1,0.3,"K&S 3/32"" brass rod, 6.6 mm"
-arbor_needle,1,0.2,"K&S 3/16"" brass tube, 4.4 mm"
-sleeve_sensor_III,1,0.2,"K&S 5/32"" tube, 4.50 mm"
+hand_I,1,0.2,"spring steel .015"""
+arbor_III,1,0.2,brass C360 (CNC turned)
+arbor_needle,1,0.2,brass C360 (CNC turned)
+cannon,1,0.2,brass C360 (CNC turned)
 hinge_body_screw_1,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_2,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_3,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_4,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-cannon,1,0.1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
-sleeve_knob_I,1,0.1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
-sleeve_sensor_II,1,0.1,"K&S 5/32"" tube, 2.50 mm"
-sleeve_knob_II,1,0.1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
-sleeve_knob_III,1,0.1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
 nut_p1_corner,1,0.1,M2 brass hex nut
-crown_collar,1,0.1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside the wall"
 hinge_body_nut_1,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"
 hinge_body_nut_2,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"
 hinge_body_nut_3,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"
@@ -95,7 +91,6 @@ hinge_lid_screw_1,1,0.1,"M1.6x4 DIN 963 slotted countersunk brass screw, from ou
 hinge_lid_nut_1,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
 hinge_lid_screw_2,1,0.1,"M1.6x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_nut_2,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
-bushing_1_8,1,0.0,"K&S 1/8"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
-sleeve_sensor_I,1,0.0,"K&S 5/32"" tube, 0.50 mm"
+bushing_1_8,1,0.0,brass C360 (CNC turned)
 hinge_lid_washer_1,1,0.0,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"
 hinge_lid_washer_2,1,0.0,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"

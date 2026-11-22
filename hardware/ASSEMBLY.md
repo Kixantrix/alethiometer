@@ -1,9 +1,10 @@
 # Assembly
 
-This is an unbuilt prototype. The hinge is one purchased brass hinge held by flush screws, not solder.
-The thumbwheels are bought solid gears. The movement and crown still require
-small bench-soldered joints; electrical soldering is
-also required. Read the fabrication hold and joint status below before buying parts.
+This is an unbuilt prototype. The hinge is one purchased brass hinge held by flush screws.
+The thumbwheels are bought solid gears, and every arbor, shaft, bushing and the crown come
+finished from a CNC-turning kit, so nothing in the movement is cut, measured or soldered: each
+part is pushed on until it stops, with a drop of Loctite. The only soldering is electrical (the
+carrier PCB and its leads). Read the fabrication hold and joint status below before buying parts.
 
 **Conventions.** "Up" is toward the dial. Positions along a shaft are measured from the
 **bottom face of P1** (the movement base plate). Every dimension comes from
@@ -20,7 +21,8 @@ update this sheet.
 | P2 (dial plate) | 9.6 – 11.2 | top bushings, cannon, dial sticker |
 
 Above the dial (measured from the top of P2): cannon tip +0.35, needle +0.45, hand III +1.61,
-hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's underside sits at +7.0.
+hand II +2.34, hand I +3.07, cap +3.46 (top of cap +4.47). The crystal's underside sits at +7.0.
+You never measure these: every height is set by a shoulder or a flush end on the turned parts.
 
 ## Tools and consumables
 
@@ -49,19 +51,21 @@ the hinge's own leaves closing on each other (§8), so the real curl also sets t
 
 1. Deburr and flatten everything. Rub each face on 600 grit on glass, then finer.
    Gears only need their faces deburred; don't round the teeth.
-2. **Fit the bushings.** No shaft runs in a laser-cut hole. Each plate hole takes a
-   1.6 mm piece of K&S tube (§2), and the next K&S size slides inside it with about 0.08 mm
+2. **Fit the bushings.** No shaft runs in a laser-cut hole. Each plate hole takes a turned
+   bushing exactly as thick as the plate (§2), and its shaft slides inside it with about 0.08 mm
    of play, so every shaft is located precisely whatever the laser tolerance.
    - Screw P1 and P2 together on their four gear standoffs. This keeps the two plates' holes
      aligned.
    - Rub pencil graphite on the shafts and arbor I so nothing sticks to them.
-   - Put a dab of Loctite 638 on each bushing and push it into its hole, flush with the plate.
-     The plate holes are drawn 0.1 mm over the tube, so they go in by hand.
+   - Stand the plates on a flat surface. Put a dab of Loctite 638 on each bushing and drop it
+     into its hole until it touches the surface: it is then flush both sides. The plate holes
+     are drawn 0.1 mm over the bushing, so they go in by hand.
    - Slide the shafts through both plates while the 638 is wet: the three sensor and three
      knob shafts through each pair of bushings, and arbor I into P1's centre bushing. This
      lines the pairs up with each other. Spin each shaft once, then let it cure (about 1 hour).
-3. Test-fit every gear on its rod or tube. Gear bores are drawn only 0.08 mm over the stock, so
-   each gear runs centred. If one won't slide on, turn the matching drill through it by hand.
+3. Test-fit every gear on its arbor or shaft. Gear bores are drawn only 0.08 mm over the
+   turned diameter, so each gear runs centred. If one won't slide on, turn the matching drill
+   through it by hand.
    Everything that doesn't affect gear mesh (hands, crown, hinge, case holes) is drawn with
    more room and goes on as cut.
 4. **Flush case screw seats, after forming.** The supplier DXFs and `__formed.step` files
@@ -77,73 +81,71 @@ the hinge's own leaves closing on each other (§8), so the real curl also sets t
    The assembly and individual-part CAD show the finished seats; the supplier gets the
    unmachined bent blanks. Clean off chips and deburr before fitting any electronics.
 
-## 2. Cut the K&S stock
+## 2. Check the turned-parts kit
 
-Cut, deburr and check each piece against the cut list (also in `out/stock_and_bought_parts.csv`):
+Nothing to cut. The kit arrives finished; [`out/turned/README.md`](out/turned/README.md) is its
+drawing (also `out/turned/turned_parts.csv`). Unpack it onto a tray and check each part's
+length with calipers against that table, so you know which is which:
 
-| Part | Stock | Length |
+| Part | Qty | What sets its position |
 |---|---|---|
-| Arbor I (top hand) | 3/32" rod | 17.6 mm |
-| Arbor II | 1/8" tube | 11.1 mm |
-| Arbor III | 5/32" tube | 7.7 mm |
-| Needle arbor | 3/16" tube | 4.4 mm |
-| Cannon | 7/32" tube | 1.95 mm |
-| Bushings ×6 | 5/32" tube | 1.6 mm each (sensor shafts, P1 and P2) |
-| Bushings ×6 | 3/16" tube | 1.6 mm each (knob shafts, P1 and P2) |
-| Bushing ×1 | 1/8" tube | 1.6 mm (arbor I, P1 centre) |
-| Sensor shafts ×3 | 1/8" rod | 11.5 mm each (0.3 mm proud below P1 for the magnet) |
-| Knob shafts ×3 | 5/32" rod | 11.2 mm each |
-| Sensor sleeves | 5/32" tube | 2.5 mm (II), 4.5 mm (III); I uses a 0.5 mm M3 shim washer |
-| Knob upper sleeves ×3 | 3/16" tube | 2.5 mm |
-| Knob lower spacers ×3 | M4 shim washer | 0.5 mm |
-| Crown plunger | 3/32" rod | 6.7 mm |
-| Crown collar | 5/32" tube | 1.5 mm |
-| Hinge body backing | .063" brass sheet | 63.5 × 11 mm, laser-cut |
+| `arbor_I` (stepped rod) | 1 | Its collar rests on P1's centre bushing; gear I sits on the collar; hand I sits on the top shoulder; the cap is flush with the top |
+| `arbor_II`, `arbor_III`, `arbor_needle` (plain tubes) | 1 each | Gear flush with the bottom end, hand flush with the top end |
+| `cannon` (flanged tube) | 1 | Flange on P2's top face |
+| `bushing_1_8`, `bushing_5_32`, `bushing_3_16` | 1, 6, 6 | Flush with both faces of the plate |
+| `shaft_sensor_I/II/III` | 1 each | Collar on the P1 bushing (0.5, 2.5 and 4.5 mm tall: the gear sits on it) |
+| `magnet_cup` | 3 | Pushed onto the sensor shaft's bottom tip until it stops |
+| `shaft_knob` | 3 | Collar on the P1 bushing; the thumbwheel sits on it |
+| `sleeve_knob` | 3 | Slides down onto the thumbwheel |
+| `crown_turned` | 1 | E-clip in its groove inside the wall |
+
+The **hinge body backing** (.063" brass, 63.5 × 11 mm) comes laser-cut with the SendCutSend order.
 
 ## 3. Sub-assemblies
 
 ### Mechanical joint status
 
 Prefer removable mechanical joints wherever practical, rather than automatically replacing
-solder with permanent adhesive. This revision addresses the hinge, not every joint:
+solder with permanent adhesive. Current construction of every joint:
 
 | Joint | Current construction |
 |---|---|
 | Hinge knuckles and pin | One purchased formed hinge; no home-soldered tube knuckles. Supplier fit is still on hold above. |
 | Hinge to body/lid | Flush countersunk screws from outside; nuts on a backing strip (body) or washers (lid) inside; removable. |
 | Opening stop | None added: the hinge leaves close on each other just past flat. |
-| Thumbwheels | One bought solid gear each, Loctite 638 on its shaft. |
-| Sensor gears, hand/needle gears, crown | Still bench-soldered as described below; removable replacements have **not** been designed or checked yet. |
-| Cannon | Still soldered into P2. Its existing 0.3 mm nominal bore clearance must not simply be relabelled as a retaining-compound fit. |
-| Bushings, hands, magnets | Existing retaining compound/epoxy joints remain; they are not claimed to be mechanically removable. |
+| Thumbwheels | One bought solid gear each, on the knob-shaft collar, Loctite 638. |
+| Sensor, hand and needle gears | On a turned collar or flush with a tube end, Loctite 638 (no solder). |
+| Cannon | Flanged; pushed into P2's 0.1 mm-clearance hole, Loctite 638. |
+| Crown | One turned piece, held by a DIN 6799 E-clip; removable. |
+| Bushings, hands, magnets, magnet cups | Loctite 638 / epoxy; not designed to be taken apart. |
 
 Do not put ordinary radial set screws directly into the thin nested hand tubes: denting them
 can bind the adjacent arbor. A removable movement conversion needs properly supported hubs
 and axial retention checked against the small vertical clearances.
 
+Every gear goes on the same way: a drop of Loctite 638 on the shaft, slide the gear down until it
+stops, wipe off the excess and keep it out of any bore. Leave each one an hour before handling.
+
 **Thumbwheels (×3).** Each is one bought brass gear (module 0.8, 26 teeth, 5 mm wide, 4 mm bore;
-see BOM.md §C). Slide it onto its 5/32" knob shaft with its bottom face **2.1 mm** above the
-shaft's bottom end and fix it with a drop of Loctite 638. That's all: no layers to align.
+see BOM.md §C). Slide it down a `shaft_knob` until it sits on the collar. No layers to align.
 
-**Sensor shafts (×3).** Solder each 32T sensor gear at its level: I at 2.1 mm, II at 4.1 mm,
-III at 6.1 mm above the bottom end. The magnet goes on later (§5), once the shaft
-is in its bearings, because it's wider than the bearing hole.
+**Sensor shafts (×3).** Slide each 32T sensor gear down its shaft until it sits on the collar
+(I has the 0.5 mm collar, II 2.5 mm, III 4.5 mm). The magnet cup goes on later (§5), once the
+shaft is in its bearings, because it's wider than the bearing hole.
 
-**Arbors.** Solder the hand gears flush with the arbor *bottom* ends: hand-I gear on the
-3/32" rod at 2.1 mm above its bottom end, hand-II gear on the bottom of the 1/8" tube, and
-hand-III gear on the bottom of the 5/32" tube. Solder the 17T needle gear to the bottom of
-the 3/16" tube. Don't let solder wick into the bores. Use a drop of paste and the iron
-touched to the gear, not the tube.
+**Arbors.** Stand arbors II and III and the needle arbor on end on a sheet of glass. Slide each
+gear down until it touches the glass: it is then flush with the bottom end. Hand-II gear on
+`arbor_II`, hand-III gear on `arbor_III`, the 17T needle gear on `arbor_needle`. The hand-I gear
+goes on `arbor_I` from the thin top end and down onto its collar.
 
-**Cannon.** Solder the 7/32" cannon into P2's centre hole, flush with P2's underside so it
-stands 0.35 mm proud of the top. The 3/16" needle arbor slides inside it (a K&S telescoping fit); keep solder out of the bore.
+**Cannon.** Push the cannon into P2's centre hole from the top until its flange sits on the
+plate, with a little Loctite 638 on the outside only. The needle arbor runs inside it.
 
 **Motor gear.** The 34T gear sits on the X27's **Ø1 output shaft**, with its bottom face
 5.5 mm above the motor's front face (level L3). Press it on with a drop of Loctite 638 and
 trim the shaft 0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
 
-**Crown.** Solder the three scalloped `crown_cap_disc` pieces onto one end of the plunger as a
-little crown. The collar goes on later, from inside the case.
+**Crown.** Nothing to do: `crown_turned` is one finished piece. It goes in with the case (§7).
 
 **Hinge: cut and trim it yourself (after releasing the hold in §0).** Buy the stock Guden brass
 hinge and cut your piece from it with a Dremel cut-off wheel. The laser-cut `hinge_trim_gauge`
@@ -192,8 +194,9 @@ little beyond, until the two leaves close on each other.
 3. Drop in, in this order:
    - arbor I (3/32" rod into the centre bearing);
    - arbor II, then arbor III, then the needle arbor, sliding each over the last;
-   - the three sensor shafts, each with its sleeve or washer below the gear;
-   - the three knob shafts, each with a 0.5 mm washer below the wheel and a 2.5 mm sleeve above it;
+   - the three sensor shafts, gears already on their collars;
+   - the three knob shafts, thumbwheels already on their collars, then a `sleeve_knob` slid down
+     onto each thumbwheel;
    - the **speaker**: solder ~6 cm of 2-core 30 AWG to its back tabs, thread the pair down through
      the open centre of P1's speaker seat (top-left) and seat the speaker on its foam ring;
      the seat is a ring so the speaker's back can breathe into the bay below;
@@ -204,8 +207,10 @@ little beyond, until the two leaves close on each other.
 4. Lower P2 over the cannon and onto every shaft tip. This is the fiddly watchmaker's moment:
    start from one side and coax each tip into its hole with tweezers. Screw the four **M2×6 M-F**
    standoffs through P2 into the gear standoffs.
-5. From underneath, epoxy a Ø6×2.5 diametric magnet centred on the bottom end of each sensor
-   shaft (the shaft pokes 0.3 mm below P1, so the magnet clears the plate).
+5. **Magnets.** Push a Ø6×2.5 diametric magnet into each `magnet_cup` with a little epoxy until
+   it bottoms. Then, from underneath, put a drop of Loctite 638 on each sensor shaft's thin
+   bottom tip and push a cup on until it stops on the shoulder, while you hold the shaft down
+   from above. The cup then hangs 0.3 mm below P1 and the magnet is centred automatically.
 6. Check that every knob turns its hand arbor smoothly and that the X27 gear meshes with the needle gear.
    Add a drop of clock oil to each bearing.
 
@@ -213,18 +218,28 @@ little beyond, until the two leaves close on each other.
 
 1. Apply the dial sticker to P2, centred on the cannon. The cut-line circle ID is Ø58 mm.
    Line up **Hourglass** with the top (12 o'clock) knob.
-2. Darken the three framing hands (brass black or a blued look) and polish the copper needle.
-3. Press on, in order, each with a dot of Loctite 638 on its arbor, all pointing at Hourglass:
-   the needle at +0.45, hand III at +1.61, hand II at +2.98, hand I at +4.34, then the cap.
-   Check there is clearance between every hand. Calibration later removes any angular error.
+2. The framing hands come blued (spring steel): no finishing. Polish the copper needle. Handle
+   the hands by the hub; they are thin.
+3. Fit them in this order, each with a dot of Loctite 638 on its arbor and pointing at Hourglass.
+   The laser-cut **`hand_setting_tool`** does the positioning: press it down over the arbors
+   until it bottoms, and the hand under it is flush with its own arbor's end.
+   - Needle on the needle arbor: press with the **one-dot** hole.
+   - Hand III on arbor III: press with the **two-dot** hole.
+   - Hand II on arbor II: press with the **three-dot** hole.
+   - Hand I: push it down arbor I's thin top until it sits on the shoulder.
+   - The cap: press it with the tool's plain end until the tool touches the top of arbor I.
+
+   Check that every hand turns freely without touching its neighbours. Calibration later removes
+   any angular error.
 
 ## 7. Case
 
-1. **Crown.** Push the crown plunger in from outside through the lower tray's top-right chamfer
-   hole and solder the 1.5 mm collar on inside, leaving 0.3 mm of play.
+1. **Crown.** Push `crown_turned` in from outside through the lower tray's top-right chamfer
+   hole and snap the DIN 6799 E-clip into its groove from inside (flat-nose pliers or an E-clip
+   applicator). The groove's position gives the 0.3 mm of play.
 2. **Lower tray.** Line the floor with one layer of Kapton. Put the three nylon spacers over the
    floor holes and lower the populated carrier straight in: U7's receptacle lines up with the wall
-   opening and the crown switch drops in just behind the plunger. Plug in the
+   opening and the crown switch drops in just behind the crown's stem. Plug in the
    battery and connect the reed leads to J6. With the movement standing beside the tray, solder
    the speaker leads into J5 (+ −) and the mic leads into J4 (VDD GND SCK WS SD): both pad rows
    sit right under their pass-throughs (see WIRING.md, *Where things go*). Press the crown: you
@@ -306,7 +321,7 @@ unsupported crown corner. Do not rely on the clearance skirt as rigid bracing.
 
 | Symptom | Fix |
 |---|---|
-| A knob is stiff | Check the thumbwheel is square on its shaft and the sleeves aren't too long; the case notch leaves 1.2 mm each side. |
+| A knob is stiff | Check the thumbwheel sits flat on its collar and no Loctite reached the sleeve or bushings; the case notch leaves 1.2 mm each side. |
 | A hand drags its neighbour | Add a 0.1 mm shim between the gears, or ease the tube's fit. |
 | Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 1.1 mm under the magnet), then recalibrate. |
 | Something electrical misbehaves | Lift the movement out and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |

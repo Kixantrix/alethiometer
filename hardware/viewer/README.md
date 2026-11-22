@@ -19,14 +19,19 @@ Then open <http://localhost:8765>. Run the first command again whenever `cad/des
 changes, then reload the page.
 
 The exporter needs the same Python environment as `cad/build.py` (`pip install -r
-hardware/cad/requirements.txt`) and takes about 20 seconds. It writes `assets/`, which is
+hardware/cad/requirements.txt`) and takes about a minute. It writes `assets/`, which is
 git-ignored:
 
 | File | What it is |
 |---|---|
 | `assets/alethiometer.glb` | One mesh per part type in its own frame, tessellated at 0.1 mm (about 2 MB) |
-| `assets/parts.json` | For each part: group, kind, material, spec, quantity, colour, Z range, placement matrices, open-lid transform, explode offset. Also the hinge axis. |
+| `assets/parts.json` | For each part: group, kind, material, spec, quantity, colour, Z range, placement matrices, open-lid transform, explode offset. Also the hinge axis, and `pcb`: where `pcb.glb` goes (glTF-to-CAD matrix) and which CAD parts it replaces. |
 | `assets/dial.png` | The dial sticker texture, downscaled to 2048 px. It uses `dial/local/dial_1200dpi.png` (the Myth Made art) if you've generated it, or the committed `dial/dial_1200dpi.png` otherwise. |
+| `assets/pcb.glb` | The real carrier board from `../pcb/alethiometer_carrier.kicad_pcb`: copper, pads and plated holes, soldermask, both silkscreens, and the THT parts soldered to it (about 4 MB). It replaces the plain CAD `pcb_carrier` slab. |
+
+The board export needs KiCad's `kicad-cli` (found on `PATH`, in the usual KiCad install folders, or
+via `KICAD_CLI`). Without it the exporter prints a warning and the viewer shows the plain CAD slab;
+`--no-pcb` skips it on purpose.
 
 three.js is loaded from the jsDelivr CDN, so the page needs internet access. The brass
 reflections use an HDR environment from the same CDN. If that fails to load, the viewer falls
@@ -35,12 +40,12 @@ back to a built-in studio environment.
 ## What it does
 
 - **Layers:** checkboxes for case, lid, movement plates, gear train, hands, dial, electronics, and
-  hardware. Expand a group (▸) to toggle individual parts. **All** and **None** set everything at once.
+  hardware. Expand a group (â–¸) to toggle individual parts. **All** and **None** set everything at once.
 - **Explode:** lifts each layer by its place in the stack: tray, electronics, P1, gear train (each
   gear level slightly apart), P2 and dial, hands, crystal, upper shell, lid.
 - **Lid:** the slider sets the lid angle about the real hinge axis. The button animates it open
-  or closed. It opens to flat (180°); the slider goes on to the CAD's `LID_OPEN_ANGLE`
-  (about 200°), where the hinge's own leaves close on each other.
+  or closed. It opens to flat (180Â°); the slider goes on to the CAD's `LID_OPEN_ANGLE`
+  (about 200Â°), where the hinge's own leaves close on each other.
   The hinge halves are a **purchased-part reference**, not verified vendor CAD. Their part
   descriptions and the fabrication hold in `../ASSEMBLY.md` identify the missing dimensions.
 - **Section cut:** a clip plane through the middle (the XZ plane). The slider moves it front to back.

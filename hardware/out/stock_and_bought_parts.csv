@@ -3,28 +3,8 @@ dial_sticker,bought,1,hardware/dial/dial_print_letter.pdf
 knob_I_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
 knob_II_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
 knob_III_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-arbor_I,stock,1,"K&S 3/32"" brass rod, 17.6 mm"
-arbor_II,stock,1,"K&S 1/8"" brass tube, 11.1 mm"
-arbor_III,stock,1,"K&S 5/32"" brass tube, 7.7 mm"
-arbor_needle,stock,1,"K&S 3/16"" brass tube, 4.4 mm"
-cannon,stock,1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
-bushing_1_8,stock,1,"K&S 1/8"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
-bushing_5_32,stock,6,"K&S 5/32"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
-bushing_3_16,stock,6,"K&S 3/16"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
-shaft_sensor_I,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
-shaft_knob_I,stock,1,"K&S 5/32"" brass rod, 11.2 mm"
-sleeve_sensor_I,stock,1,"K&S 5/32"" tube, 0.50 mm"
-sleeve_knob_I,stock,1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
 magnet_I,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
-shaft_sensor_II,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
-shaft_knob_II,stock,1,"K&S 5/32"" brass rod, 11.2 mm"
-sleeve_sensor_II,stock,1,"K&S 5/32"" tube, 2.50 mm"
-sleeve_knob_II,stock,1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
 magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
-shaft_sensor_III,stock,1,"K&S 1/8"" brass rod, 11.5 mm"
-shaft_knob_III,stock,1,"K&S 5/32"" brass rod, 11.2 mm"
-sleeve_sensor_III,stock,1,"K&S 5/32"" tube, 4.50 mm"
-sleeve_knob_III,stock,1,"K&S 3/16"" tube, 0.50 + 2.50 mm"
 magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 standoff_bay,bought,3,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
@@ -50,10 +30,11 @@ wire_speaker,bought,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs dow
 wire_mic,bought,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 reed_switch,bought,1,"Glass reed switch, NO, ~2×14 mm"
 usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
-spacer_usb,bought,1,M2 nylon round spacer 5 mm ×2 + M2×10 screws and nuts (USB breakout)
+spacer_usb,bought,1,"M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"
+screw_usb,bought,2,"M2 × 10 brass DIN 84 slotted cheese-head screw (USB breakout, from the top)"
+nut_usb,bought,2,"M2 brass hex nut (USB breakout screws, under the carrier)"
 crown_switch,bought,1,Omron B3F-3150 right-angle tactile switch on the carrier
-crown_plunger,stock,1,"K&S 3/32"" brass rod, 6.6 mm"
-crown_collar,stock,1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside the wall"
+crown_eclip,bought,1,"DIN 6799 retaining washer (E-clip) size 1.5, stainless"
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet

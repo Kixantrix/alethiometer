@@ -92,7 +92,7 @@ modules flat.
   screws, not on the socket. Its mouth sits about 1.5 mm inside the wall; the wall opening is
   sized for a plug's overmould to enter.
 - **Crown switch (SW1).** An Omron B3F-3150 right-angle tactile switch soldered at the top-right
-  corner, its button on the crown axis. The brass crown plunger presses it through the lower
+  corner, its button on the crown axis. The turned brass crown's stem presses it through the lower
   case's chamfer.
 - **AS5600 ×3 (U2–U4).** Each chip sits exactly under its sensor shaft. The 1×6 row faces the
   dial centre. A **rest post** under the far edge (just a bare 1×2 socket) holds the board level at the

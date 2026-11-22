@@ -5,7 +5,8 @@ before ordering. Every fabricated part comes from `out/`, which `cad/build.py` r
 
 **Previous estimated total ≈ $450–590**, excluding the newly proposed purchased hinge,
 which still needs a quote (≈ $300–380 SendCutSend, ≈ $115–140 electronics including the
-carrier PCB, ≈ $35–60 stock, hardware and consumables). Tools are listed separately in
+carrier PCB, ≈ $35–60 hardware and consumables), plus the turned-parts kit (§B, needs a quote,
+guess $100–250). Tools are listed separately in
 [§G](#g-tools) (≈ $300 starting from nothing; skip whatever you already own).
 
 **Do not order hinge-related parts yet.** The reference hinge's undimensioned curl geometry
@@ -30,17 +31,17 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
 | `crystal_seat_spider` | Brass 260 .040" | 1 | |
 | `crystal_frame_spider` | Brass 260 .063" | 1 | Crystal pocket |
 | `crystal` | **Clear cast acrylic .063"** | 1 | Ø88 mm. Upgrade: any Ø88 × 1.5 mm flat mineral watch/clock glass. |
-| `gear_hand_I/II/III_32T` | Brass 260 .040" | 1 each | Module 0.8, 20° PA. Bores differ (3/32", 1/8", 5/32") |
-| `gear_sensor_I/II/III_32T` | Brass 260 .040" | 1 each | Bore 1/8" |
-| `gear_needle_17T` | Brass 260 .040" | 1 | Bore 3/16" |
+| `gear_hand_I/II/III_32T` | Brass 260 .040" | 1 each | Module 0.8, 20° PA. Bores differ to suit arbors I, II, III |
+| `gear_sensor_I/II/III_32T` | Brass 260 .040" | 1 each | |
+| `gear_needle_17T` | Brass 260 .040" | 1 | |
 | `gear_motor_34T` | Brass 260 .040" | 1 | Press fit on the X27's Ø1 shaft |
-| `hand_I`, `hand_II`, `hand_III` | Brass 260 .040" | 1 each | Darken after cutting |
+| `hand_I`, `hand_II`, `hand_III` | **1075 blue-tempered spring steel .015"** | 1 each | Comes blued: no finishing. SendCutSend's only thickness for this material |
 | `hand_needle` | **Copper 110 .032"** | 1 | The answering needle |
 | `hand_cap_rosette` | Brass 260 .040" | 1 | Ø10 centre cap |
-| `crown_cap_disc` | Brass 260 .040" | 3 | Scalloped crown |
 | `hinge_backing_body` | Brass 260 .063" | 1 | Load-spreading strip inside the upper shell |
 | `hinge_drill_guide` | Brass 260 .040" | 1 | **Tool**, one 90° bend: hooks over the closed lid and drills all six hinge holes. Upload `hinge_drill_guide__formed.step`. |
 | `hinge_trim_gauge` | Brass 260 .063" | 1 | **Tool**: marks the hinge's cut-to-length and the lid-leaf trim line |
+| `hand_setting_tool` | Brass 260 .063" | 1 | **Tool**: presses each hand flush with its arbor (ASSEMBLY.md §6) |
 
 **Ordering notes**
 - Add **deburring** to the plates if offered for that thickness. The case parts will be hand-finished anyway.
@@ -50,21 +51,33 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
   flat and bend it yourself on a small box-and-pan brake.
 - Order a spare set of the small gears (`gear_*`). They're cheap, and laser-cut teeth sometimes
   need a second try. The thumbwheels are bought gears (§C).
-- Fits are sized for SendCutSend's ±0.13 mm. Shafts run in K&S tube bushings, not in the cut
+- Fits are sized for SendCutSend's ±0.13 mm. Shafts run in turned bushings, not in the cut
   holes, so nothing needs reaming (ASSEMBLY.md §1).
 - **Gear precision upgrade (optional).** The laser-cut gears are fine for this slow, hand-turned
   mechanism: expect about a degree of play at the hands, and calibration absorbs any fixed offset.
   If you want tighter meshing, send the same `gear_*` DXFs to a wire-EDM service
   (e.g. Xometry, PCBWay) for about ±0.01 mm teeth. No design change is needed.
 
-## B. K&S Precision Metals brass stock (hobby shops, Amazon)
+## B. Turned-parts kit (CNC turning service)
 
-| Item | Qty | ≈ $ | Used for |
+Every arbor, shaft, bushing, sleeve, magnet cup and the crown: 31 small brass parts in 15 designs,
+made to exact length with their shoulders so nothing is cut or measured during assembly.
+Upload the files in [`out/turned/`](out/turned) (one `.step` per design, quantity in the
+filename) with its [`README.md`](out/turned/README.md), which is the drawing: every diameter,
+bore and length, the tolerances and the knurl.
+
+| Service | Notes |
+|---|---|
+| PCBWay or JLCPCB "CNC machining" (turning) | Usually cheapest for small brass batches; ask for C360 brass |
+| Xometry / Protolabs Network | Instant quotes for turned parts |
+| A local Swiss-lathe or watch-parts shop | Best for the 0.36 mm-wall tubes |
+
+| Item | Qty | ≈ $ | Notes |
 |---|---|---|---|
-| Round brass tube, .014" wall, 12": **1/8", 5/32", 3/16", 7/32"** (or the K&S #3400 telescoping assortment) | 1 each | 15–25 | Hand arbors, needle arbor, cannon, sleeves and crown collar |
-| Round brass rod, 12": **3/32", 1/8", 5/32"** | 1 each | Check | Arbor I and crown plunger, sensor shafts, knob shafts |
+| Turned-parts kit, brass C360 | 1 set | Quote (guess 100–250) | Tolerances: ODs 0/−0.02 mm, bores +0.02/0, lengths ±0.03. The plain tubes may be quoted as precision tube cut to length and faced: equally good. Order a spare or two of the bushings and sleeves |
 
-Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
+The diameters keep K&S telescoping sizes (3/32", 1/8", 5/32", 3/16", 7/32" with .014" walls), so
+in a pinch the plain tubes and bushings can still be cut from K&S stock.
 
 ## C. Fasteners and fittings
 
@@ -77,13 +90,12 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 | M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
 | M2 × 8 brass slotted **countersunk** screw, DIN 963, 90° | 3 | 2 | Flush in the floor → spacer → PCB → bay standoff; length includes head |
 | M2 × 6 brass slotted **countersunk** screw, DIN 963, 90° | 4 | | Flush in the top face; length includes head |
-| **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, Loctite 638 on its 5/32" shaft (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |
+| **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, on the knob-shaft collar with Loctite 638 (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |
 | Brass hinge, **Guden BR05050404-72** (72" stock length) | 1 | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width. Cut your 5-knuckle piece with a Dremel and trim the lid leaf, using `hinge_trim_gauge` (ASSEMBLY.md §3). Plenty left over for spares. |
 | M2 × 6 DIN 963 countersunk screw, 90°, Ø3.8 mm head + M2 hex nut | 4 each | Check | Flush in the fixed hinge leaf → shell → body backing strip → nut |
 | M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.0 mm head | 2 | Check | Flush in the lid hinge leaf |
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm, and M1.6 DIN 125 washer (Ø4 × 0.3) | 2 each | Check | Inside the lid wall |
-| M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 1 | 2 | Sensor-I shaft spacer |
-| M4 brass shim washer 0.5 mm (Ø8 × Ø4.2) | 3 | 2 | Under each thumbwheel |
+| DIN 6799 retaining washer (E-clip), **size 1.5** (for Ø2–2.5 shafts), stainless | 1 (+ spares) | 2 | Holds the crown in, inside the wall. They fly: buy a pack |
 | Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
 | Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
 
@@ -131,11 +143,10 @@ header with part numbers. Summary:
 | Item | ≈ $ | Notes |
 |---|---|---|
 | Matte white (or cream) inkjet vinyl sticker sheet + clear matte laminate | 8 | Generate the dial with Myth Made's symbols (`dial/make_dial.py --art …`), then print `dial/local/dial_print_letter.pdf` or upload `dial/local/dial_1200dpi.png` to a die-cut sticker service. See `dial/README.md`. |
-| Soft solder + brass flux + solder paste | 12 | Still needed for shaft/movement and crown joints; no hinge or knob-lamination soldering |
-| 5-minute epoxy, Loctite 638 (retaining compound) | 10 | |
+| Electronics solder (lead-free or 60/40, 0.5–0.8 mm) and flux pen | 10 | PCB and leads only: nothing in the movement is soldered |
+| 5-minute epoxy, Loctite 638 (retaining compound) | 10 | 638 holds every gear, hand, bushing and the cannon; epoxy the magnets |
 | Clock oil | 6 | |
 | Speaker cloth / fine acoustic mesh (a 60 × 60 mm piece) | 3 | Under the grille ring |
-| Brass black / gun blue for the hands (optional) | 8 | |
 | Renaissance Wax or clear lacquer | 10 | |
 
 ## F. Cloud
@@ -148,15 +159,15 @@ The instrument talks to this repo's Azure Function (`/api/ask-voice`, `/api/spea
 ## G. Tools
 
 Everything needed to build the instrument, with the assembly step that uses it. Consumables
-(solder, flux, glue, oil, abrasive paper) are in [§E](#e-dial-finish-and-consumables). The two
-laser-cut jigs, `hinge_trim_gauge` and `hinge_drill_guide`, come with the SendCutSend order.
+(solder, flux, glue, oil, abrasive paper) are in [§E](#e-dial-finish-and-consumables). The three
+laser-cut jigs, `hinge_trim_gauge`, `hinge_drill_guide` and `hand_setting_tool`, come with the
+SendCutSend order.
 
 | Tool | Used for (ASSEMBLY.md) | ≈ $ | Notes |
 |---|---|---|---|
-| Temperature-controlled soldering iron, ≥60 W, fine chisel tip (e.g. Pinecil) | §3–§6 carrier PCB, shaft and crown joints | 35 | Brass sinks heat; a weak iron won't wet it |
-| Butane micro torch + a fire-safe pad | §3 brass-to-brass solder joints | 20 | |
+| Temperature-controlled soldering iron, fine chisel tip (e.g. Pinecil) | §4 carrier PCB, §5 speaker and mic leads | 35 | Electronics only |
 | **90° zero-flute (cross-hole) countersink**, ~6 mm (1/4") body, for holes down to 1.6 mm, + T-handle | §1 seven case screw seats, §7 six hinge-leaf seats | 20 | Must be **90°**, not the common US 82°. Finished rim Ø3.8–3.9 mm (M2), Ø3.0–3.1 mm (M1.6) |
-| Digital calipers | §1 countersink rims, §2 stock lengths, general checks | 20 | |
+| Digital calipers | §1 countersink rims, §2 identifying the turned parts | 20 | |
 | Rotary tool (Dremel) + reinforced cut-off wheels | §3 cutting the hinge from the 72" stock | 50 | Wear safety glasses |
 | Drill (cordless or drill press), low speed, with **Ø1.8 mm** and **Ø2.4 mm** HSS bits | §7 drilling the hinge through `hinge_drill_guide` | — | Assumed owned; bits ≈ $5 |
 | Automatic centre punch | §3 staking the hinge pin, §7 spotting the hinge holes | 10 | |
@@ -164,10 +175,11 @@ laser-cut jigs, `hinge_trim_gauge` and `hinge_drill_guide`, come with the SendCu
 | Needle file set | §1 deburring, §3 filing the hinge leaf to the gauge line | 12 | |
 | Flat glass plate (or a tile) | §1 flattening and deburring on 600–2000 grit | 5 | |
 | Pin vise + small drill set (0.3–3 mm) | §1 opening a gear bore that comes out tight | 15 | |
-| Tube cutter (K&S #296) or jeweller's saw and mitre box | §2 cutting the K&S stock | 10 | No longer needed once the turned-parts kit replaces the K&S stock |
+| Flat-nose pliers or an E-clip applicator | §7 snapping the crown's E-clip on | 8 | |
+| Flat glass sheet (the same one) | §1 bushings flush, §3 gears flush with the arbor ends | — | |
 | Precision screwdrivers (slotted 1.5–2.5 mm) and nut drivers 3.2 mm and 4 mm | M1.6/M2 screws, nuts and hex standoffs throughout | 15 | |
 | Flush cutters and a 30 AWG wire stripper | Socket strips, speaker/mic leads, the USB-C cable for J7 | 18 | |
 | Fine tweezers | Wiring, nuts, seating arbor tips (§5) | 8 | |
 | Multimeter | PCB bring-up and continuity checks (`pcb/README.md`) | 25 | |
 | USB-C data cable and a computer with PlatformIO | First firmware flash (`firmware/README.md`) | — | |
-| Safety glasses | Cutting, drilling, the torch | 5 | |
+| Safety glasses | Cutting the hinge, drilling | 5 | |

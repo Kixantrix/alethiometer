@@ -2,4 +2,5 @@
 step/
 *.step
 !sendcutsend/*.step
+!turned/*.step
 build_log.txt

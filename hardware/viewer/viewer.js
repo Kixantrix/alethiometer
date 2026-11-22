@@ -134,10 +134,16 @@ async function load() {
   setLid(restDeg);
 
   const v = `?v=${manifest.generated ?? Date.now()}`;
-  const [gltf, dialTex] = await Promise.all([
+  const [gltf, dialTex, pcbGltf] = await Promise.all([
     new GLTFLoader().loadAsync('assets/alethiometer.glb' + v),
     manifest.dial.texture
       ? new THREE.TextureLoader().loadAsync('assets/' + manifest.dial.texture + v).catch(() => null)
+      : Promise.resolve(null),
+    manifest.pcb
+      ? new GLTFLoader().loadAsync('assets/' + manifest.pcb.file + v).catch((err) => {
+        console.warn('KiCad board failed to load; showing the CAD carrier instead.', err);
+        return null;
+      })
       : Promise.resolve(null),
   ]);
   if (dialTex) {
@@ -153,7 +159,8 @@ async function load() {
     geom.computeVertexNormals();
     if (meta.finish === 'dial') dialUVs(geom, manifest.dial.half);
     const material = makeMaterial(meta, dialTex);
-    const rec = { meta, material, visible: true, meshes: [], lidPart: !!meta.open };
+    const rec = { meta, material, materials: [material], visible: true, meshes: [], lidPart: !!meta.open,
+                  pieces: meta.placements.length, tris: meta.triangles * meta.placements.length };
     for (const arr of meta.placements) {
       const mesh = new THREE.Mesh(geom, material);
       mesh.name = meta.name;
@@ -165,6 +172,7 @@ async function load() {
     }
     parts.push(rec);
   }
+  const pcbLoaded = pcbGltf ? attachPcb(pcbGltf) : false;
 
   buildSidebar();
   $('lid').disabled = false;
@@ -172,11 +180,48 @@ async function load() {
   updateMatrices();
   setView('iso', false);
   status('');
-  const pieces = parts.reduce((n, r) => n + r.meshes.length, 0);
-  const tris = parts.reduce((n, r) => n + r.meta.triangles * r.meshes.length, 0);
+  const pieces = parts.reduce((n, r) => n + r.pieces, 0);
+  const tris = parts.reduce((n, r) => n + r.tris, 0);
   $('stats').textContent = `${parts.length} part types, ${pieces} pieces, ${(tris / 1000).toFixed(0)}k triangles`
     + ` · lid stop: ${Math.round(manifest.hinge.open_deg)}°`
-    + (manifest.dial.source ? ` · dial: ${manifest.dial.source}` : ' · no dial texture');
+    + (manifest.dial.source ? ` · dial: ${manifest.dial.source}` : ' · no dial texture')
+    + (pcbLoaded ? ` · carrier: ${manifest.pcb.source}` : '');
+}
+
+// The real carrier board exported from KiCad (export_viewer.py). Its meshes become the
+// `attach` part's meshes, so explode, visibility, picking and section all treat it as that part;
+// the CAD stand-ins listed in `replaces` are dropped.
+function attachPcb(gltf) {
+  const spec = manifest.pcb;
+  const host = parts.find((r) => r.meta.name === spec.attach);
+  if (!host) { console.warn('KiCad board: no part named', spec.attach); return false; }
+  const frame = new THREE.Matrix4().fromArray(spec.matrix);
+  gltf.scene.updateMatrixWorld(true);
+  const meshes = [];
+  gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  if (!meshes.length) return false;
+
+  for (const name of spec.replaces) {
+    const rec = parts.find((r) => r.meta.name === name);
+    if (!rec) continue;
+    for (const m of rec.meshes) root.remove(m);
+    rec.meshes = [];
+    if (rec !== host) parts.splice(parts.indexOf(rec), 1);
+  }
+  const materials = new Set();
+  for (const o of meshes) {
+    const base = frame.clone().multiply(o.matrixWorld);
+    o.removeFromParent();
+    o.matrixAutoUpdate = false;
+    o.userData = { rec: host, base };
+    o.material.side = THREE.DoubleSide;
+    materials.add(o.material);
+    root.add(o);
+    host.meshes.push(o);
+  }
+  host.materials = [...materials];
+  host.tris = spec.triangles;
+  return true;
 }
 
 // ---------------------------------------------------------------- transforms
@@ -220,7 +265,7 @@ function buildSidebar() {
     label.append(cb, ' ' + g.label);
     const count = document.createElement('span');
     count.className = 'count';
-    count.textContent = recs.reduce((n, r) => n + r.meshes.length, 0);
+    count.textContent = recs.reduce((n, r) => n + r.pieces, 0);
     const sw = document.createElement('span');
     sw.className = 'swatch';
     sw.style.background = swatchColor(recs[0].meta.color);
@@ -290,12 +335,12 @@ const HILITE = new THREE.Color(0x6a4300);
 
 function select(rec, fromList = false) {
   if (state.selected) {
-    state.selected.material.emissive?.set(0x000000);
+    for (const mat of state.selected.materials) mat.emissive?.set(0x000000);
     state.selected.row?.classList.remove('selected');
   }
   state.selected = rec;
   if (!rec) { $('info').hidden = true; return; }
-  rec.material.emissive?.copy(HILITE);
+  for (const mat of rec.materials) mat.emissive?.copy(HILITE);
   rec.row?.classList.add('selected');
   if (!fromList && rec.row) {
     const g = groupEls[rec.meta.group];
@@ -306,7 +351,7 @@ function select(rec, fromList = false) {
   const label = manifest.groups.find((g) => g.id === m.group)?.label ?? m.group;
   const rows = [
     ['Layer', label],
-    ['Kind', { scs: 'laser cut (SendCutSend)', 'scs-bent': 'laser cut + bent (SendCutSend)', stock: 'K&S stock', bought: 'bought' }[m.kind] ?? m.kind],
+    ['Kind', { scs: 'laser cut (SendCutSend)', 'scs-bent': 'laser cut + bent (SendCutSend)', stock: 'K&S stock', turned: 'CNC-turned brass (kit)', bought: 'bought' }[m.kind] ?? m.kind],
     ['Material', m.material],
     ['Spec', m.spec],
     ['Qty', m.qty + (m.qty_extra ? ` (+${m.qty_extra} spare)` : '')],
@@ -414,8 +459,10 @@ function setSection(on, pos = state.sectionPos) {
   $('sectionPos').disabled = !on;
   $('sectionPos').value = pos;
   for (const r of parts) {
-    r.material.clippingPlanes = on ? [clipPlane] : [];
-    r.material.needsUpdate = true;
+    for (const mat of r.materials) {
+      mat.clippingPlanes = on ? [clipPlane] : [];
+      mat.needsUpdate = true;
+    }
   }
 }
 
