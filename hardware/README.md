@@ -70,10 +70,11 @@ the interpretation aloud.
   on the outside says "speaker" or "microphone".
 - **Crown.** A small knurled brass crown centred on the top-right corner, low on the case. Press
   it to wake the instrument; hold it to speak, release to ask. Double-click sends it to sleep (it
-  also sleeps after 2 minutes idle). Triple-click opens Wi-Fi setup; five clicks starts calibration.
-- **Power and mute.** Two small slide switches peek out of the bottom wall. Power off disconnects
-  the battery for storage. Mute makes it silent: it never speaks or chimes, and the needle alone
-  gives the answer.
+  also sleeps after 2 minutes idle). Triple-click opens Wi-Fi setup, four clicks toggle mute, five
+  clicks start calibration.
+- **Power and mute.** A small slide switch sits just inside a slot in the back wall, below the
+  USB-C port: flick it with a fingernail to disconnect the battery for storage. Four clicks of the
+  crown toggle mute (remembered): it never speaks or chimes, and the needle alone gives the answer.
 - **Lid.** A magnet pair holds it shut. It opens flat and stops just beyond (about 200°) when the hinge's
   own leaves close on each other; on a table it rests on the tabletop. There is no separate
   stop hardware. A USB-C charging port is tucked in the hinge-side wall. Battery is

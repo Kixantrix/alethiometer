@@ -4,7 +4,7 @@ One octagonal, two-layer, **all through-hole** board in the bottom of the case. 
 point-to-point wiring. **Every module plugs into sockets**, so you can pull any of them to
 reflash, probe or replace it without desoldering anything. The crown switch and the wall USB-C
 port are mounted on the board too, so their push and plug forces go into the screwed-down
-carrier rather than a glue joint. So are the power and mute slide switches and the battery's
+carrier rather than a glue joint. So are the power slide switch and the battery's
 JST-PH socket. The two off-board parts (mic, speaker) connect to labelled pads. Every signal also has a labelled test pad.
 
 ![top](fab/render_top.png)
@@ -51,8 +51,7 @@ boards plus shipping.
 | — | Short USB-C cable **with data** (USB 2.0), thin (≤ 3.5 mm) | 1 | Cut to ~6 cm from the plug: ProS3 USB-C → J7. Check D+/D− continuity first; charge-only cables won't work. |
 | R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers |
 | R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) |
-| R7 | 1 MΩ, ¼ W metal film | 1 | Mute-switch pull-up to the always-on 3V3 |
-| SW2, SW3 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 2 | Power (SW2) and mute (SW3), sliders out through the bottom wall |
+| SW2 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 1 | Power, on the back edge; reached through a slot in the back wall |
 | J8 | **JST S2B-PH-K-S** side-entry 2-pin socket, 2.0 mm | 1 | Battery plug. Polarity is marked on the silkscreen. |
 | C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
 | — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J4 and J5 |
@@ -91,8 +90,8 @@ modules flat.
 - **Wall USB-C (U7).** The Adafruit #4090 breakout plugs into a 1×8 socket with its receptacle
   facing the right wall. Two M2 × 10 screws go through its mounting holes (right beside the
   receptacle) and 5 mm nylon spacers, with nuts under the carrier, so plugging in pushes on
-  screws, not on the socket. Its mouth sits about 1.5 mm inside the wall; the wall opening is
-  sized for a plug's overmould to enter.
+  screws, not on the socket. Its mouth sits about 1.5 mm inside the outer face, behind a
+  10 × 4.4 mm opening that hugs the port (plugs with short shells may not latch fully).
 - **Crown switch (SW1).** An Omron B3F-3150 right-angle tactile switch soldered at the top-right
   corner, its button on the crown axis. The turned brass crown's stem presses it through the lower
   case's chamfer.
@@ -125,7 +124,7 @@ you only plug into J1 on the bench, with the movement lifted off.
 
 1. **Check the bare board** with a multimeter. The GND test pad must not be shorted to `VBAT`,
    `+5V`, `+3V3` or `3V3_SW`.
-2. **Resistors and C1.** R1–R7 lie flat. C1's long leg (+) goes to the square pad marked `+`.
+2. **Resistors and C1.** R1–R6 lie flat. C1's long leg (+) goes to the square pad marked `+`.
    Clip the leads.
 3. **Male header** for J1 (and J2 if you want it).
 4. **Module sockets: use the modules as jigs.** Cut each socket strip to length (you lose one
@@ -137,7 +136,7 @@ you only plug into J1 on the bench, with the movement lifted off.
    pins on top of the module. Then slide the plastic spacer up and off with pliers, and clip the
    stubs flush. The MAX98357A's two speaker pins are single header pins fitted the same way.
    Every module now unplugs and drops back in at exactly the right height.
-5. **Switches, J8 and battery.** Solder SW2, SW3 and J8 flat on the board. Check with a meter that
+5. **Power switch, J8 and battery.** Solder SW2 and J8 flat on the board. Check with a meter that
    your battery's red wire meets J8's **+** pin; if not, swap the two crimps in its plug (lift the
    tabs with a pin). Stick the cell to the `BATTERY` area with foam tape, lead end toward the top,
    and plug it into J8.
@@ -159,13 +158,13 @@ the **test pads** in the bottom strip and J1. Every pad is labelled with its net
 
 | Step | Fitted | Check |
 |---|---|---|
-| 1 | Bare board + passives | Resistance GND↔`+3V3`, `+5V`, `VBAT`, `3V3_SW` all > 1 kΩ. `H1`/`H2`/`H3` → GND ≈ 47 kΩ. `MUTE` → `+3V3` ≈ 1 MΩ. |
+| 1 | Bare board + passives | Resistance GND↔`+3V3`, `+5V`, `VBAT`, `3V3_SW` all > 1 kΩ. `H1`/`H2`/`H3` → GND ≈ 47 kΩ. |
 | 2 | ProS3 only, USB connected | `+5V` ≈ 5.0 V, `+3V3` ≈ 3.3 V, `VBAT` ≈ 4.2 V (charging or battery). Flash the firmware (see [`../../firmware/README.md`](../../firmware/README.md)) and open the serial monitor. |
 | 3 | + AS5600 ×3 | `3V3_SW` ≈ 3.3 V while awake. `hands` prints three angles. Turning a magnet over each chip moves `H1`–`H3` between about 0 and 2.7 V. |
 | 4 | + DRV8833 + X27 | `FLT` reads high (no fault). `home` buzzes the needle against its stop, and `sweep` visits the symbols. You can scope `AIN1`/`AIN2`/`BIN1`/`BIN2`. If it homes the wrong way, set `MOTOR_PHASE_DIR = -1`. |
 | 5 | + MAX98357A + speaker | `tone` (or `tone 440`) beeps. `AMP_SD` is high while it plays. `BCLK`/`WS`/`DOUT` carry I2S. |
 | 6 | + INMP441 on J4 | `rec` records and plays back. `MIC_SD` carries data. |
-| 7 | Crown / mute | Press the crown and flip the mute switch. `status` shows the change, and a crown press wakes it from `sleep`. |
+| 7 | Crown / power | Press the crown: `status` shows it, and a crown press wakes it from `sleep`. Power switch off: `BAT+` and `VBAT` disconnect (on battery, it goes dark). |
 
 **Firmware iteration.** The ProS3's native USB (CDC serial + the ESP32-S3's built-in USB-JTAG
 auto-reset) reaches the wall port through J7 and U7, so `pio run -t upload` works with

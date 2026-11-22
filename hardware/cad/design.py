@@ -171,6 +171,7 @@ J4_PAD_MID, J5_PAD_MID = (-46.0, -22.08), (-18.5, 29.73)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
 USB_BOARD_Z = Z_CARRIER_TOP + L.MODULE_LIFT               # Adafruit #4090 underside (on its socket)
+USB_OPENING = (10.0, 4.4)                                 # receptacle 8.94 × 3.26, plug shell 8.4 × 2.6
 USB_SCREW_LEN, USB_SCREW_HEAD = 10.0, (3.8, 1.3)           # DIN 84 M2: head Ø3.8 × 1.3
 USB = dict(y=L.USBC_PLACE["c"][1], z=USB_BOARD_Z + 1.6 + 1.63)   # receptacle centre, right wall
 CROWN_Z = Z_CARRIER_TOP + L.CROWN_SW_ACT_H                # crown axis = switch actuator height
@@ -322,13 +323,16 @@ def lower_tray() -> Part:
     cuts = [WallCut(*wall_point(LOWER_OUTER, tr["angle"]), knob_notch_width(CASE_W / 2 - T040),
                     knob_z0, LOWER_H + 1) for tr in TRAINS]
     ux = wall_point(LOWER_OUTER, 0.0)[0]
-    # USB-C opening big enough for a plug's overmould to enter (the receptacle sits ~1.5 mm in)
-    cuts.append(WallCut(ux, USB["y"], 12.6, USB["z"] - 3.3, USB["z"] + 3.3, rounded=True))
+    # USB-C opening hugging the port: clears the plug shell by ~0.8 mm and the receptacle itself
+    # if the bend puts the wall closer. The mouth sits ~1.5 mm in, so the cable's grip stops at
+    # the brass: plugs with a short metal shell may not latch fully (user's choice, for looks).
+    w_, h_ = USB_OPENING
+    cuts.append(WallCut(ux, USB["y"], w_, USB["z"] - h_ / 2, USB["z"] + h_ / 2, rounded=True))
     (cx, cy), _ = crown_axis()
     cuts.append(WallCut(cx, cy, 3.1, CROWN_Z - 1.55, CROWN_Z + 1.55, rounded=True))
-    for px in (L.SW_MUTE_PIN1_X, L.SW_POWER_PIN1_X):        # power and mute sliders
-        cuts.append(WallCut(px + SLIDE_SLOT[0], wall_point(LOWER_OUTER, 270.0)[1], SLIDE_SLOT[1],
-                            SLIDE_SLOT_Z - SLIDE_SLOT[2] / 2, SLIDE_SLOT_Z + SLIDE_SLOT[2] / 2, rounded=True))
+    # power slide: reached through a slot in the back wall (the slider stays inside the wall)
+    cuts.append(WallCut(ux, L.SW_POWER_PIN1_Y + SLIDE_SLOT[0], SLIDE_SLOT[1],
+                        SLIDE_SLOT_Z - SLIDE_SLOT[2] / 2, SLIDE_SLOT_Z + SLIDE_SLOT[2] / 2, rounded=True))
     tray = Tray(LOWER_OUTER, LOWER_H, T040, BEND_IR, K_FACTOR,
                 floor_holes=[(x, y, POST_HOLE) for x, y in L.BAY_POSTS], wall_cuts=cuts)
     prof, bends = tray.flat()
@@ -981,16 +985,15 @@ def electronics() -> list[Part]:
     run("wire_usb", [(-33.0, 43.7, zu), (-36.5, 43.7, zu), (-38.0, 46.0, zt + 5.0), (-37.0, 46.5, zt + 2.5),
                      (j7[0], j7[1], zt + 1.6), (j7[0], j7[1], zt + 0.05)], 3.0, (0.12, 0.12, 0.13),
         "short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7")
-    # Power and mute slide switches (C&K OS102011MA1QN1), sliders out through the bottom wall
+    # Power slide switch (C&K OS102011MA1QN1) on the back edge, slider just inside the wall slot
     bw, bd, bh = L.SLIDE_SW_BODY
     aw, reach, az0, az1 = L.SLIDE_SW_ACT
-    fy = L.SLIDE_SW_FRONT_Y
-    for name, px, use in (("switch_power", L.SW_POWER_PIN1_X, "power: off = battery disconnected"),
-                          ("switch_mute", L.SW_MUTE_PIN1_X, "mute: needle only, no speech or chimes")):
-        body = box(px - 2.3, fy, zt, px - 2.3 + bw, fy + bd, zt + bh)
-        on = px + SLIDE_SW_ON_OFFSET
-        body = body.fuse(box(on, fy - reach, zt + az0, on + aw, fy, zt + az1))
-        add(name, body, f"C&K OS102011MA1QN1 right-angle slide switch ({use})", BLACK)
+    fx, py = L.SLIDE_SW_FRONT_X, L.SW_POWER_PIN1_Y
+    body = box(fx - bd, py - 2.3, zt, fx, py - 2.3 + bw, zt + bh)
+    on = py + SLIDE_SW_ON_OFFSET
+    body = body.fuse(box(fx, on, zt + az0, fx + reach, on + aw, zt + az1))
+    add("switch_power", body, "C&K OS102011MA1QN1 right-angle slide switch (power: off = battery "
+        "disconnected)", BLACK)
     # Wall USB-C: Adafruit #4090 on its socket + two 5 mm spacers, receptacle mouth toward the wall
     hw, hh = u["w"] / 2, u["h"] / 2
     usb = box(-hw, -hh, 0, hw, hh, 1.6).fuse(

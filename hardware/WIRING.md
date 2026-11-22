@@ -3,8 +3,8 @@
 Almost all of this is on the [carrier PCB](pcb/README.md): every module plugs into sockets
 on it and the board makes the connections below. The only wires are to the two off-board parts
 (mic, speaker), which solder to labelled pads J4 and J5, plus a short USB-C cable from the ProS3's
-port to J7. The battery plugs into J8. The crown, power and mute switches and the wall USB-C port
-are all on the carrier. This page is the signal reference. For per-pad
+port to J7. The battery plugs into J8. The crown and power switches and the wall USB-C port are
+all on the carrier. This page is the signal reference. For per-pad
 detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
 
 > The pin numbers are the single source of truth in [`firmware/src/config.h`](../firmware/src/config.h).
@@ -28,7 +28,6 @@ flowchart LR
   MCU -- IO21 BCLK / IO12 WS --> MIC
   LDO2 -- 3V3 --> MIC
   CROWN[Crown switch] -- IO9 --> MCU
-  MUTE[Mute switch SW3] -- IO16 --> MCU
 ```
 
 ## Connection table
@@ -58,7 +57,6 @@ flowchart LR
 | ProS3 | VBAT | MAX98357A VIN | |
 | MAX98357A | + / − | **J5** → speaker | Through the amp's two speaker-pin sockets. GAIN is unconnected (9 dB). |
 | Crown switch SW1 | — | IO9 ↔ GND (on the carrier) | Internal pull-up; also the deep-sleep wake button. |
-| Mute switch SW3 | — | IO16 ↔ GND | R7 (1 MΩ) pulls IO16 up to the always-on 3V3. LOW = muted. |
 | INMP441 | VDD GND SCK WS SD | **J4** | Tie the mic's L/R pin to GND at the mic. |
 
 ## Where things go
@@ -74,7 +72,7 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
 | X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier; located sideways by P1's slot (slide to set mesh) |
 | LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area, lead end toward the top; plugs into **J8** just to its left |
-| Power / mute switches | carrier bottom edge, x 31.5 / 19.5, sliders through the bottom wall | Soldered to the carrier; slide toward the corner = on / sound on |
+| Power switch | carrier back (+x) edge, pin 1 at y −16, below the X27 | Soldered to the carrier. Its slider stays ~1.2 mm inside a slot in the back wall (the board drops straight in); flick it with a fingernail. Toward the USB port = on. |
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. P1's seat is a ring (Ø22 opening) so the speaker's back vents into the bay. Two leads from its back tabs drop through that opening onto **J5**, directly below. |
 | INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −17 … −27). |
 | Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |

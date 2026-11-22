@@ -16,6 +16,7 @@ struct Settings {
   float needleOffset;   // needle deg when motor is at 0 (the hard stop)
   bool handsCalibrated = false;
   bool needleCalibrated = false;
+  bool muted = false;     // no speech or chimes; the needle alone answers
 };
 
 extern Settings settings;
@@ -24,3 +25,4 @@ void settingsLoad();
 void settingsSaveCloud();
 void settingsSaveHands();
 void settingsSaveNeedle();
+void settingsSaveMuted();

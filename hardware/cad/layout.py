@@ -100,20 +100,23 @@ BATTERY_BOX = (-37.0, -48.0, -13.2, -13.2)       # x0, y0, x1, y1 (sits on the c
 BATTERY_JST_ENTRY = (-40.5, -28.5)              # mouth centre (CAD frame)
 BATTERY_JST_BODY = (5.9, 7.6, 4.85)             # across the pins, depth, height
 
-# Power and mute: two C&K OS102011MA1QN1 right-angle slide switches on the carrier, their
-# sliders out through the bottom wall under the DRV8833. Pins 1-2-3 run along +x;
-# slider toward pin 3 (the case corner) = power on / sound on.
+# Power: a C&K OS102011MA1QN1 right-angle slide switch on the carrier's back (+x) edge, below
+# the USB-C port and clear of the X27. Like everything on the carrier it stays inside the wall
+# (the board drops straight in), so its slider sits ~1.2 mm inside a slot in the back wall:
+# flick it with a fingernail or pen tip. Pins 1-2-3 run along +y; toward pin 3 (the USB port) = on.
 SLIDE_SW_BODY = (8.6, 4.4, 4.7)                 # along x, depth, height (pin 1 at x0 + 2.3)
 SLIDE_SW_ACT = (2.0, 4.0, 1.6, 3.6)             # slider width, reach beyond body, z0, z1 above carrier
 SLIDE_SW_TRAVEL = 2.0
-SLIDE_SW_FRONT_Y = -52.5                        # body front edge, just inside the carrier edge
-SW_MUTE_PIN1_X, SW_POWER_PIN1_X = 19.5, 31.5   # footprints incl. legs are 11.4 wide
+SLIDE_SW_TIP_GAP = 0.2                          # slider tip inside the inner wall face
+SLIDE_SW_FRONT_X = CASE_W / 2 - T040 - SLIDE_SW_TIP_GAP - SLIDE_SW_ACT[1]   # body front edge
+SW_POWER_PIN1_Y = -16.0                         # below the X27's footprint
 
 # Wall USB-C: Adafruit #4090 USB-C breakout (0.1" header + two M2 holes beside the receptacle),
 # on a 1x8 socket and two 5 mm spacers, receptacle facing the right wall. Frame as the other
 # modules: header row toward -y, receptacle mouth at +y.
 ADAFRUIT_USBC = dict(w=20.32, h=13.97, header_dy=-4.445, holes=((-7.62, 4.445), (7.62, 4.445)))
-USBC_WALL_GAP = 0.75                                   # board front edge to the inner wall
+USBC_WALL_GAP = 0.75                                   # board edge to inner wall: the receptacle stays inside
+                                                       # the wall even if a bend lands 0.5 mm inward
 USBC_PLACE = dict(c=(CASE_W / 2 - T040 - USBC_WALL_GAP - ADAFRUIT_USBC["h"] / 2, 23.5), rot=-90.0)
 
 # Crown: centred on the top-right chamfer of the lower tray, pressing a right-angle

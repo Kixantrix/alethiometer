@@ -8,5 +8,6 @@ void appLoop();
 void appStartCalibration();
 void appStartPortal();
 void appSleep();
+void appToggleMute();    // crown x4 / console 'mute'
 void appTouch();   // reset the idle-sleep timer
 bool appIsIdle();

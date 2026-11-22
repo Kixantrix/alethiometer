@@ -239,8 +239,8 @@ little beyond, until the two leaves close on each other.
    applicator). The groove's position gives the 0.3 mm of play.
 2. **Lower tray.** Line the floor with one layer of Kapton. Put the three nylon spacers over the
    floor holes and lower the populated carrier straight in: U7's receptacle lines up with the wall
-   opening, the crown switch drops in just behind the crown's stem, and the power and mute
-   sliders poke out through their two slots in the bottom wall. Plug the battery into J8 (check
+   opening, the crown switch drops in just behind the crown's stem, and the power switch's
+   slider lines up behind its slot in the back wall. Plug the battery into J8 (check
    with a meter first that its red wire lands on the **+** mark: JST-PH polarity isn't
    standardised). With the movement standing beside the tray, solder
    the speaker leads into J5 (+ −) and the mic leads into J4 (VDD GND SCK WS SD): both pad rows
@@ -328,5 +328,5 @@ unsupported crown corner. Do not rely on the clearance skirt as rigid bracing.
 | Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 1.1 mm under the magnet), then recalibrate. |
 | Something electrical misbehaves | Lift the movement out and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |
 | The needle buzzes at the wrong end on wake | Set `MOTOR_PHASE_DIR = -1` in `firmware/src/config.h`. |
-| Nothing happens on a crown press | Power switch on (slid toward the corner)? Check the battery plug polarity and charge it over USB with the switch on. |
-| It never speaks | The mute switch is toward the centre (muted). |
+| Nothing happens on a crown press | Power switch on (slid toward the USB port)? Check the battery plug polarity and charge it over USB with the switch on. |
+| It never speaks | It's muted: four clicks of the crown toggle mute (`status` shows it). |

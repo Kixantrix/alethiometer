@@ -155,8 +155,9 @@ app setting. See *Development* and *Physical instrument API* in the root `README
 Nothing has been built yet. The geometry passes the CAD interference check and the PCB passes
 DRC. Before ordering, check these against real parts:
 
-- **USB-C opening.** The receptacle sits about 1.5 mm inside the wall. Hold a real cable up
-  to the 12.6 × 6.6 mm opening (`lower_tray()` in `design.py`).
+- **USB-C opening.** It hugs the port (10.0 × 4.4 mm, `USB_OPENING` in `design.py`), and the
+  receptacle mouth sits about 1.5 mm inside the outer face, so a cable's grip stops at the brass.
+  Plugs with a short metal shell may not latch fully: test your cables against the real case.
 - **X27.168 shaft.** The 34T motor gear sits 5.5 mm above the motor's front face. Check your
   motor's shaft length.
 - **Crown switch.** The Omron B3F-3150's button is modelled 3.75 mm above the board

@@ -107,7 +107,7 @@ void speak() {
   powerLed(0, 255, 60);
   String error;
   const bool ok = cloudSpeak(
-      reading.interpretation, [] { return digitalRead(PIN_CROWN) == LOW || powerMuted(); }, error);
+      reading.interpretation, [] { return digitalRead(PIN_CROWN) == LOW; }, error);
   if (!ok) {
     Serial.printf("[app] speech failed: %s\n", error.c_str());
     audioChime(Chime::Error);
@@ -121,6 +121,7 @@ void handleIdle(const CrownSignal &sig) {
     Serial.printf("[app] %d click(s)\n", sig.clicks);
     if (sig.clicks == CLICKS_SLEEP) appSleep();
     else if (sig.clicks == CLICKS_PORTAL) appStartPortal();
+    else if (sig.clicks == CLICKS_MUTE) appToggleMute();
     else if (sig.clicks == CLICKS_CALIBRATE) appStartCalibration();
   } else if (millis() - lastActivityMs > IDLE_SLEEP_MS) {
     Serial.println("[app] idle timeout");
@@ -159,7 +160,7 @@ void handleReading() {
     Serial.printf("[app] stop %d: %s (%d swing%s)\n", tag + 1, SYMBOL_NAMES[s.index], s.swings, s.swings > 1 ? "s" : "");
   }
   if (needleBusy()) return;
-  if (reading.fromCloud && !powerMuted()) speak();
+  if (reading.fromCloud && !settings.muted) speak();
   else audioChime(Chime::Offline);
   enterIdle();
 }
@@ -172,7 +173,7 @@ void appSetup() {
   settingsLoad();
   const WakeReason wake = powerWakeReason();
   Serial.printf("\n[app] The Alethiometer wakes (reason %d), battery %.2f V%s%s\n", static_cast<int>(wake),
-                powerBatteryVolts(), powerUsbPresent() ? " (USB)" : "", powerMuted() ? ", muted" : "");
+                powerBatteryVolts(), powerUsbPresent() ? " (USB)" : "", settings.muted ? ", muted" : "");
 
   crownBegin();
   handsBegin();
@@ -264,6 +265,20 @@ void appSleep() {
   audioOff();
   cloudOff();
   powerDeepSleep();
+}
+
+void appToggleMute() {
+  settings.muted = !settings.muted;
+  settingsSaveMuted();
+  Serial.printf("[app] %s\n", settings.muted ? "muted" : "sound on");
+  if (settings.muted) {   // silent acknowledgement: the needle nods to the Moon and back
+    needleSetMood(NeedleMood::Still);
+    needleGoToSymbol(SYMBOL_MOON, Approach::Nearest, 900, -1, 600);
+    needleGoToSymbol(SYMBOL_HOURGLASS, Approach::Nearest, 900);
+  } else {
+    audioChime(Chime::CalDone);
+  }
+  enterIdle();
 }
 
 void appTouch() { lastActivityMs = millis(); }

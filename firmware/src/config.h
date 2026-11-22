@@ -22,7 +22,6 @@ constexpr int PIN_I2S_DIN = 14;    // <- INMP441 SD
 constexpr int PIN_AMP_SD = 15;     // MAX98357A SD_MODE: HIGH = on (left channel), LOW = shutdown
 
 constexpr int PIN_CROWN = 9;       // pushbutton to GND, active LOW, RTC GPIO (ext1 wake)
-constexpr int PIN_MUTE = 16;       // mute slide switch to GND, external 1 MOhm pull-up: LOW = muted
 constexpr int PIN_LDO2 = 17;       // ProS3 LDO2 enable (AS5600s, INMP441, RGB LED)
 constexpr int PIN_VBAT_SENSE = 10; // ProS3 on-board divider
 constexpr int PIN_VBUS_SENSE = 33; // HIGH when USB 5 V present
@@ -114,6 +113,7 @@ constexpr uint32_t CROWN_HOLD_MS = 450;     // longer press = push-to-talk
 constexpr uint32_t CROWN_CLICK_GAP_MS = 450;
 constexpr int CLICKS_SLEEP = 2;        // double-click: park and sleep now
 constexpr int CLICKS_PORTAL = 3;
+constexpr int CLICKS_MUTE = 4;         // toggle mute (remembered)
 constexpr int CLICKS_CALIBRATE = 5;
 constexpr uint32_t CAL_ABORT_HOLD_MS = 1500;
 

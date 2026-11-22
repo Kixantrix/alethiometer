@@ -10,7 +10,6 @@ void powerBegin() {
   pinMode(PIN_LDO2, OUTPUT);
   digitalWrite(PIN_LDO2, HIGH);
   pinMode(PIN_CROWN, INPUT_PULLUP);
-  pinMode(PIN_MUTE, INPUT);  // external 1 MOhm pull-up
   pinMode(PIN_VBUS_SENSE, INPUT);
   analogSetPinAttenuation(PIN_VBAT_SENSE, ADC_2_5db);
   // Release any RTC pad config left over from deep sleep so the digital GPIOs work again.
@@ -20,7 +19,6 @@ void powerBegin() {
   pinMode(PIN_AMP_SD, OUTPUT);
   digitalWrite(PIN_AMP_SD, LOW);
   pinMode(PIN_CROWN, INPUT_PULLUP);
-  pinMode(PIN_MUTE, INPUT);
   delay(LDO2_SETTLE_MS);
 }
 
@@ -43,7 +41,6 @@ float powerBatteryVolts() {
 
 bool powerUsbPresent() { return digitalRead(PIN_VBUS_SENSE) == HIGH; }
 
-bool powerMuted() { return digitalRead(PIN_MUTE) == LOW; }
 
 bool powerBatteryLow() { return !powerUsbPresent() && powerBatteryVolts() < VBAT_WARN_V; }
 

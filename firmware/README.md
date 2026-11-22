@@ -95,13 +95,14 @@ Run once after assembly, and again if a gear is re-meshed. **Click the crown 5 t
 | 5 clicks | Calibration |
 | Press during speech | Stop speaking |
 | Double-click | Needle parks on the Hourglass, deep sleep now |
+| 4 clicks | Toggle mute (remembered). Muting: the needle nods to the Moon and back; unmuting: a chime |
 | 120 s without use | Park and deep sleep |
 
-**Mute switch** (slide switch beside the power switch): muted, it never speaks or chimes. Ask
-as usual (hold the crown and speak); the needle gives the reading and the LED shows each stage.
-Set `MUTE_SILENCES_CHIMES = false` in `config.h` to keep the chimes while muted.
+**Mute** (4 clicks, or `mute` on the console): it never speaks or chimes. Ask as usual (hold the
+crown and speak); the needle gives the reading. Set `MUTE_SILENCES_CHIMES = false` in `config.h`
+to keep the chimes while muted.
 
-**Power switch** (slide switch on the bottom wall): off disconnects the battery completely, for
+**Power switch** (recessed slide switch on the back wall, below the USB-C port; flick it with a fingernail or pen tip): off disconnects the battery completely, for
 storage. The battery only charges from USB with the switch **on**.
 
 While the question is considered the needle drifts and trembles; then it sweeps through the
@@ -128,6 +129,7 @@ started (offline readings only). On USB power these limits are ignored.
 | `wifi` | open the setup portal |
 | `sleep` | park and deep sleep |
 | `status` | battery, USB, mute, needle position, API/key/calibration state |
+| `mute` | toggle mute |
 
 ## Pin map
 
@@ -144,7 +146,6 @@ All pins are defined in `src/config.h`.
 | I2S DIN ← INMP441 SD | IO14 | INMP441 L/R → GND (left) |
 | MAX98357A SD_MODE | IO15 | HIGH = on (left channel), LOW = shutdown; held LOW in deep sleep |
 | Crown button → GND | IO9 | internal/RTC pull-up, ext1 wake (any-low) |
-| Mute switch → GND | IO16 | 1 MΩ pull-up (R7) to 3V3; LOW = muted |
 | LDO2 enable | IO17 (on-board) | powers AS5600 ×3, INMP441, RGB LED |
 | VBAT sense | IO10 (on-board) | divider 442k/160k |
 | VBUS sense | IO33 (on-board) | |
@@ -180,7 +181,7 @@ python firmware/tools/gen_symbols.py
 
 | State | Estimated current |
 |---|---|
-| Deep sleep | ~25–30 µA (ESP32-S3 + ProS3 regulator ~10 µA, VBAT divider ~7 µA, mute pull-up 3.3 µA when muted, MAX98357A/DRV8833 shutdown ~2 µA; LDO2 loads are off) |
+| Deep sleep | ~25–30 µA (ESP32-S3 + ProS3 regulator ~10 µA, VBAT divider ~7 µA, MAX98357A/DRV8833 shutdown ~2 µA; LDO2 loads are off) |
 | Awake, idle on Wi-Fi | ~70 mA (S3 + modem-sleep Wi-Fi ~45 mA, 3 × AS5600 ~20 mA, mic/LED ~3 mA) |
 | Needle moving | +20 mA |
 | Recording | ~75 mA |

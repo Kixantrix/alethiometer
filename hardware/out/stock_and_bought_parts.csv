@@ -33,7 +33,6 @@ battery_plug,bought,1,JST PH 2-pin plug on the LiPo's lead
 wire_battery,bought,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"
 wire_usb,bought,1,"short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7"
 switch_power,bought,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = battery disconnected)
-switch_mute,bought,1,"C&K OS102011MA1QN1 right-angle slide switch (mute: needle only, no speech or chimes)"
 usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
 spacer_usb,bought,1,"M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"
 screw_usb,bought,2,"M2 × 10 brass DIN 84 slotted cheese-head screw (USB breakout, from the top)"

@@ -43,11 +43,12 @@ PCB_DIR = HERE.parent / "pcb"
 PCB_BOARD = PCB_DIR / "alethiometer_carrier.kicad_pcb"
 PCB_PART = "pcb_carrier"
 # 3D models for what is actually soldered to the bare board: resistors, C1, the J1 debug header and
-# the crown switch. J2 is optional and J4-J7 are wire pads, so their pin-header models stay out.
-PCB_COMPONENTS = "R*,C*,J1,SW*"
+# the crown and power switches and the battery socket. J2 is optional and J4-J7 are wire pads, so
+# their pin-header models stay out.
+PCB_COMPONENTS = "R*,C*,J1,J8,SW*"
 # CAD stand-ins that KiCad draws for real, by reference designator. Replaced only when the KiCad
 # export actually contains a model for that reference (KiCad 10 ships none for the B3F-315x).
-PCB_DUPLICATES = {"SW1": "crown_switch"}
+PCB_DUPLICATES = {"SW1": "crown_switch", "SW2": "switch_power", "J8": "battery_socket"}
 
 GROUPS = [
     ("case", "Case"),

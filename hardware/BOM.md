@@ -22,7 +22,7 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
 
 | Part | Material | Qty | Notes |
 |---|---|---|---|
-| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall), crown hole (top-right chamfer) and two switch slots (bottom wall). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
+| `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall), crown hole (top-right chamfer) and the power-switch slot (back wall). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
 | `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 17.2 mm. Knob notches. |
 | `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum). |
 | `lid_overlay` | Brass 260 .040" | 1 | Pierced rosette, fixed inside the lid |
@@ -127,10 +127,10 @@ header with part numbers. Summary:
 | **Juken/Switec X27.168** gauge stepper (with internal stop; *don't* remove it) | 1 | 4–10 | Adafruit #2424, AliExpress |
 | Short female headers, 5 mm body (**Adafruit #3008**, 5 × 36-pin) | 1 pack | 5 | Every module socket, including the X27 |
 | Male header strip 0.1", 1×40 | 1 | 1 | Speaker pins, J1/J2 |
-| Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3, 1 MΩ × 1** | 7 | 1 | Hand dividers, lid pull-up |
+| Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3** | 6 | 1 | Hand-sensor dividers |
 | 100 µF 10–16 V electrolytic, radial Ø6.3 mm, 2.5 mm pitch, ≤ 11 mm tall | 1 | 0.3 | VBAT bulk cap |
 | LiPo 1S 3.7 V, **402535** (≈4 × 25 × 35 mm, ~350 mAh), **JST-PH 2.0** lead (with protection circuit) | 1 | 6–9 | Anything ≤ 4.5 × 25 × 35 mm fits. Plugs into J8; check the polarity (PCB README) |
-| **C&K OS102011MA1QN1** right-angle slide switch | 2 | 2 | Power and mute, on the carrier |
+| **C&K OS102011MA1QN1** right-angle slide switch | 1 | 1 | Power, on the carrier |
 | **JST S2B-PH-K-S** side-entry 2-pin socket | 1 | 0.5 | Battery socket J8 on the carrier |
 | **Adafruit USB Type C breakout** (#4090) + 2× M2 × 10 screws, nuts and 5 mm nylon spacers | 1 | 4 | Wall USB-C port, screwed to the carrier |
 | Short USB-C cable with data (thin), cut to ~6 cm | 1 | 3 | ProS3 → carrier J7 |

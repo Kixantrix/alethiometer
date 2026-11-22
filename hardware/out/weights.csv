@@ -1,5 +1,5 @@
 part,qty,grams,material
-case_lower_tray,1,165.7,"brass .040"""
+case_lower_tray,1,166.1,"brass .040"""
 case_lid,1,126.1,"brass .040"""
 case_upper_shell,1,104.4,"brass .040"""
 dial_plate_P2,1,79.3,"brass .063"""
@@ -52,7 +52,6 @@ battery_plug,1,1,JST PHR-2 plug
 wire_battery,1,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"
 wire_usb,1,1,"short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7"
 switch_power,1,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = battery disconnected)
-switch_mute,1,1,"C&K OS102011MA1QN1 right-angle slide switch (mute: needle only, no speech or chimes)"
 spacer_usb,1,1,M2 nylon spacer 5 mm
 screw_usb,2,1,M2×10 DIN 84 cheese head
 nut_usb,2,1,M2 hex nut

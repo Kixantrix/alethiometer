@@ -26,6 +26,7 @@ void settingsLoad() {
   settings.needleCalibrated = prefs.getBool("ncal", false);
   settings.needleOffset = prefs.getFloat("noff", NEEDLE_OFFSET_DEFAULT);
   settings.portalPassword = prefs.getString("appw", "");
+  settings.muted = prefs.getBool("mute", false);
   prefs.end();
   if (settings.apiBase.isEmpty()) settings.apiBase = API_BASE_DEFAULT;
   if (settings.portalPassword.length() < 8) {
@@ -67,4 +68,10 @@ void settingsSaveNeedle() {
   prefs.putBool("ncal", true);
   prefs.end();
   settings.needleCalibrated = true;
+}
+
+void settingsSaveMuted() {
+  prefs.begin(NS, false);
+  prefs.putBool("mute", settings.muted);
+  prefs.end();
 }

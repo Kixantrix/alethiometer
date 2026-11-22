@@ -15,7 +15,7 @@ String line;
 
 void help() {
   Serial.println(
-      "commands: hands | needle <0-35> | home | sweep | rec | tone [hz] | cal | wifi | sleep | status");
+      "commands: hands | needle <0-35> | home | sweep | rec | tone [hz] | cal | wifi | mute | sleep | status");
 }
 
 void printHands() {
@@ -29,7 +29,7 @@ void printHands() {
 
 void status() {
   Serial.printf("battery %.2f V, USB %s, %s, needle %.1f deg (motor %.1f), offset %.1f\n",
-                powerBatteryVolts(), powerUsbPresent() ? "yes" : "no", powerMuted() ? "muted" : "sound on",
+                powerBatteryVolts(), powerUsbPresent() ? "yes" : "no", settings.muted ? "muted" : "sound on",
                 needleAngleDeg(), needleMotorDeg(), settings.needleOffset);
   Serial.printf("api %s, device key %s, hands %scalibrated, needle %scalibrated\n", settings.apiBase.c_str(),
                 settings.deviceKey.length() ? "set" : "MISSING", settings.handsCalibrated ? "" : "NOT ",
@@ -93,6 +93,9 @@ void run(String cmd) {
     else Serial.println("busy - try again when idle");
   } else if (verb == "wifi") {
     if (appIsIdle()) appStartPortal();
+    else Serial.println("busy - try again when idle");
+  } else if (verb == "mute") {
+    if (appIsIdle()) appToggleMute();
     else Serial.println("busy - try again when idle");
   } else if (verb == "sleep") {
     appSleep();

@@ -14,7 +14,7 @@ Everything is through-hole and every module is socketed: the carrier gets
 0.1" female headers (5 mm "short" ones for the breakouts and the ProS3, two
 standard 1x4 for the X27 motor's rear pins) and each module plugs in on its own
 male headers, so any of them can be pulled to reflash or replace it. Off-board
-parts (mic, speaker) are wired to labelled pads; the battery plugs into J8.
+parts (mic, speaker) are wired to labelled pads; the battery plugs into J8 via the power switch.
 """
 from __future__ import annotations
 
@@ -279,7 +279,7 @@ def fp_std(lib, name):
 # ProS3 header pin -> net (pin numbers from Unexpected Maker's ProS3 KiCad symbol)
 PROS3_NETS = {
     1: "VBAT", 2: "GND", 3: "+5V", 4: "+3V3", 5: "H1", 6: "H2", 7: "IO3", 8: "H3", 9: "AIN1",
-    10: "BCLK", 11: "IO0", 12: "3V3_SW", 13: "MUTE", 14: "AMP_SD", 15: "MIC_SD", 16: "DOUT", 17: "WS",
+    10: "BCLK", 11: "IO0", 12: "3V3_SW", 14: "AMP_SD", 15: "MIC_SD", 16: "DOUT", 17: "WS",
     22: "IO38", 23: "RX", 24: "TX", 25: "GND", 26: "RST",
     27: "AIN2", 28: "BIN1", 29: "BIN2", 30: "CROWN", 31: "IO34", 32: "IO36", 33: "IO37", 34: "IO35",
 }
@@ -294,7 +294,7 @@ AS5600_NETS = {"I": "H1_OUT", "II": "H2_OUT", "III": "H3_OUT"}
 # Test pads: a strip along the bottom edge, two rows, vertical labels above each pad
 TP_X0, TP_PITCH, TP_ROW_Y = -11.4, 2.8, (-40.9, -44.0)   # clear of the battery (x < -13.2)
 TEST_PADS = [
-    "GND", "VBAT", "+5V", "+3V3", "3V3_SW", "H1", "H2", "H3", "CROWN", "MUTE", "FLT",
+    "GND", "VBAT", "+5V", "+3V3", "3V3_SW", "H1", "H2", "H3", "CROWN", "BAT+", "FLT",
     "GND", "AIN1", "AIN2", "BIN1", "BIN2", "BCLK", "WS", "DOUT", "MIC_SD", "AMP_SD", "GND",
 ]
 
@@ -317,7 +317,6 @@ RESISTORS = {
     "R1": ("10k", "H1_OUT", "H1", -13.0, 13.5, -90), "R2": ("47k", "H1", "GND", -13.0, 1.0, -90),
     "R3": ("10k", "H2_OUT", "H2", -9.2, 13.5, -90), "R4": ("47k", "H2", "GND", -9.2, 1.0, -90),
     "R5": ("10k", "H3_OUT", "H3", -5.4, 13.5, -90), "R6": ("47k", "H3", "GND", -5.4, 1.0, -90),
-    "R7": ("1M", "MUTE", "+3V3", -1.6, 13.5, -90),
 }
 CAP = ("C1", "100uF 10V", "VBAT", "GND", (44.0, -30.0), 90)
 
@@ -431,21 +430,19 @@ def build() -> pcbnew.BOARD:
         board.Add(_text(board, mark, pcbnew.VECTOR2I(q.x, q.y + mm(1.9)), 1.2, pcbnew.F_SilkS, 0.0))
     text("J8 BAT red=+", (ex - 4.6, ey - 5.5), 0.8, angle=90)
 
-    # power (SW2) and mute (SW3) slide switches: slider out through the bottom wall
-    for ref, px, nets, title, left, right in (
-            ("SW2", L.SW_POWER_PIN1_X, {"2": "BAT+", "3": "VBAT"}, "POWER", "OFF", "ON"),
-            ("SW3", L.SW_MUTE_PIN1_X, {"1": "GND", "2": "MUTE"}, "", "MUTE", "SOUND")):
-        sw_ = add(fp_std("Button_Switch_THT", "SW_Slide_SPDT_Angled_CK_OS102011MA1Q"), ref, title,
-                  (0, 0), 0.0, nets)
-        tip = (px + 1.0, L.SLIDE_SW_FRONT_Y - L.SLIDE_SW_ACT[1])
-        place_by_feature(sw_, (1.0, 6.2), (0.0, 1.0), tip, (0.0, -1.0))
-        sw_.Reference().SetVisible(False)
-        sw_.Value().SetVisible(False)
-        pins = {pad.GetNumber(): pad.GetPosition() for pad in sw_.Pads() if pad.GetNumber()}
-        if pcbnew.ToMM(pins["3"].x) < pcbnew.ToMM(pins["1"].x):
-            raise SystemExit(f"{ref}: pin 3 should face the case corner (+x)")
-        yt = L.SLIDE_SW_FRONT_Y + L.SLIDE_SW_BODY[1] + 1.2
-        text(f"{title} {left}|{right}".strip(), (px + 3.2, yt), 0.8)
+    # power slide switch SW2 on the back (+x) edge; its slider stays inside the wall slot
+    py = L.SW_POWER_PIN1_Y
+    sw_ = add(fp_std("Button_Switch_THT", "SW_Slide_SPDT_Angled_CK_OS102011MA1Q"), "SW2", "POWER",
+              (0, 0), 0.0, {"2": "BAT+", "3": "VBAT"})
+    tip = (L.SLIDE_SW_FRONT_X + L.SLIDE_SW_ACT[1], py + 1.0)
+    place_by_feature(sw_, (1.0, 6.2), (0.0, 1.0), tip, (1.0, 0.0))
+    sw_.Reference().SetVisible(False)
+    sw_.Value().SetVisible(False)
+    pins = {pad.GetNumber(): pad.GetPosition() for pad in sw_.Pads() if pad.GetNumber()}
+    if pcbnew.ToMM(pins["3"].y) > pcbnew.ToMM(pins["1"].y):            # board frame is y-down
+        raise SystemExit("SW2: pin 3 should face the USB port (+y)")
+    xt = L.SLIDE_SW_FRONT_X - L.SLIDE_SW_BODY[1] - 1.2
+    text("POWER OFF|ON", (xt, py + 2.0), 0.8, angle=90)
 
     # ---- passives ----
     for ref, (val, na, nb, x, y, rot) in RESISTORS.items():
