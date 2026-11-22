@@ -5,7 +5,8 @@ before ordering. Every fabricated part comes from `out/`, which `cad/build.py` r
 
 **Previous estimated total ≈ $450–590**, excluding the newly proposed purchased hinge,
 which still needs a quote (≈ $300–380 SendCutSend, ≈ $115–140 electronics including the
-carrier PCB, ≈ $35–60 stock, hardware and consumables). Tools are not included.
+carrier PCB, ≈ $35–60 stock, hardware and consumables). Tools are listed separately in
+[§G](#g-tools) (≈ $300 starting from nothing; skip whatever you already own).
 
 **Do not order hinge-related parts yet.** The reference hinge's undimensioned curl geometry
 needs a supplier drawing/sample and a CAD update before fabrication; see
@@ -143,3 +144,30 @@ The instrument talks to this repo's Azure Function (`/api/ask-voice`, `/api/spea
 `gpt-4o-mini-transcribe` and `gpt-4o-mini-tts` deployments in the Azure OpenAI resource and a
 `DEVICE_KEY` app setting (see the root README). Expect a few cents per reading
 (transcription, the reading, optional web search, and about a minute of speech).
+
+## G. Tools
+
+Everything needed to build the instrument, with the assembly step that uses it. Consumables
+(solder, flux, glue, oil, abrasive paper) are in [§E](#e-dial-finish-and-consumables). The two
+laser-cut jigs, `hinge_trim_gauge` and `hinge_drill_guide`, come with the SendCutSend order.
+
+| Tool | Used for (ASSEMBLY.md) | ≈ $ | Notes |
+|---|---|---|---|
+| Temperature-controlled soldering iron, ≥60 W, fine chisel tip (e.g. Pinecil) | §3–§6 carrier PCB, shaft and crown joints | 35 | Brass sinks heat; a weak iron won't wet it |
+| Butane micro torch + a fire-safe pad | §3 brass-to-brass solder joints | 20 | |
+| **90° zero-flute (cross-hole) countersink**, ~6 mm (1/4") body, for holes down to 1.6 mm, + T-handle | §1 seven case screw seats, §7 six hinge-leaf seats | 20 | Must be **90°**, not the common US 82°. Finished rim Ø3.8–3.9 mm (M2), Ø3.0–3.1 mm (M1.6) |
+| Digital calipers | §1 countersink rims, §2 stock lengths, general checks | 20 | |
+| Rotary tool (Dremel) + reinforced cut-off wheels | §3 cutting the hinge from the 72" stock | 50 | Wear safety glasses |
+| Drill (cordless or drill press), low speed, with **Ø1.8 mm** and **Ø2.4 mm** HSS bits | §7 drilling the hinge through `hinge_drill_guide` | — | Assumed owned; bits ≈ $5 |
+| Automatic centre punch | §3 staking the hinge pin, §7 spotting the hinge holes | 10 | |
+| Small bench vise + two small spring or C-clamps | §3 hinge cutting/trim, §7 clamping the drill guide | 30 | Soft jaws or a scrap of card to protect the brass |
+| Needle file set | §1 deburring, §3 filing the hinge leaf to the gauge line | 12 | |
+| Flat glass plate (or a tile) | §1 flattening and deburring on 600–2000 grit | 5 | |
+| Pin vise + small drill set (0.3–3 mm) | §1 opening a gear bore that comes out tight | 15 | |
+| Tube cutter (K&S #296) or jeweller's saw and mitre box | §2 cutting the K&S stock | 10 | No longer needed once the turned-parts kit replaces the K&S stock |
+| Precision screwdrivers (slotted 1.5–2.5 mm) and nut drivers 3.2 mm and 4 mm | M1.6/M2 screws, nuts and hex standoffs throughout | 15 | |
+| Flush cutters and a 30 AWG wire stripper | Socket strips, speaker/mic leads, the USB-C cable for J7 | 18 | |
+| Fine tweezers | Wiring, nuts, seating arbor tips (§5) | 8 | |
+| Multimeter | PCB bring-up and continuity checks (`pcb/README.md`) | 25 | |
+| USB-C data cable and a computer with PlatformIO | First firmware flash (`firmware/README.md`) | — | |
+| Safety glasses | Cutting, drilling, the torch | 5 | |

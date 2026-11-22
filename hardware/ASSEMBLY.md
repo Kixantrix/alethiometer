@@ -24,20 +24,9 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 
 ## Tools and consumables
 
-- Soldering iron (fine chisel tip, ≥60 W) **and** a small butane torch. Brass sinks heat.
-- Soft solder (lead-free Sn96/Ag4 or 60/40), liquid flux for brass (e.g. Harris Stay-Clean),
-  and a solder-paste syringe for the small joints.
-- Needle files, 600–2000 grit paper, and a pin vise with a set of small drills (to open a gear
-  bore that comes out tight).
-- A **90° zero-flute (cross-hole) countersink**, about 6 mm (1/4") body, rated for holes down to
-  1.6 mm (1/16"), in a T-handle or a drill at low speed. It must be **90°** (metric screws):
-  the common US 82° bits leave the head rocking proud. Zero-flute cutters don't chatter in thin
-  brass the way fluted ones do. Calipers to check the seat diameter.
-- Tube cutter (K&S #296) or a jeweller's saw and mitre box for the K&S stock.
-- 1.8 mm and 2.4 mm drills for transfer-drilling the hinge, and M1.6/M2 screwdrivers.
-- Tweezers, a small vise, Kapton tape, 5-minute epoxy, Loctite 638 (or any retaining compound),
-  clock oil (e.g. Moebius 8030).
-- Multimeter. A USB-C cable for the first flash.
+The full tool list, with the step that uses each tool, is in
+[BOM.md §G](BOM.md#g-tools); consumables are in [BOM.md §E](BOM.md#e-dial-finish-and-consumables).
+The one to get right is the countersink: a **90° zero-flute** cutter, not an 82° one.
 
 ## 0. Before you order
 
