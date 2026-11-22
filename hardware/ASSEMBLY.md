@@ -28,7 +28,11 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 - Soft solder (lead-free Sn96/Ag4 or 60/40), liquid flux for brass (e.g. Harris Stay-Clean),
   and a solder-paste syringe for the small joints.
 - Needle files, 600–2000 grit paper, and a pin vise with a set of small drills (to open a gear
-  bore that comes out tight). A sharp **90° countersink** for the seven external M2 screws.
+  bore that comes out tight).
+- A **90° zero-flute (cross-hole) countersink**, about 6 mm (1/4") body, rated for holes down to
+  1.6 mm (1/16"), in a T-handle or a drill at low speed. It must be **90°** (metric screws):
+  the common US 82° bits leave the head rocking proud. Zero-flute cutters don't chatter in thin
+  brass the way fluted ones do. Calipers to check the seat diameter.
 - Tube cutter (K&S #296) or a jeweller's saw and mitre box for the K&S stock.
 - 1.8 mm and 2.4 mm drills for transfer-drilling the hinge, and M1.6/M2 screwdrivers.
 - Tweezers, a small vise, Kapton tape, 5-minute epoxy, Loctite 638 (or any retaining compound),
@@ -77,8 +81,10 @@ the hinge's own leaves closing on each other (§8), so the real curl also sets t
    Use **90° DIN 963 slotted countersunk M2 brass screws**, not raised/oval countersunk or
    larger-headed ISO alternatives. Work by hand with the thin sheet firmly supported, and
    test the actual screw frequently until its head is flush, not below the surrounding face.
-   The nominal head is Ø3.8 mm: the countersink is **0.55 mm deep**, leaving about **0.47 mm**
-   of straight through-hole in the 1.016 mm sheet. Do not cut through that remaining land.
+   The holes are cut at the right starting size; countersink each one until its rim measures
+   **Ø3.8–3.9 mm** (about 0.55 mm deep, leaving about **0.47 mm** of straight hole in the
+   1.016 mm sheet), then drop a screw in and check it sits flush. Light pressure, a few turns
+   at a time: the cutter centres itself in the existing hole. Stop as soon as the head is flush.
    The assembly and individual-part CAD show the finished seats; the supplier gets the
    unmachined bent blanks. Clean off chips and deburr before fitting any electronics.
 
@@ -251,8 +257,9 @@ little beyond, until the two leaves close on each other.
      slot. Centre it so both ends are the same distance from the corners, then clamp everything.
    - Drill through the guide's holes, leaf and wall in one go: four Ø2.4 mm (case) and two Ø1.8 mm
      (lid). Centre-punch or spot each hole first so the drill doesn't wander.
-   - Unclamp, deburr, and countersink the **leaf holes only**, 90°, so the screw heads sit flush
-     (Ø3.8 mm for M2, Ø3.2 mm for M1.6).
+   - Unclamp, deburr, and countersink the **leaf holes only** with the same 90° zero-flute
+     countersink until the screw heads sit flush: rim **Ø3.8–3.9 mm** on the four M2 holes
+     (Ø2.4 drilled), **Ø3.0–3.1 mm** on the two M1.6 holes (Ø1.8 drilled).
    - Case side: four **M2×6 DIN 963** screws from outside, the laser-cut backing strip and four
      M2 nuts inside. P2 has a hinge-side relief for the strip and nuts.
    - Lid side: two **M1.6×4 DIN 963** screws from outside, an M1.6 washer and nut inside each.

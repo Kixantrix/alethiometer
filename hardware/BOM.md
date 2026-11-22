@@ -79,7 +79,7 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 | **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, Loctite 638 on its 5/32" shaft (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |
 | Brass hinge, **Guden BR05050404-72** (72" stock length) | 1 | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width. Cut your 5-knuckle piece with a Dremel and trim the lid leaf, using `hinge_trim_gauge` (ASSEMBLY.md §3). Plenty left over for spares. |
 | M2 × 6 DIN 963 countersunk screw, 90°, Ø3.8 mm head + M2 hex nut | 4 each | Check | Flush in the fixed hinge leaf → shell → body backing strip → nut |
-| M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.2 mm head | 2 | Check | Flush in the lid hinge leaf |
+| M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.0 mm head | 2 | Check | Flush in the lid hinge leaf |
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm, and M1.6 DIN 125 washer (Ø4 × 0.3) | 2 each | Check | Inside the lid wall |
 | M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 1 | 2 | Sensor-I shaft spacer |
 | M4 brass shim washer 0.5 mm (Ø8 × Ø4.2) | 3 | 2 | Under each thumbwheel |
@@ -90,7 +90,7 @@ The external screws use nominal Ø3.8 mm heads
 ([DIN 963 dimensions](https://www.jandesupply.com/reference-metric-machine-screw-dimensions.php)).
 Hand-countersink the seven case holes after forming, to suit the actual screws
 ([ASSEMBLY.md §1](ASSEMBLY.md#1-prepare-the-laser-cut-parts)). Do not substitute oval/raised
-countersunk heads, a different head diameter, or an 82° screw. The supplier files retain
+countersunk heads, a different head diameter, or an 82° screw. Tool: a 90° zero-flute countersink (~6 mm body); finished rim Ø3.8–3.9 mm for M2, Ø3.0–3.1 mm for M1.6. The supplier files retain
 plain pilot holes; do not request countersinking from the laser-cut/bending service.
 
 The hinge is a **procurement candidate with a fabrication hold**, not a dimensionally verified
