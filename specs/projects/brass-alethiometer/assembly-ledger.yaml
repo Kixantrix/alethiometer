@@ -1,0 +1,321 @@
+# Assembly ledger: every hand operation in building the brass alethiometer.
+# Schema and rules: .github/skills/dfma/SKILL.md §6.
+# Check:  python tools/validators/check_assembly_ledger.py            (CI; remediations warn)
+#         python tools/validators/check_assembly_ledger.py --strict   (ready-to-order gate)
+# Tools:  python tools/validators/check_assembly_ledger.py --tools-table   (BOM §G source)
+#
+# Hand-seeded from hardware/ASSEMBLY.md and BOM.md at ea2574c on
+# kixantrix-brass-alethiometer-hardware. The approved turned-parts redesign (D-013) is
+# still in progress there. When a step changes, update this file in the same commit.
+# Long term, generate it from the model (plan.md, follow-up F-1).
+schema: kerrigan/assembly-ledger@1
+project: brass-alethiometer
+reflects:
+  ref: ea2574c
+  source: hardware/ASSEMBLY.md
+
+builder:
+  profile: novice-maker
+  quote: >-
+    "I can cut but I CANNOT do it precisely. I am not a watchmaker. I am not that good of a
+    crafter. Need the easiest assembly methods."  /  "Stacking stuff then adhering is going
+    to be a bad technique."  /  "...have things still work without me needing to dremel everywhere"
+  max_unaided_precision_mm: 0.5
+  ok_skills: [tht-soldering, wire-soldering, drilling-with-guide, rough-cut-to-gauge,
+              countersinking, gluing, screwing]
+  avoid: [precision-cutting, measuring-during-assembly, stacking-and-adhering,
+          structural-soldering, hand-finishing, blind-alignment, chemical-finishing]
+
+budget:
+  max_operations: 60     # hand touches; PROPOSED target once D-013 lands (owner to confirm)
+  max_tools: 16          # PROPOSED (owner to confirm)
+
+tools:
+  - {id: iron, name: "Temperature-controlled soldering iron ≥60 W (e.g. Pinecil)"}
+  - {id: torch, name: "Butane micro torch + fire-safe pad"}
+  - {id: countersink-90, name: "90° zero-flute countersink ~6 mm + T-handle"}
+  - {id: calipers, name: "Digital calipers"}
+  - {id: dremel, name: "Rotary tool + reinforced cut-off wheels"}
+  - {id: drill, name: "Drill, low speed, Ø1.8 and Ø2.4 mm HSS bits"}
+  - {id: centre-punch, name: "Automatic centre punch"}
+  - {id: vise-clamps, name: "Small bench vise + two small clamps"}
+  - {id: needle-files, name: "Needle file set"}
+  - {id: glass-plate, name: "Flat glass plate + 600–2000 grit paper"}
+  - {id: pin-vise, name: "Pin vise + 0.3–3 mm drills"}
+  - {id: tube-cutter, name: "Tube cutter (K&S #296) or jeweller's saw + mitre box"}
+  - {id: screwdrivers, name: "Precision slotted screwdrivers + 3.2/4 mm nut drivers"}
+  - {id: cutters-strippers, name: "Flush cutters + 30 AWG stripper"}
+  - {id: tweezers, name: "Fine tweezers"}
+  - {id: multimeter, name: "Multimeter"}
+  - {id: usb-computer, name: "USB-C data cable + computer with PlatformIO"}
+  - {id: safety-glasses, name: "Safety glasses"}
+
+operations:
+  # §1 Prepare the laser-cut parts
+  - id: deburr-flatten
+    step: "ASSEMBLY §1.1"
+    what: "Deburr and flatten every laser-cut part on abrasive paper over glass"
+    count: 1
+    technique: deburring
+    tools: [glass-plate, needle-files]
+    disposition: ok
+  - id: glue-bushings
+    step: "ASSEMBLY §1.2"
+    what: "Loctite 13 tube bushings flush into P1/P2, aligned by sliding shafts through both plates while wet"
+    count: 13
+    technique: gluing
+    precision_mm: 0.1
+    located_by: "plate faces (flush) + shafts through both plates"
+    tools: []
+    disposition: ok
+  - id: ream-tight-gear-bore
+    step: "ASSEMBLY §1.3"
+    what: "Contingency: hand-turn a drill through any laser-cut gear bore that won't slide on"
+    count: 1
+    technique: hand-finishing
+    tools: [pin-vise]
+    disposition: remediate
+    remediation: "Confirm SendCutSend hole tolerance on first article; size GEAR_FIT so the worst case still slides on"
+  - id: countersink-case
+    step: "ASSEMBLY §1.4"
+    what: "Countersink 7 case screw holes to a Ø3.8–3.9 mm rim until a DIN 963 head sits flush"
+    count: 7
+    technique: countersinking
+    precision_mm: 0.1
+    tools: [countersink-90, calipers]
+    disposition: accepted
+    accepted_by: >-
+      owner 2026-11-22 (D-014): "for external screws I still want those countersinked.
+      I think I can do it easily"
+  # §2 Cut the K&S stock
+  - id: cut-ks-stock
+    step: "ASSEMBLY §2"
+    what: "Cut 31 K&S tube/rod pieces to listed lengths (arbors, cannon, 13 × 1.6 mm bushings, shafts, sleeves, crown)"
+    count: 31
+    technique: precision-cutting
+    precision_mm: 0.1
+    tools: [tube-cutter, calipers]
+    disposition: remediate
+    remediation: "D-013 turned-parts kit: arbors, shafts, bushings and crown arrive at length with shoulders"
+  # §3 Sub-assemblies
+  - id: glue-thumbwheels
+    step: "ASSEMBLY §3"
+    what: "Loctite each bought 26T thumbwheel 2.1 mm above its shaft end"
+    count: 3
+    technique: measuring-during-assembly
+    precision_mm: 0.1
+    tools: [calipers]
+    disposition: remediate
+    remediation: "D-013: turned knob shaft with integral collar; wheel pushed down to the collar"
+  - id: solder-gears-to-shafts
+    step: "ASSEMBLY §3"
+    what: "Solder 3 sensor gears at 2.1/4.1/6.1 mm, 3 hand gears and the needle gear flush on their arbors"
+    count: 7
+    technique: structural-soldering
+    precision_mm: 0.1
+    tools: [iron, torch, calipers]
+    disposition: remediate
+    remediation: "D-013: turned shoulders set every gear height; push to stop with retaining compound"
+  - id: solder-cannon
+    step: "ASSEMBLY §3"
+    what: "Solder the cannon into P2 flush with its underside without wicking into the bore"
+    count: 1
+    technique: structural-soldering
+    precision_mm: 0.1
+    located_by: "P2 underside (flush on a flat surface)"
+    tools: [iron, torch]
+    disposition: remediate
+    remediation: "D-013: turned flanged cannon; flange sits on P2"
+  - id: press-motor-gear
+    step: "ASSEMBLY §3"
+    what: "Press 34T gear onto the X27 Ø1 shaft 5.5 mm above the motor face, trim shaft 0.3 mm above gear"
+    count: 1
+    technique: measuring-during-assembly
+    precision_mm: 0.2
+    tools: [calipers, cutters-strippers]
+    disposition: remediate
+    remediation: "Add a laser-cut motor-gear height gauge to tooling(), or a turned hub with a shaft stop"
+  - id: stack-crown
+    step: "ASSEMBLY §3"
+    what: "Solder three scalloped discs in a stack onto the crown plunger"
+    count: 1
+    technique: stacking-and-adhering
+    tools: [iron, torch]
+    disposition: remediate
+    remediation: "D-013: one-piece turned crown"
+  - id: cut-hinge
+    step: "ASSEMBLY §3"
+    what: "Cut 5 knuckles from the Guden stock hinge at the trim-gauge slot ends; stake the pin"
+    count: 2
+    technique: rough-cut-to-gauge
+    located_by: "hinge_trim_gauge slot"
+    tools: [dremel, vise-clamps, centre-punch, safety-glasses]
+    disposition: ok
+  - id: trim-hinge-leaf
+    step: "ASSEMBLY §3"
+    what: "Scribe the lid leaf along the gauge edge, cut outside the line and file to it (5.6 mm from pivot)"
+    count: 1
+    technique: hand-finishing
+    precision_mm: 0.3
+    located_by: "hinge_trim_gauge edge (scribe line)"
+    tools: [dremel, needle-files, vise-clamps]
+    disposition: accepted
+    accepted_by: >-
+      owner 2026-11-22 (D-010): "6. Seems worth it for now unless you find a hinge that
+      would just work."
+  # §4 Carrier PCB
+  - id: populate-pcb
+    step: "ASSEMBLY §4 / pcb/README.md"
+    what: "Solder THT resistors, C1, headers and module sockets (modules as their own jigs)"
+    count: 1
+    technique: tht-soldering
+    tools: [iron, cutters-strippers]
+    disposition: ok
+  - id: bring-up
+    step: "ASSEMBLY §4"
+    what: "Bring-up checklist with test pads; flash firmware; note the portal password"
+    count: 1
+    technique: testing
+    tools: [multimeter, usb-computer]
+    disposition: ok
+  # §5 Movement
+  - id: set-motor-mesh
+    step: "ASSEMBLY §5.1"
+    what: "Slide the X27 in P1's slot until the motor gear meshes 'with a hair of backlash', then solder its socket pins"
+    count: 1
+    technique: blind-alignment
+    precision_mm: 0.05
+    tools: [iron, screwdrivers]
+    disposition: remediate
+    remediation: "Locate the X27 by fixed pin holes at the designed centre distance (or a laser-cut mesh shim), no slot"
+  - id: wire-speaker-mic
+    step: "ASSEMBLY §5.3 / §7.2"
+    what: "Solder leads to speaker (2) and INMP441 (5), then into J5/J4"
+    count: 4
+    technique: wire-soldering
+    tools: [iron, cutters-strippers]
+    disposition: ok
+  - id: tape-mic
+    step: "ASSEMBLY §5.3"
+    what: "Stick the mic under P2's port with holed foam tape"
+    count: 1
+    technique: gluing
+    precision_mm: 1.0
+    tools: [tweezers]
+    disposition: ok
+  - id: coax-p2-onto-shafts
+    step: "ASSEMBLY §5.4"
+    what: "Lower P2 over ~10 shaft tips at once and coax each into its hole with tweezers ('the fiddly watchmaker's moment')"
+    count: 1
+    technique: blind-alignment
+    precision_mm: 0.1
+    tools: [tweezers, screwdrivers]
+    disposition: remediate
+    remediation: "Stagger shaft-tip heights so tips engage one or two at a time; chamfered lead-ins on turned tips (D-013)"
+  - id: glue-magnets
+    step: "ASSEMBLY §5.5"
+    what: "Epoxy a Ø6 diametric magnet centred on each sensor shaft end"
+    count: 3
+    technique: gluing
+    precision_mm: 0.25
+    tools: []
+    disposition: remediate
+    remediation: "D-013: turned magnet cup on each sensor shaft centres the magnet"
+  - id: oil-bearings
+    step: "ASSEMBLY §5.6"
+    what: "Oil every bearing"
+    count: 1
+    technique: lubricating
+    tools: []
+    disposition: ok
+  # §6 Dial and hands
+  - id: apply-dial-sticker
+    step: "ASSEMBLY §6.1"
+    what: "Apply the dial sticker centred on the cannon with Hourglass at 12 o'clock"
+    count: 1
+    technique: blind-alignment
+    precision_mm: 0.3
+    tools: []
+    disposition: remediate
+    remediation: "Laser-cut sticker-application ring that registers on P2's outline (no eyeballing)"
+  - id: darken-hands
+    step: "ASSEMBLY §6.2"
+    what: "Darken framing hands with brass black"
+    count: 3
+    technique: chemical-finishing
+    tools: []
+    disposition: remediate
+    remediation: "D-012: hands cut from blue-tempered spring steel"
+  - id: press-hands
+    step: "ASSEMBLY §6.3"
+    what: "Loctite needle, three hands and cap onto arbors at +0.45/+1.61/+2.98/+4.34 mm and check clearances"
+    count: 5
+    technique: measuring-during-assembly
+    precision_mm: 0.1
+    tools: [calipers, tweezers]
+    disposition: remediate
+    remediation: "D-013: each hand seats flush on a turned tube end or shoulder (+ hand-setting tool)"
+  # §7 Case
+  - id: fit-crown-collar
+    step: "ASSEMBLY §7.1"
+    what: "Solder the crown collar inside the wall leaving 0.3 mm play"
+    count: 1
+    technique: structural-soldering
+    precision_mm: 0.3
+    tools: [iron]
+    disposition: remediate
+    remediation: "D-013: E-clip in a turned groove sets the play"
+  - id: install-carrier
+    step: "ASSEMBLY §7.2–3"
+    what: "Kapton the floor, drop the carrier onto spacers, plug battery/reed, screw the movement down (3 screws)"
+    count: 3
+    technique: screwing
+    tools: [screwdrivers]
+    disposition: ok
+  - id: glue-shell-parts
+    step: "ASSEMBLY §7.4 / §8.2"
+    what: "Glue speaker cloth, body magnet, reed switch, lid overlay and two lid magnets"
+    count: 6
+    technique: gluing
+    precision_mm: 1.0
+    tools: []
+    disposition: ok
+  - id: drill-hinge
+    step: "ASSEMBLY §7.5"
+    what: "Clamp hinge_drill_guide over lid + shell; spot and drill 6 holes through leaf and wall"
+    count: 6
+    technique: drilling-with-guide
+    located_by: "hinge_drill_guide"
+    tools: [drill, centre-punch, vise-clamps, safety-glasses]
+    disposition: ok
+  - id: countersink-hinge
+    step: "ASSEMBLY §7.5"
+    what: "Countersink the 6 hinge-leaf holes until heads sit flush"
+    count: 6
+    technique: countersinking
+    precision_mm: 0.1
+    tools: [countersink-90, calipers]
+    disposition: accepted
+    accepted_by: "owner 2026-11-22 (D-010, D-014): hinge stays; countersinking with the right tool is OK"
+  - id: fit-hinge-and-shell
+    step: "ASSEMBLY §7.5–6"
+    what: "Screw hinge (4 M2 + 2 M1.6 with nuts), lower shell over movement, fit 4 top screws"
+    count: 10
+    technique: screwing
+    tools: [screwdrivers, tweezers]
+    disposition: ok
+  # §9 Finish
+  - id: polish-wax
+    step: "ASSEMBLY §9.1"
+    what: "Polish and wax the case"
+    count: 1
+    technique: finishing
+    tools: []
+    disposition: ok
+  - id: calibrate
+    step: "ASSEMBLY §9.3–4"
+    what: "Join the Wi-Fi portal and run the crown calibration sequence"
+    count: 1
+    technique: testing
+    tools: []
+    disposition: ok
