@@ -1,6 +1,6 @@
 file,part,material,qty,size_mm,bends,notes
 case_lower_tray__brass-040in__qty1.dxf,case_lower_tray,"brass .040""",1,149.7 x 149.7,8,"brass .040"", 8 bends 90° up; hand-countersink 3 floor holes 90° to suit M2 DIN 963 heads (nominal diameter 3.8 mm) after forming"
-case_upper_shell__brass-040in__qty1.dxf,case_upper_shell,"brass .040""",1,145.7 x 145.7,8,"brass .040"", 8 bends 90°; hand-countersink 4 top holes 90° to suit M2 DIN 963 heads (nominal diameter 3.8 mm) after forming; transfer-drill hinge mounting holes only after checking the purchased hinge"
+case_upper_shell__brass-040in__qty1.dxf,case_upper_shell,"brass .040""",1,143.7 x 143.7,8,"brass .040"", 8 bends 90°; hand-countersink 4 top holes 90° to suit M2 DIN 963 heads (nominal diameter 3.8 mm) after forming; transfer-drill hinge mounting holes only after checking the purchased hinge"
 case_lid__brass-040in__qty1.dxf,case_lid,"brass .040""",1,124.4 x 124.4,8,"brass .040"", 8 bends 90°; transfer-drill hinge holes after checking the purchased hinge"
 lid_overlay__brass-040in__qty1.dxf,lid_overlay,"brass .040""",1,107.7 x 107.7,0,"brass .040"" pierced rosette"
 movement_base_plate_P1__brass-063in__qty1.dxf,movement_base_plate_P1,"brass .063""",1,106.0 x 106.0,0,"brass .063"" (hidden; skeletonised)"

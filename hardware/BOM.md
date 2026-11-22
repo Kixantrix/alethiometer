@@ -23,7 +23,7 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
 | Part | Material | Qty | Notes |
 |---|---|---|---|
 | `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall) and crown hole (top-right chamfer). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
-| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 18.25 mm. Knob notches. |
+| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 17.2 mm. Knob notches. |
 | `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum). |
 | `lid_overlay` | Brass 260 .040" | 1 | Pierced rosette, fixed inside the lid |
 | `dial_plate_P2` | Brass 260 .063" | 1 | Skeleton window; carries the dial sticker and top bearings |
@@ -87,7 +87,7 @@ in a pinch the plain tubes and bushings can still be cut from K&S stock.
 | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | 1 | Floor → carrier PCB (keeps the board off the brass) |
 | M2 brass hex nut | 1 | | Under P1 at the top-right corner |
 | M2 brass hex standoff, **male-female 8 mm** (+3 mm thread) | 4 | 3 | Gear posts (P1 → P2) |
-| M2 brass hex standoff, **male-female 6 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
+| M2 brass hex standoff, **male-female 5 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
 | M2 × 8 brass slotted **countersunk** screw, DIN 963, 90° | 3 | 2 | Flush in the floor → spacer → PCB → bay standoff; length includes head |
 | M2 × 6 brass slotted **countersunk** screw, DIN 963, 90° | 4 | | Flush in the top face; length includes head |
 | **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, on the knob-shaft collar with Loctite 638 (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |

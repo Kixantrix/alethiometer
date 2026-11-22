@@ -33,8 +33,8 @@ the interpretation aloud.
 
 ## The instrument
 
-- **Size** 112.4 × 112.4 mm (an octagon with 16 mm chamfers). The body is 38.0 mm tall,
-  45.6 mm with the lid closed. Weight is about **840 g**, almost all of it brass.
+- **Size** 112.9 × 112.9 mm (an octagon with 16 mm chamfers). The body is 37.0 mm tall,
+  44.6 mm with the lid closed. Weight is about **810 g**, almost all of it brass.
 - **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
   3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
   reflash or swap. The board has labelled test pads for every signal. The wall USB-C port and the
@@ -101,9 +101,9 @@ flowchart LR
 | 17.1 – 18.7 | **P1**, movement base plate (bearings) |
 | 19.2 – 27.2 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
 | 26.7 – 28.3 | **P2**, dial plate + sticker |
-| 28.8 – 34.7 | needle, hands III, II, I, cap |
-| 34.3 – 38.0 | crystal spiders, crystal, top face |
-| 38.0 – 45.6 | lid |
+| 28.8 – 32.8 | needle, hands III, II, I, cap (1.5 mm under the crystal) |
+| 33.3 – 37.0 | crystal spiders, crystal, top face |
+| 37.0 – 44.6 | lid |
 
 The bay height is set by the AS5600 sensors: socket, sensor board, air gap and magnet stacked
 under P1. Sockets cost about 4 mm of case height compared with soldering the modules flat. That
@@ -200,7 +200,7 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
   flex antenna under the crystal can be dropped in if needed.
 - **Cloud voice** needs two extra Azure OpenAI deployments. The endpoints exist in `api/` but
   haven't been exercised against real Azure yet.
-- **Weight.** About 840 g, because brass is dense. P1 can be cut from aluminium to save about
+- **Weight.** About 810 g, because brass is dense. P1 can be cut from aluminium to save about
   45 g; it's fully hidden.
 
 ## Credits

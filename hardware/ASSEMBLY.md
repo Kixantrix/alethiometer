@@ -21,7 +21,7 @@ update this sheet.
 | P2 (dial plate) | 9.6 – 11.2 | top bushings, cannon, dial sticker |
 
 Above the dial (measured from the top of P2): cannon tip +0.35, needle +0.45, hand III +1.61,
-hand II +2.34, hand I +3.07, cap +3.46 (top of cap +4.47). The crystal's underside sits at +7.0.
+hand II +2.34, hand I +3.07, cap +3.46 (top of cap +4.47). The crystal's underside sits at +6.0.
 You never measure these: every height is set by a shoulder or a flush end on the turned parts.
 
 ## Tools and consumables
@@ -205,7 +205,7 @@ little beyond, until the two leaves close on each other.
      foam tape that has a hole over the port. Its leads hang down through P1's open lattice
      beside it once P2 goes on.
 4. Lower P2 over the cannon and onto every shaft tip. This is the fiddly watchmaker's moment:
-   start from one side and coax each tip into its hole with tweezers. Screw the four **M2×6 M-F**
+   start from one side and coax each tip into its hole with tweezers. Screw the four **M2×5 M-F**
    standoffs through P2 into the gear standoffs.
 5. **Magnets.** Push a Ø6×2.5 diametric magnet into each `magnet_cup` with a little epoxy until
    it bottoms. Then, from underneath, put a drop of Loctite 638 on each sensor shaft's thin

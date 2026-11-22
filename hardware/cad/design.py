@@ -67,7 +67,7 @@ UPPER_INNER = offset(UPPER_OUTER, -T040)
 # The bay height is set by the AS5600 chain: socket (L.MODULE_LIFT) + module + chip
 # + air gap + sensor magnet + magnet drop below P1.
 CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 12.0
-GEAR_STANDOFF, HAND_STANDOFF = 8.0, 6.0    # M2 hex standoff lengths
+GEAR_STANDOFF, HAND_STANDOFF = 8.0, 5.0    # M2 hex standoff lengths
 Z_FLOOR_TOP = T040
 Z_CARRIER = Z_FLOOR_TOP + CARRIER_SPACER   # carrier PCB (bottom face)
 Z_CARRIER_TOP = Z_CARRIER + CARRIER_T
@@ -482,7 +482,7 @@ def p1_plate() -> Part:
 
 def p2_plate() -> Part:
     outline = offset(UPPER_INNER, -PLATE_CLEAR)
-    hinge_clearance = T040 + T063 + HINGE_NUT_H + 0.4       # backing strip + M2 nuts inside the wall
+    hinge_clearance = HINGE_BODY_SCREW_LEN - T040 + 0.4     # hinge screw tips, backing strip and nuts
     outline = outline.difference(rect(HINGE_X, 0, 2 * hinge_clearance, hinge_span() + 1.0))
     p = Profile(outline)
     # hidden outer zone (under the top face) is opened up for weight and as the sound path

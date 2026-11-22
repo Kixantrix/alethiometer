@@ -1,7 +1,7 @@
 part,qty,grams,material
 case_lower_tray,1,165.9,"brass .040"""
 case_lid,1,126.1,"brass .040"""
-case_upper_shell,1,107.9,"brass .040"""
+case_upper_shell,1,104.4,"brass .040"""
 dial_plate_P2,1,79.3,"brass .063"""
 lid_overlay,1,48.8,"brass .040"""
 movement_base_plate_P1,1,44.8,"brass .063"""
@@ -28,12 +28,12 @@ standoff_gear,4,2.9,M2×8+3 M-F brass hex standoff
 gear_hand_II_32T,1,2.5,"brass .040"""
 hinge_pin,1,2.3,Included in the purchased hinge; have the supplier retain the pin after cutting
 gear_motor_34T,1,2.2,"brass .040"""
-standoff_hand,4,2.2,M2×6+3 M-F brass hex standoff
 crown_turned,1,2.1,brass C360 (CNC turned)
 gear_hand_I_32T,1,2.0,"brass .040"""
 gear_hand_III_32T,1,2.0,"brass .040"""
 driver_DRV8833,1,2,Adafruit DRV8833 #3297
 amp_MAX98357A,1,2,Adafruit MAX98357A #3006
+standoff_hand,4,1.8,M2×6+3 M-F brass hex standoff
 sensor_AS5600_I,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"

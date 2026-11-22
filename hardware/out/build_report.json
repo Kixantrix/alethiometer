@@ -1,8 +1,8 @@
 {
  "summary": {
   "case_outer": "112.9 \u00d7 112.9 mm",
-  "body_height": 37.95,
-  "closed_height": 45.57,
+  "body_height": 36.95,
+  "closed_height": 44.57,
   "knob_protrusion": 3.73,
   "levels": [
    19.216,
@@ -16,7 +16,7 @@
    "I": 31.391200000000005
   },
   "cap": 31.772,
-  "crystal_clearance": 2.544,
+  "crystal_clearance": 1.544,
   "x27_body": [
    10.12,
    19.72
@@ -27,7 +27,7 @@
   "needle_ratio": 2.0,
   "knob_turns_per_rev": 1.2307692307692308
  },
- "weight_g": 815,
+ "weight_g": 811,
  "interference": [],
  "lid_check_angles": [
   0,
