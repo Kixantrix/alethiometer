@@ -44,6 +44,10 @@ sensor_AS5600_III,bought,1,"Adafruit AS5600 #6357, plugged into the carrier"
 motor_X27_168,bought,1,Juken/Switec X27.168 gauge stepper
 speaker,bought,1,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
 mic_INMP441,bought,1,INMP441 I2S MEMS mic module
+speaker_foam_ring,bought,1,"0.2 mm adhesive foam ring, Ø28 × Ø22: seats and seals the speaker on P1"
+mic_foam_tape,bought,1,"0.5 mm double-sided foam tape, Ø14 with a Ø2.5 hole over the mic port: sticks the INMP441 to the underside of P2 and seals the port"
+wire_speaker,bought,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through P1's Ø3.5 hole to J5 (+/−)"
+wire_mic,bought,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 reed_switch,bought,1,"Glass reed switch, NO, ~2×14 mm"
 usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
 spacer_usb,bought,1,M2 nylon round spacer 5 mm ×2 + M2×10 screws and nuts (USB breakout)

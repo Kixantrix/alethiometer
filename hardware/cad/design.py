@@ -147,6 +147,10 @@ POSTS = L.POSTS
 # Electronics placements
 SPEAKER = dict(c=(-28.5, 28.5), d=28.0, h=5.0)
 MIC = dict(c=(-32.0, -32.0), d=14.0, h=3.0)
+# Speaker and mic leads run down to their carrier pads (J5, J4; positions from pcb/make_pcb.py)
+SPK_WIRE_HOLE = (-18.5, 29.75)             # Ø3.5 in P1's speaker seat, right above J5
+SPK_WIRE_D, MIC_WIRE_D = 1.6, 2.4          # bundle envelopes: 2 and 5 × 30 AWG silicone
+J4_PAD_MID, J5_PAD_MID = (-46.0, -22.08), (-18.5, 29.73)
 REED = dict(c=polar(53.6, 300.0), angle=300.0 + 90.0, len=14.0, d=2.2)
 LID_MAGNET_L = polar(54.0, 157.5)          # closure pair, between grille ring and wall
 MAGNET_D, MAGNET_H = 5.0, 4.0
@@ -449,6 +453,7 @@ def p1_plate() -> Part:
     for x, y in POSTS:
         p.hole(x, y, POST_HOLE_PLATE)
     p.cut(slot(X27_CENTER[0] - 1.0, 0, X27_CENTER[0] + 1.0, 0, X27_BODY_D + 0.6))  # slide to set gear mesh
+    p.hole(*SPK_WIRE_HOLE, 3.5)                       # speaker leads down to J5 (deburr the edge)
     return flat_part("movement_base_plate_P1", p, T063, material="brass .063\"",
                      placements=[loc(z=Z_P1)], spec="brass .063\" (hidden; skeletonised)",
                      color=BRASS_DARK)
@@ -853,6 +858,39 @@ def electronics() -> list[Part]:
     mx, my = MIC["c"]
     add("mic_INMP441", cylinder(MIC["d"], MIC["h"], mx, my, Z_P2 - 0.5 - MIC["h"]),
         "INMP441 I2S MEMS mic module", PCB)
+    # What holds them: a foam ring under the speaker, a foam tape pad between the mic and P2
+    sx_, sy_ = SPEAKER["c"]
+    E.append(Part("speaker_foam_ring", "bought", "foam ring", cylinder(SPEAKER["d"], 0.2, sx_, sy_, Z_P1_TOP,
+                  hole=SPEAKER["d"] - 6.0), [loc()], BLACK, "electronics",
+                  spec="0.2 mm adhesive foam ring, Ø28 × Ø22: seats and seals the speaker on P1",
+                  density="acrylic"))
+    mx_, my_ = MIC["c"]
+    E.append(Part("mic_foam_tape", "bought", "foam tape", cylinder(MIC["d"], 0.5, mx_, my_, Z_P2 - 0.5, hole=2.5),
+                  [loc()], (0.85, 0.85, 0.80), "electronics",
+                  spec="0.5 mm double-sided foam tape, Ø14 with a Ø2.5 hole over the mic port: sticks the "
+                  "INMP441 to the underside of P2 and seals the port", density="acrylic"))
+    # Speaker and mic leads, so the routes are visible and collision-checked
+    def run(name, pts, d, color, spec):
+        sol = None
+        for a, b in zip(pts, pts[1:]):
+            va, vb = cq.Vector(*a), cq.Vector(*b)
+            seg = cq.Solid.makeCylinder(d / 2, (vb - va).Length, va, vb - va)
+            sol = seg if sol is None else sol.fuse(seg)
+        for p_ in pts[1:-1]:
+            sol = sol.fuse(cq.Solid.makeSphere(d / 2, cq.Vector(*p_)))
+        E.append(Part(name, "bought", spec, sol.clean(), [loc()], color, "electronics", spec=spec,
+                      density="copper"))
+    zp = Z_CARRIER_TOP + 0.05
+    hx, hy = SPK_WIRE_HOLE
+    run("wire_speaker", [(hx, hy, Z_P1_TOP + 0.2), (hx, hy, zp + 2.0), (*J5_PAD_MID, zp + 1.0), (*J5_PAD_MID, zp)], SPK_WIRE_D,
+        (0.75, 0.12, 0.10), "speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through P1's "
+        "Ø3.5 hole to J5 (+/−)")
+    mz = Z_P2 - 0.5 - MIC["h"]
+    run("wire_mic", [(-37.5, -28.5, mz), (-37.5, -28.5, mz - 1.6), (-42.5, -25.5, Z_P1_TOP + 1.0),
+                     (-43.5, -24.5, Z_P1 - 3.0), (*J4_PAD_MID, zp + 1.5), (*J4_PAD_MID, zp)],
+        MIC_WIRE_D, (0.35, 0.38, 0.45),
+        "mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 "
+        "(VDD GND SCK WS SD; tie L/R to GND at the mic)")
     rx, ry = REED["c"]
     reed = cq.Solid.makeCylinder(REED["d"] / 2, REED["len"], cq.Vector(-REED["len"] / 2, 0, 0),
                                  cq.Vector(1, 0, 0))

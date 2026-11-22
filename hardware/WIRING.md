@@ -73,8 +73,8 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
 | X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier; located sideways by P1's slot (slide to set mesh) |
 | LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area; PicoBlade lead to the ProS3 |
-| Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. Leads to J5. |
-| INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Leads to J4. |
+| Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. Two leads from its back tabs go straight down through P1's Ø3.5 mm hole at (−18.5, 29.8) onto **J5**, which sits directly below. |
+| INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −17 … −27). |
 | Reed switch | under the top face at r 53.6 mm, 300° | Epoxy; its lid magnet sits directly above it. Leads to J6. |
 | Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |
 | Wall USB-C | right wall, receptacle centre y = 23.5 | Adafruit #4090 on a socket, screwed to the carrier on two spacers |

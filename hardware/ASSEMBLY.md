@@ -198,7 +198,14 @@ little beyond, until the two leaves close on each other.
    - arbor I (3/32" rod into the centre bearing);
    - arbor II, then arbor III, then the needle arbor, sliding each over the last;
    - the three sensor shafts, each with its sleeve or washer below the gear;
-   - the three knob shafts, each with a 0.5 mm washer below the wheel and a 2.42 mm sleeve above it.
+   - the three knob shafts, each with a 0.5 mm washer below the wheel and a 2.5 mm sleeve above it;
+   - the **speaker**: solder ~6 cm of 2-core 30 AWG to its back tabs, thread the pair down through
+     P1's Ø3.5 mm hole (top-left, beside the speaker seat's edge; deburr it first) and seat the
+     speaker on a foam ring with its tabs over the hole;
+   - the **mic**: solder ~8 cm of 5-core 30 AWG to the INMP441 (VDD GND SCK WS SD, with L/R
+     bridged to GND at the mic) and stick it under P2's 7-hole mic port, port up, with
+     foam tape that has a hole over the port. Its leads hang down through P1's open lattice
+     beside it once P2 goes on.
 4. Lower P2 over the cannon and onto every shaft tip. This is the fiddly watchmaker's moment:
    start from one side and coax each tip into its hole with tweezers. Screw the four **M2×6 M-F**
    standoffs through P2 into the gear standoffs.
@@ -223,7 +230,9 @@ little beyond, until the two leaves close on each other.
 2. **Lower tray.** Line the floor with one layer of Kapton. Put the three nylon spacers over the
    floor holes and lower the populated carrier straight in: U7's receptacle lines up with the wall
    opening and the crown switch drops in just behind the plunger. Plug in the
-   battery and connect the mic, speaker and reed leads to J4, J5 and J6. Press the crown: you
+   battery and connect the reed leads to J6. With the movement standing beside the tray, solder
+   the speaker leads into J5 (+ −) and the mic leads into J4 (VDD GND SCK WS SD): both pad rows
+   sit right under their pass-throughs (see WIRING.md, *Where things go*). Press the crown: you
    should feel the switch click.
 3. Lower the movement straight down onto the carrier. The X27 and its gear rise up through
    P1's slot and the motor gear slides into mesh with the needle gear (rock the needle a hair
