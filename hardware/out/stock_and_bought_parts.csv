@@ -55,26 +55,19 @@ crown_collar,stock,1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside th
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_reed,bought,1,Ø5×4 mm N52 magnet
-hinge_leaf_body,bought,1,"Guden BR05050404-72 hinge, fixed half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
-hinge_leaf_lid,bought,1,"Guden BR05050404-72 hinge, moving half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
-hinge_pin,bought,1,Included in the ONE purchased hinge; have supplier retain pin after cutting
-hinge_backing_lid,stock,1,"brass .063"" hinge load-spreading strip, 63.5 x 5 mm; hand-cut (below laser service minimum width)"
-hinge_mount_block_a,stock,1,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
-hinge_mount_block_b,stock,1,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
-hinge_stop_washer_a,stock,1,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
-hinge_stop_split_pin_a,bought,1,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting
-hinge_stop_washer_b,stock,1,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
-hinge_stop_split_pin_b,bought,1,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting
-hinge_stop_pin,stock,1,"K&S 1/8"" brass rod, 72.13 mm; cross-drill ends for split pins"
-hinge_body_screw_1,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_2,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_3,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_4,bought,1,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_bracket_screw_a_1,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_a_2,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_b_1,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_b_2,bought,1,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_lid_screw_1,bought,1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
-hinge_lid_nut_1,bought,1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
-hinge_lid_screw_2,bought,1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
-hinge_lid_nut_2,bought,1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
+hinge_leaf_body,bought,1,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_leaf_lid,bought,1,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_pin,bought,1,Included in the purchased hinge; have the supplier retain the pin after cutting
+hinge_backing_lid,stock,1,"brass .063"" hinge backing strip, 63.5 x 5 mm; hand-cut (below laser service minimum width)"
+hinge_body_screw_1,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_nut_1,bought,1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_screw_2,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_nut_2,bought,1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_screw_3,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_nut_3,bought,1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_screw_4,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_nut_4,bought,1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_lid_screw_1,bought,1,"M1.6x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_lid_nut_1,bought,1,"M1.6 brass hex nut, 3.2 mm AF, inside on the backing strip"
+hinge_lid_screw_2,bought,1,"M1.6x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_lid_nut_2,bought,1,"M1.6 brass hex nut, 3.2 mm AF, inside on the backing strip"

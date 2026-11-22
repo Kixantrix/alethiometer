@@ -12,16 +12,13 @@ knob_I_31T_layers,4,11.8,"brass .040"""
 knob_II_31T_layers,4,11.8,"brass .040"""
 knob_III_31T_layers,4,11.8,"brass .040"""
 crystal,1,11.6,"clear acrylic .063"""
-hinge_leaf_body,1,9.5,"Guden BR05050404-72 hinge, fixed half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_leaf_body,1,9.5,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_backing_body,1,9.3,"brass .063"""
 motor_X27_168,1,9,Juken/Switec X27.168 gauge stepper
 battery,1,7,LiPo 1S 402535 (~350 mAh)
 mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
-hinge_mount_block_a,1,5.5,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
-hinge_mount_block_b,1,5.5,"10 mm square brass bar, 7 mm high; M2 blind tapped holes 3.5 mm from wall face and 5 mm from bracket face; see assembly"
-hinge_stop_pin,1,4.8,"K&S 1/8"" brass rod, 72.13 mm; cross-drill ends for split pins"
-hinge_leaf_lid,1,4.7,"Guden BR05050404-72 hinge, moving half of ONE cut-to-length assembly; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
+hinge_leaf_lid,1,4.7,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_backing_lid,1,4.3,"brass .063"""
 standoff_bay,3,3.3,M2×12 F-F brass hex standoff
 gear_sensor_I_36T,1,3.0,"brass .040"""
@@ -32,7 +29,7 @@ knob_II_31T_base,1,2.9,"brass .040"""
 knob_III_31T_base,1,2.9,"brass .040"""
 standoff_gear,4,2.9,M2×8+3 M-F brass hex standoff
 gear_hand_II_36T,1,2.4,"brass .040"""
-hinge_pin,1,2.3,Included in the ONE purchased hinge; have supplier retain pin after cutting
+hinge_pin,1,2.3,Included in the purchased hinge; have the supplier retain the pin after cutting
 standoff_hand,4,2.2,M2×6+3 M-F brass hex standoff
 gear_motor_38T,1,2.1,"brass .040"""
 driver_DRV8833,1,2,Adafruit DRV8833 #3297
@@ -44,7 +41,6 @@ sensor_AS5600_I,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,1,1.5,"Adafruit AS5600 #6357, plugged into the carrier"
 usb_c_breakout,1,1.5,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
-hinge_stop_bracket,2,1.4,"brass .040"""
 gear_needle_19T,1,1.0,"brass .040"""
 module_sockets,1,1,5 mm female header sockets
 mic_INMP441,1,1,INMP441 I2S MEMS mic module
@@ -83,16 +79,12 @@ arbor_II,1,0.3,"K&S 1/8"" brass tube, 11.1 mm"
 arbor_III,1,0.3,"K&S 5/32"" brass tube, 7.7 mm"
 reed_switch,1,0.3,"Glass reed switch, NO, ~2×14 mm"
 crown_plunger,1,0.3,"K&S 3/32"" brass rod, 6.6 mm"
-hinge_body_screw_1,1,0.3,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_2,1,0.3,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_3,1,0.3,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_body_screw_4,1,0.3,"M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block"
-hinge_bracket_screw_a_1,1,0.3,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_a_2,1,0.3,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_b_1,1,0.3,M2x5 DIN 84 slotted cheese head into end face of mounting block
-hinge_bracket_screw_b_2,1,0.3,M2x5 DIN 84 slotted cheese head into end face of mounting block
 arbor_needle,1,0.2,"K&S 3/16"" brass tube, 4.4 mm"
 sleeve_sensor_III,1,0.2,"K&S 5/32"" tube, 4.50 mm"
+hinge_body_screw_1,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_2,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_3,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_4,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 cannon,1,0.1,"K&S 7/32"" brass tube, 1.95 mm (soldered into P2)"
 sleeve_knob_I,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 sleeve_sensor_II,1,0.1,"K&S 5/32"" tube, 2.50 mm"
@@ -100,13 +92,13 @@ sleeve_knob_II,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 sleeve_knob_III,1,0.1,"K&S 5/32"" tube, 0.50 + 2.42 mm"
 nut_p1_corner,1,0.1,M2 brass hex nut
 crown_collar,1,0.1,"K&S 5/32"" tube, 1.5 mm, soldered on the plunger inside the wall"
-hinge_lid_screw_1,1,0.1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
-hinge_lid_nut_1,1,0.1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
-hinge_lid_screw_2,1,0.1,"M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head"
-hinge_lid_nut_2,1,0.1,"M1.6 hex nut, 3.2 mm AF x 1.3 mm"
+hinge_body_nut_1,1,0.1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_nut_2,1,0.1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_nut_3,1,0.1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_body_nut_4,1,0.1,"M2 brass hex nut, 4 mm AF, inside on the backing strip"
+hinge_lid_screw_1,1,0.1,"M1.6x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_lid_nut_1,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside on the backing strip"
+hinge_lid_screw_2,1,0.1,"M1.6x6 DIN 963 slotted countersunk brass screw, from outside"
+hinge_lid_nut_2,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside on the backing strip"
 bushing_1_8,1,0.0,"K&S 1/8"" brass tube, 1.6 mm bushing, Loctite 638 into the plate"
 sleeve_sensor_I,1,0.0,"K&S 5/32"" tube, 0.50 mm"
-hinge_stop_washer_a,1,0.0,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
-hinge_stop_split_pin_a,1,0.0,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting
-hinge_stop_washer_b,1,0.0,M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid
-hinge_stop_split_pin_b,1,0.0,0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting

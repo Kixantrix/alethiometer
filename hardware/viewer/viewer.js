@@ -129,8 +129,9 @@ async function load() {
   hinge.point.fromArray(manifest.hinge.point);
   hinge.axis.fromArray(manifest.hinge.axis).normalize();
   $('lid').max = manifest.hinge.open_deg;
-  state.lid = manifest.hinge.open_deg;
-  setLid(manifest.hinge.open_deg);
+  const restDeg = manifest.hinge.rest_deg ?? manifest.hinge.open_deg;
+  state.lid = restDeg;
+  setLid(restDeg);
 
   const v = `?v=${manifest.generated ?? Date.now()}`;
   const [gltf, dialTex] = await Promise.all([
@@ -174,7 +175,7 @@ async function load() {
   const pieces = parts.reduce((n, r) => n + r.meshes.length, 0);
   const tris = parts.reduce((n, r) => n + r.meta.triangles * r.meshes.length, 0);
   $('stats').textContent = `${parts.length} part types, ${pieces} pieces, ${(tris / 1000).toFixed(0)}k triangles`
-    + ` · lid stop: ${manifest.hinge.open_deg}°`
+    + ` · lid stop: ${Math.round(manifest.hinge.open_deg)}°`
     + (manifest.dial.source ? ` · dial: ${manifest.dial.source}` : ' · no dial texture');
 }
 
@@ -423,7 +424,7 @@ $('explode').addEventListener('change', () => setView());
 $('lid').addEventListener('input', (e) => setLid(+e.target.value));
 $('lid').addEventListener('change', () => setView());
 $('lidToggle').addEventListener('click', () => {
-  setLid(state.lidTarget > 90 ? 0 : manifest.hinge.open_deg);
+  setLid(state.lidTarget > 90 ? 0 : (manifest.hinge.rest_deg ?? manifest.hinge.open_deg));
   setView();
 });
 $('section').addEventListener('change', (e) => setSection(e.target.checked));

@@ -3,8 +3,8 @@
 Prices are rough USD estimates from late 2026 for **one** instrument. Check current prices
 before ordering. Every fabricated part comes from `out/`, which `cad/build.py` regenerates.
 
-**Previous estimated total ≈ $450–590**, excluding the newly proposed purchased hinge and
-machined mounting blocks, which still need a quote (≈ $300–380 SendCutSend, ≈ $115–140 electronics including the
+**Previous estimated total ≈ $450–590**, excluding the newly proposed purchased hinge,
+which still needs a quote (≈ $300–380 SendCutSend, ≈ $115–140 electronics including the
 carrier PCB, ≈ $35–60 stock, hardware and consumables). Tools are not included.
 
 **Do not order hinge-related parts yet.** The reference hinge's undimensioned curl geometry
@@ -40,7 +40,6 @@ and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is 
 | `hand_cap_rosette` | Brass 260 .040" | 1 | Ø10 centre cap |
 | `crown_cap_disc` | Brass 260 .040" | 3 | Scalloped crown |
 | `hinge_backing_body` | Brass 260 .063" | 1 | Load-spreading strip inside the upper shell |
-| `hinge_stop_bracket` | Brass 260 .040" | 2 | Two M2 screws per bracket into tapped mounting blocks; no solder |
 
 **Ordering notes**
 - Add **deburring** to the plates if offered for that thickness. The case parts will be hand-finished anyway.
@@ -62,8 +61,7 @@ and quantity, e.g. `knob_I_31T_layers__brass-040in__qty4.dxf`. The same list is 
 | Item | Qty | ≈ $ | Used for |
 |---|---|---|---|
 | Round brass tube, .014" wall, 12": **1/8", 5/32", 3/16", 7/32"** (or the K&S #3400 telescoping assortment) | 1 each | 15–25 | Hand arbors, needle arbor, cannon, sleeves and crown collar |
-| Round brass rod, 12": **3/32", 1/8"** | 1 each | Check | Arbor I, sensor/knob shafts, crown plunger and 72.13 mm stop pin |
-| 10 mm square brass bar | 14 mm plus saw allowance | Quote | Two 7 mm high tapped hinge mounting blocks |
+| Round brass rod, 12": **3/32", 1/8"** | 1 each | Check | Arbor I, sensor/knob shafts, crown plunger |
 | .063" brass strip/sheet | 63.5 × 5 mm | Check | Hand-cut lid backing strip; below laser-service minimum width |
 
 Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
@@ -82,12 +80,9 @@ Cut list in [ASSEMBLY.md](ASSEMBLY.md) §2 and `out/stock_and_bought_parts.csv`.
 | M2 × 8 DIN 963 countersunk screw, **shorten to 7 mm including head** | 9 | Check | Three through-bolts per thumbwheel; full-length screws hit P2 |
 | M2 brass hex nut, 4 mm AF × 1.6 mm | 9 | Check | Thumbwheel clamp nuts; not taller locknuts |
 | Purchased brass hinge, **Guden BR05050404-72** | One 63.5 mm cut length | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width; retained pin and trimmed leaves by supplier. CAD body/lid/pin entries are components of **one** hinge, not three purchases. |
-| M2 × 6 DIN 84 slotted cheese-head screw | 4 | Check | Inside body backing strip → shell → fixed hinge leaf → tapped blocks |
-| M2 × 5 DIN 84 slotted cheese-head screw | 4 | Check | Stop brackets → tapped blocks |
+| M2 × 6 DIN 963 countersunk screw, 90°, Ø3.8 mm head + M2 hex nut | 4 each | Check | Flush in the fixed hinge leaf → shell → body backing strip → nut |
 | M1.6 × 6 DIN 963 countersunk screw, 90°, Ø3.2 mm head | 2 | Check | Flush in moving hinge leaf |
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm | 2 | Check | Inside lid backing strip |
-| M3 washer, reduced to **Ø5 OD × Ø3.4 ID × 0.5 mm** | 2 | Check | Stop rod retention; larger OD fouls the lid |
-| 0.8 mm split pin | 2 plus spares | Check | Ø1 mm cross-holes in stop rod; trim/bend clear of lid |
 | M3 brass shim washer 0.5 mm (Ø6 × Ø3.2) | 4 | 2 | Shaft spacers |
 | Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick) | 3 | 5 | Sensor-shaft magnets for the AS5600s |
 | Ø5 × 4 mm N52 axial magnet | 3 | 3 | Lid closure pair + reed trigger |
@@ -136,7 +131,7 @@ header with part numbers. Summary:
 | Item | ≈ $ | Notes |
 |---|---|---|
 | Matte white (or cream) inkjet vinyl sticker sheet + clear matte laminate | 8 | Generate the dial with Myth Made's symbols (`dial/make_dial.py --art …`), then print `dial/local/dial_print_letter.pdf` or upload `dial/local/dial_1200dpi.png` to a die-cut sticker service. See `dial/README.md`. |
-| Soft solder + brass flux + solder paste | 12 | Still needed for shaft/movement and crown joints; no hinge, stop or knob-lamination soldering |
+| Soft solder + brass flux + solder paste | 12 | Still needed for shaft/movement and crown joints; no hinge or knob-lamination soldering |
 | 5-minute epoxy, Loctite 638 (retaining compound) | 10 | |
 | Clock oil | 6 | |
 | Speaker cloth / fine acoustic mesh (a 60 × 60 mm piece) | 3 | Under the grille ring |

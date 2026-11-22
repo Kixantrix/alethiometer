@@ -1,6 +1,6 @@
 # Assembly
 
-This is an unbuilt prototype. The hinge and opening stop use removable fasteners, not solder.
+This is an unbuilt prototype. The hinge is one purchased brass hinge held by flush screws, not solder.
 Thumbwheel laminations are bolted together too. The movement and crown still require
 small bench-soldered joints; electrical soldering is
 also required. Read the fabrication hold and joint status below before buying parts.
@@ -30,9 +30,7 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 - Needle files, 600–2000 grit paper, and a pin vise with a set of small drills (to open a gear
   bore that comes out tight). A sharp **90° countersink** for the seven external M2 screws.
 - Tube cutter (K&S #296) or a jeweller's saw and mitre box for the K&S stock.
-- A small drill press with depth stops, 1 mm and 1.6 mm drills, and an M2 bottoming tap for the
-  hinge mounting blocks (or have a small machine shop make the pair). The lid hinge also
-  needs an M1.6 screwdriver and a 90° countersink.
+- 1.8 mm and 2.4 mm drills for transfer-drilling the hinge, and M1.6/M2 screwdrivers.
 - Tweezers, a small vise, Kapton tape, 5-minute epoxy, Loctite 638 (or any retaining compound),
   clock oil (e.g. Moebius 8030).
 - Multimeter. A USB-C cable for the first flash.
@@ -43,10 +41,10 @@ hand II +2.98, hand I +4.34, cap +5.36 (top of cap +6.38). The crystal's undersi
 model. Guden's [BR05050404-72 drawing](https://www.guden.com/itemdetail/BR05050404-72) specifies
 .040" sheet, a .091" pin, .500" knuckle pitch and 1.060" open width, but not the curl/leaf offset
 or knuckle-slot clearance. Obtain a sample or a complete drawing first. Confirm the five-knuckle
-cut, retained pin, trimmed leaf heights and 180°-to-45° leaf travel; update the CAD pivot,
-mounting stack and stop to match before ordering hinge-related laser parts or drilling the
-shells. The current model's 0.1 mm curl and slot clearances are assumptions, not vendor tolerances.
-The nominal stop remains 135°; a clean CAD check does not release this hold.
+cut, retained pin and trimmed leaf heights; update the CAD pivot and mounting stack to match
+before ordering hinge-related laser parts or drilling the shells. The current model's 0.1 mm
+curl and slot clearances are assumptions, not vendor tolerances. The opening limit is set by
+the hinge's own leaves closing on each other (§8), so the real curl also sets that angle.
 
 1. Generate the dial with Myth Made's symbols (see [`dial/README.md`](dial/README.md)). Print
    `dial/local/dial_print_letter.pdf` at 100 % on plain paper and check the 50 mm bar.
@@ -106,21 +104,19 @@ Cut, deburr and check each piece against the cut list (also in `out/stock_and_bo
 | Crown collar | 5/32" tube | 1.5 mm |
 | Hinge body backing | .063" brass sheet | 63.5 × 11 mm, laser-cut |
 | Hinge lid backing | .063" brass strip | 63.5 × 5 mm, hand-cut (too narrow for the laser service) |
-| Hinge mounting blocks ×2 | 10 mm square brass bar | 7 mm high |
-| Hinge stop pin | 1/8" rod | 72.13 mm; Ø1 mm cross-holes 1.5 mm from each end |
 
 ## 3. Sub-assemblies
 
 ### Mechanical joint status
 
 Prefer removable mechanical joints wherever practical, rather than automatically replacing
-solder with permanent adhesive. This revision addresses the hinge and stop, not every joint:
+solder with permanent adhesive. This revision addresses the hinge, not every joint:
 
 | Joint | Current construction |
 |---|---|
 | Hinge knuckles and pin | One purchased formed hinge; no home-soldered tube knuckles. Supplier fit is still on hold above. |
-| Hinge to body/lid | Through-screws with backing strips; removable. |
-| Stop brackets and rod | Screwed mounting blocks and brackets; washers and replaceable split pins retain the rod. |
+| Hinge to body/lid | Flush countersunk screws from outside, nuts on backing strips inside; removable. |
+| Opening stop | None added: the hinge leaves close on each other just past flat. |
 | Knob laminations | Three through-bolts per wheel; four upper layers removable. Only the base layer is soldered to its shaft. |
 | Knob base-to-shaft, sensor gears, hand/needle gears, crown | Still bench-soldered as described below; removable replacements have **not** been designed or checked yet. |
 | Cannon | Still soldered into P2. Its existing 0.3 mm nominal bore clearance must not simply be relabelled as a retaining-compound fit. |
@@ -164,41 +160,11 @@ trim the shaft 0.3 mm above the gear. Don't push hard on the shaft; support it f
 **Crown.** Solder the three scalloped `crown_cap_disc` pieces onto one end of the plunger as a
 little crown. The collar goes on later, from inside the case.
 
-**Purchased hinge and mounting blocks (after releasing the hold in §0).** Request one
-63.5 mm five-knuckle length of the Guden brass hinge, with both end knuckles on the fixed leaf
-and the pin retained by the supplier. Nominal trimmed heights from the pivot are 13 mm for
-the body leaf and 6.4 mm for the lid leaf. These are not laser-cut comb leaves.
-
-The two `hinge_mount_block_*` parts are **10 × 10 × 7 mm brass blocks**. Mirror their Y
-orientation at opposite hinge ends. On each block, measure heights from its bottom:
-
-| Entry face | Hole centres | Full-diameter drill depth |
-|---|---|---|
-| Wall-facing face | 6 mm inward from the outer end, 5.25 mm high; 4 mm inward, 1.75 mm high | 3.5 mm |
-| Outer end face | 7 mm outward from the wall-facing face, 5.25 mm high; 5 mm outward, 1.75 mm high | 5 mm |
-
-Drill Ø1.6 mm and bottom-tap M2, with at least 3.0 mm usable thread from the wall face and
-4.6 mm from the outer end. Allow for the drill point, but do not exceed **4.0 mm total**
-from the wall face or **5.5 mm total** from the end face. The staggered holes avoid each other.
-Deburr and verify screw clearance with the actual fasteners; do not bottom a screw.
-
-**135° opening stop.** Two M2×5 DIN 84 slotted cheese-head screws fasten each
-`hinge_stop_bracket` to a block's outer end. The blocks and fixed hinge leaf are clamped to
-the shell by the four M2×6 inside screws and the body backing strip (§7). The rod's diameter,
-not screw friction, sets the stop contact.
-
-Cross-drill the 1/8" rod Ø1 mm, 1.5 mm from each end. Slide it through both brackets, fit
-**Ø5 mm OD × Ø3.4 mm ID × 0.5 mm washers** and retain it with 0.8 mm split pins. Reduce
-ordinary washers to the specified OD if necessary: larger washers catch the opening lid.
-Trim and spread the split-pin legs away from the lid, keeping their final X envelope within
-about 6.2 mm as shown by the simplified CAD bodies. Check the actual formed clips through
-the full travel; they are not modelled as detailed vendor parts. Use new split pins after servicing.
-
-Clamp temporary lid/body references to the hinge and check **135° opening from closed**
-with a protractor. It must close freely and stop on the rod, not the brackets or hardware.
-Hole clearance and real hinge geometry affect the angle; correct the CAD/parts if the
-dry-fit fails, rather than forcing the lid or substituting glue. This is a hard stop, **not**
-a friction hinge or a stay. No stop-strength or wear test has been performed.
+**Purchased hinge (after releasing the hold in §0).** Request one 63.5 mm five-knuckle
+length of the Guden brass hinge, with both end knuckles on the fixed leaf and the pin
+retained by the supplier. Nominal trimmed heights from the pivot are 13 mm for the body leaf
+and 6.4 mm for the lid leaf. Nothing else is fitted outside the case: there is no separate
+stop. The lid opens flat and a little beyond, until the two leaves close on each other.
 
 ## 4. Carrier PCB and bench test (before anything goes in the case)
 
@@ -270,12 +236,12 @@ a friction hinge or a stay. No stop-strength or wear test has been performed.
    - Drop the crystal into the frame spider, then lay the seat spider on top.
 5. **Body hinge, before fitting the shell over the movement.** Jig the checked purchased
    hinge against the right wall with its pivot at the CAD datum. Transfer-drill the four
-   Ø2.4 mm holes through the fixed leaf and formed wall, using the backing strip as a guide.
-   The supplier shell blank deliberately has no hinge holes. Place the backing strip inside
-   and the tapped blocks outside the leaf; insert four **M2×6 DIN 84** screws from inside.
-   The two screws at each end are staggered so their heads clear. Nominal engagement in
-   the blocks is 2.37 mm. Fit the stop brackets before lowering the shell.
-   P2 has a hinge-side relief for this backing strip and the inside screw heads.
+   Ø2.4 mm holes through the fixed leaf and formed wall, using the laser-cut backing strip as
+   a guide (holes at Y = ±9.5 and ±25.4 mm, 8 mm below the top edge). The supplier shell blank
+   deliberately has no hinge holes. Countersink the **leaf only**, 90°, for the Ø3.8 mm heads.
+   Fit four **M2×6 DIN 963** countersunk screws from outside, with the backing strip and four
+   M2 nuts inside. The heads must finish flush with the leaf. P2 has a hinge-side relief for
+   the backing strip and nuts.
 6. Lower the shell over the movement. The thumbwheels must pass through the three notches.
    Fix it with four **M2×6 countersunk** screws through the top face.
    Countersunk lengths include the head. These give about **2.37 mm** of thread engagement
@@ -310,18 +276,19 @@ unsupported crown corner. Do not rely on the clearance skirt as rigid bracing.
 1. **Lid hinge first.** Close and align the lid. Transfer-drill its two Ø1.8 mm mounting holes
    through the checked moving leaf and wall, nominally at Y = ±12.7 mm and 3.5 mm above the
    seam. Hand-countersink the **hinge leaf only**, 90°, for the Ø3.2 mm heads of two
-   **M1.6×6 DIN 963** screws. Their heads must be flush: a proud head would hit the stop
-   rod early. Nominal seat depth is 0.7 mm, leaving 0.316 mm of straight bore.
+   **M1.6×6 DIN 963** screws. Their heads must be flush: when the lid is fully open the
+   leaves close face to face, and a proud head would stop it early. Nominal seat depth is
+   0.7 mm, leaving 0.316 mm of straight bore.
 2. Fit the hand-cut **63.5 × 5 × 1.6 mm lid backing strip** inside, between 0.2 and 5.2 mm
    above the seam, then the M1.6 nuts. Keep it below the lid's inside bend and check tool
    access before attaching the overlay. Nominal screw projection beyond each nut is 1.07 mm.
 3. Epoxy the pierced overlay inside the lid, keeping the hinge nuts and backing strip clear.
    Epoxy the two lid magnets into the overlay's holes, poles attracting the body magnet.
    The purchased hinge pin is already retained; no peening or glue is needed at assembly.
-4. Open gently to the **135° stop**. Confirm that the lid leaf contacts the fixed stop pin
-   along its straight strip, both brackets remain clear of the moving leaf and lid shell,
-   and neither the fasteners, split pins nor the shell edges bind anywhere in the travel. Do not force the
-   lid past the stop or use it as a handle. This hinge has not yet been physically prototyped.
+4. Open the lid through its full travel. It passes flat (180°) and stops a little beyond, about
+   200° with the modelled hinge, when the two leaves close face to face. On a table the lid's far
+   edge comes to rest on the tabletop first. Check nothing binds anywhere in the travel and the
+   screw heads don't touch. This hinge has not yet been physically prototyped.
 
 ## 9. Finish and first run
 

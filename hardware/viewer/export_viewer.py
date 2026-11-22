@@ -197,7 +197,7 @@ def main() -> int:
     manifest = dict(
         units="mm", up="z", generated=int(time.time()),
         groups=[dict(id=g, label=lbl) for g, lbl in GROUPS],
-        hinge=dict(point=[ax, 0.0, az], axis=[0.0, 1.0, 0.0], open_deg=D.LID_OPEN_ANGLE),
+        hinge=dict(point=[ax, 0.0, az], axis=[0.0, 1.0, 0.0], open_deg=D.LID_OPEN_ANGLE, rest_deg=D.LID_REST_ANGLE),
         dial=dict(texture="dial.png" if dial_src else None, source=dial_src, half=DIAL_HALF),
         z_top=D.Z_TOP, summary=D.summary(), parts=manifest_parts,
     )

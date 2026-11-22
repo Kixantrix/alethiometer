@@ -157,20 +157,23 @@ KNUCKLE_LEN = 0.5 * IN - KNUCKLE_GAP
 HINGE_PIN_D = 0.091 * IN
 HINGE_BARREL_D = HINGE_PIN_D + 0.1 + 2 * T040
 HINGE_BODY_DEPTH, HINGE_LID_HEIGHT = 13.0, 6.4
-HINGE_BLOCK_W, HINGE_BLOCK_H = 10.0, 7.0
-HINGE_BLOCK_TOP = -6.25
-HINGE_MOUNT_Z = (-8.0, -11.5)
+HINGE_BODY_MOUNTS = (-25.4, -9.5, 9.5, 25.4)   # along the hinge; M2 countersunk from outside, nuts inside
+HINGE_BODY_MOUNT_Z = -8.0                      # below the pivot
 HINGE_LID_MOUNTS = (-12.7, 12.7)
 HINGE_LID_MOUNT_Z = 3.5
+HINGE_NUT_H, HINGE_BODY_SCREW_LEN, HINGE_LID_SCREW_HEAD_D = 1.6, 6.0, 3.2
 HINGE_MOUNT_CLEAR = 2.4
 HINGE_LID_CLEAR = 1.8
 HINGE_REFERENCE_NOTE = (
     "Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel "
     "on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 )
-LID_OPEN_ANGLE = 135.0
-HINGE_STOP_CONTACT_Z = 4.8                 # contact height on the closed lid leaf, above the seam
-HINGE_STOP_SIDE_CLEAR = 0.3                # lid leaf ends to the fixed stop brackets
+# No separate stop: the lid opens flat (180°) and a little past, until the hinge's own leaves
+# close onto each other. The leaves are tangent to the barrel on the wall side, so their
+# outer faces are (barrel radius - leaf thickness) either side of the pivot when folded.
+LID_REST_ANGLE = 180.0                     # "open" pose for renders, GLB and the viewer
+_LEAF_OFFSET = HINGE_BARREL_D / 2 - T040
+LID_OPEN_ANGLE = 180.0 + 2 * math.degrees(math.atan(_LEAF_OFFSET / HINGE_LID_HEIGHT))   # ~201°
 
 
 @dataclass
@@ -446,7 +449,7 @@ def p1_plate() -> Part:
 
 def p2_plate() -> Part:
     outline = offset(UPPER_INNER, -PLATE_CLEAR)
-    hinge_clearance = T040 + T063 + 1.3 + 0.4
+    hinge_clearance = T040 + T063 + HINGE_NUT_H + 0.4       # backing strip + M2 nuts inside the wall
     outline = outline.difference(rect(HINGE_X, 0, 2 * hinge_clearance, hinge_span() + 1.0))
     p = Profile(outline)
     # hidden outer zone (under the top face) is opened up for weight and as the sound path
@@ -937,7 +940,8 @@ def crown_cap() -> list[Part]:
 
 
 # ---------------------------------------------------------------------------
-# Purchased hinge reference; screwed backing strips and a removable stop
+# Hinge: one purchased brass hinge, screwed on with flush countersunk screws.
+# Nothing else outside the case: the leaves themselves are the opening stop.
 # ---------------------------------------------------------------------------
 HINGE_X = wall_point(UPPER_OUTER, 0.0)[0]       # outer face of the right wall
 HINGE_AXIS = (HINGE_X + HINGE_BARREL_D / 2, Z_TOP)
@@ -948,20 +952,8 @@ def hinge_span() -> float:
 
 
 def hinge_body_mounts() -> list[tuple[float, float]]:
-    y = hinge_span() / 2 + HINGE_STOP_SIDE_CLEAR - HINGE_BLOCK_W / 2
-    return [(side * (y + offset), z) for side in (-1, 1)
-            for offset, z in zip((-1.0, 1.0), HINGE_MOUNT_Z)]
-
-
-def hinge_bracket_mount_x(z: float) -> float:
-    return HINGE_X + T040 + (7.0 if z == HINGE_MOUNT_Z[0] else 5.0)
-
-
-def cheese_screw(length, d=2.0, head_d=3.8, head_h=1.3):
-    head = cylinder(head_d, head_h, z=-head_h)
-    head = head.cut(box(-head_d / 2 - 0.1, -0.25, -head_h - 0.1,
-                        head_d / 2 + 0.1, 0.25, -head_h + 0.5))
-    return head.fuse(cylinder(d, length))
+    """(y along the hinge, z relative to the pivot) of the body-leaf screws."""
+    return [(y, HINGE_BODY_MOUNT_Z) for y in HINGE_BODY_MOUNTS]
 
 
 def hinge() -> list[Part]:
@@ -980,137 +972,73 @@ def hinge() -> list[Part]:
             poly = poly.union(rect((a + b) / 2, (tab_lo + tab_hi) / 2, b - a, tab_hi - tab_lo))
         return Profile(poly)
 
+    # Leaves are drawn in their own XY (x = along the hinge, y = height above the pivot), then stood up
     stand = cq.Location(cq.Vector(HINGE_X, 0, 0), cq.Vector(0, 0, 1), 90) * \
         cq.Location(cq.Vector(), cq.Vector(1, 0, 0), 90)
     body_leaf = leaf(body_k, -HINGE_BODY_DEPTH, -clear, -clear - 0.5, 0.0)
     lid_leaf = leaf(lid_k, clear, HINGE_LID_HEIGHT, 0.0, clear + 0.5)
-    for y, z in hinge_body_mounts():
-        body_leaf.hole(y, z, HINGE_MOUNT_CLEAR)
-    for y in HINGE_LID_MOUNTS:
-        lid_leaf.hole(y, HINGE_LID_MOUNT_Z, HINGE_LID_CLEAR)
+    body_seats = [(y, z, HINGE_MOUNT_CLEAR, CASE_SCREW_HEAD_D) for y, z in hinge_body_mounts()]
+    lid_seats = [(y, HINGE_LID_MOUNT_Z, HINGE_LID_CLEAR, HINGE_LID_SCREW_HEAD_D) for y in HINGE_LID_MOUNTS]
+    for prof, seats in ((body_leaf, body_seats), (lid_leaf, lid_seats)):
+        for y, z, hole, _ in seats:
+            prof.hole(y, z, hole)
     kn = cq.Solid.makeCylinder(HINGE_BARREL_D / 2, KNUCKLE_LEN, cq.Vector(ax, 0, az), cq.Vector(0, 1, 0)) \
         .cut(cq.Solid.makeCylinder((HINGE_PIN_D + 0.1) / 2, KNUCKLE_LEN, cq.Vector(ax, 0, az),
                                    cq.Vector(0, 1, 0)))
     parts = []
     leaf_loc = cq.Location(cq.Vector(0, 0, Z_TOP)) * stand
-    for name, prof, spans_, group in (
-        ("hinge_leaf_body", body_leaf, body_k, "case"),
-        ("hinge_leaf_lid", lid_leaf, lid_k, "lid"),
+    for name, prof, seats, spans_, group in (
+        ("hinge_leaf_body", body_leaf, body_seats, body_k, "case"),
+        ("hinge_leaf_lid", lid_leaf, lid_seats, lid_k, "lid"),
     ):
         solid = profile_solid(prof, T040)
-        if group == "lid":
-            for y in HINGE_LID_MOUNTS:
-                solid = solid.cut(cq.Solid.makeCone(1.6, 0, 1.6,
-                                  cq.Vector(y, HINGE_LID_MOUNT_Z, T040), cq.Vector(0, 0, -1)))
+        for y, z, _, head in seats:                       # 90° countersinks: heads sit flush
+            solid = solid.cut(cq.Solid.makeCone(head / 2, 0, head / 2,
+                                                cq.Vector(y, z, T040), cq.Vector(0, 0, -1)))
         solid = solid.moved(leaf_loc)
         solid = solid.fuse(*(kn.moved(loc(0, a)) for a, _ in spans_))
         parts.append(stock(name, solid, [loc()],
-                           "Guden BR05050404-72 hinge, "
+                           "Guden BR05050404-72 brass hinge, "
                            f"{'fixed' if group == 'case' else 'moving'} half of ONE cut-to-length assembly; "
-                           + HINGE_REFERENCE_NOTE, group=group, kind="bought"))
+                           "countersink the screw holes 90° in the leaf; " + HINGE_REFERENCE_NOTE,
+                           group=group, kind="bought"))
     pin = cq.Solid.makeCylinder(HINGE_PIN_D / 2, total, cq.Vector(ax, y0, az), cq.Vector(0, 1, 0))
     parts.append(stock("hinge_pin", pin, [loc()],
-                       "Included in the ONE purchased hinge; have supplier retain pin after cutting",
+                       "Included in the purchased hinge; have the supplier retain the pin after cutting",
                        group="case", kind="bought"))
 
-    for name, height, z, mounts, hole, group, kind in (
-        ("hinge_backing_body", 11.0, -8.0, hinge_body_mounts(), HINGE_MOUNT_CLEAR, "case", "scs"),
-        ("hinge_backing_lid", 5.0, 2.7,
-         [(y, HINGE_LID_MOUNT_Z) for y in HINGE_LID_MOUNTS], HINGE_LID_CLEAR, "lid", "stock"),
+    # Backing strips inside the walls spread the screw load into the .040" sheet
+    for name, height, z, seats, group, kind in (
+        ("hinge_backing_body", 11.0, HINGE_BODY_MOUNT_Z, body_seats, "case", "scs"),
+        ("hinge_backing_lid", 5.0, 2.7, lid_seats, "lid", "stock"),
     ):
         profile = Profile(rect(0, z, total, height))
-        for y, z_ in mounts:
+        for y, z_, hole, _ in seats:
             profile.hole(y, z_, hole)
         backing_loc = cq.Location(cq.Vector(-T040 - T063, 0, Z_TOP)) * stand
         parts.append(flat_part(name, profile, T063, material="brass .063\"", group=group,
                                placements=[backing_loc], kind=kind,
-                               spec=f"brass .063\" hinge load-spreading strip, {total:.1f} x {height:g} mm"
+                               spec=f"brass .063\" hinge backing strip, {total:.1f} x {height:g} mm"
                                + ("; hand-cut (below laser service minimum width)" if kind == "stock" else "")))
 
-    # Blocks have separate, non-intersecting tapped holes from the wall and bracket faces.
-    block_y = total / 2 + HINGE_STOP_SIDE_CLEAR
-    for side in (-1, 1):
-        y = side * block_y
-        block_x = HINGE_X + T040
-        block = box(block_x, min(y, y - side * HINGE_BLOCK_W),
-                    az + HINGE_BLOCK_TOP - HINGE_BLOCK_H,
-                    block_x + HINGE_BLOCK_W, max(y, y - side * HINGE_BLOCK_W), az + HINGE_BLOCK_TOP)
-        for z in HINGE_MOUNT_Z:
-            mount_y = next(y_ for y_, z_ in hinge_body_mounts() if side * y_ > 0 and z_ == z)
-            block = block.cut(cq.Solid.makeCylinder(1.0, 3.5,
-                              cq.Vector(block_x, mount_y, az + z),
-                              cq.Vector(1, 0, 0)))
-            block = block.cut(cq.Solid.makeCylinder(1.0, 5.0,
-                              cq.Vector(hinge_bracket_mount_x(z), y, az + z), cq.Vector(0, -side, 0)))
-        parts.append(stock(f"hinge_mount_block_{'a' if side < 0 else 'b'}", block, [loc()],
-                           "10 mm square brass bar, 7 mm high; M2 blind tapped holes "
-                           "3.5 mm from wall face and 5 mm from bracket face; see assembly",
-                           group="case"))
-
-    # The lid leaf's outer face meets a fixed cross-pin at the opening limit.
-    a = math.radians(LID_OPEN_ANGLE)
-    x = HINGE_X + T040 - ax + ROD_18 / 2
-    sx = x * math.cos(a) + HINGE_STOP_CONTACT_Z * math.sin(a)
-    sz = -x * math.sin(a) + HINGE_STOP_CONTACT_Z * math.cos(a)
-    mount_x = HINGE_X + T040 - ax
-    outline = rect(mount_x + HINGE_BLOCK_W / 2, HINGE_BLOCK_TOP - HINGE_BLOCK_H / 2,
-                   HINGE_BLOCK_W, HINGE_BLOCK_H).union(circle(sx, sz, 2.3)).convex_hull
-    bracket = Profile(outline)
-    for z in HINGE_MOUNT_Z:
-        bracket.hole(hinge_bracket_mount_x(z) - ax, z, HINGE_MOUNT_CLEAR)
-    bracket.hole(sx, sz, ROD_18 + FIT)
-    end_locs = [
-        cq.Location(cq.Vector(ax, y, az), cq.Vector(1, 0, 0), 90)
-        for y in (block_y + T040, -block_y)
-    ]
-    parts.append(flat_part("hinge_stop_bracket", bracket, T040,
-                           placements=end_locs, group="case",
-                           spec="brass .040\" x2, two M2 screws into each removable mounting block"))
-    stop_half = block_y + T040 + 3.0
-    stop = cq.Solid.makeCylinder(ROD_18 / 2, 2 * stop_half,
-                                cq.Vector(ax + sx, -stop_half, az + sz), cq.Vector(0, 1, 0))
-    for side in (-1, 1):
-        y = side * (block_y + T040 + 1.5)
-        stop = stop.cut(cq.Solid.makeCylinder(0.5, ROD_18 + 2,
-                        cq.Vector(ax + sx - ROD_18 / 2 - 1, y, az + sz), cq.Vector(1, 0, 0)))
-        washer = cq.Solid.makeCylinder(2.5, 0.5, cq.Vector(ax + sx, side * (block_y + T040), az + sz),
-                                      cq.Vector(0, side, 0)).cut(
-            cq.Solid.makeCylinder(1.7, 0.5, cq.Vector(ax + sx, side * (block_y + T040), az + sz),
-                                  cq.Vector(0, side, 0)))
-        parts.append(stock(f"hinge_stop_washer_{'a' if side < 0 else 'b'}", washer, [loc()],
-                           "M3 washer reduced to 5 mm OD x 3.4 mm ID x 0.5 mm; larger OD hits lid", STEEL,
-                           group="case", density="steel", kind="stock"))
-        clip = cq.Solid.makeCylinder(0.4, ROD_18 + 3, cq.Vector(ax + sx - ROD_18 / 2 - 1.5, y, az + sz),
-                                    cq.Vector(1, 0, 0))
-        parts.append(stock(f"hinge_stop_split_pin_{'a' if side < 0 else 'b'}", clip, [loc()],
-                           "0.8 mm split pin through 1 mm cross-drilled hole; spread legs after fitting",
-                           STEEL, group="case", density="steel", kind="bought"))
-    parts.append(stock("hinge_stop_pin", stop, [loc()],
-                       f"K&S 1/8\" brass rod, {2 * stop_half:.2f} mm; cross-drill ends for split pins",
-                       group="case"))
-
-    for index, (y, z) in enumerate(hinge_body_mounts()):
-        origin = cq.Vector(HINGE_X - T040 - T063, y, az + z)
-        screw = cheese_screw(6).rotate(cq.Vector(), cq.Vector(0, 1, 0), 90).translate(origin)
-        parts.append(stock(f"hinge_body_screw_{index + 1}", screw, [loc()],
-                           "M2x6 DIN 84 slotted cheese head, inside backing strip into mounting block",
-                           group="case", kind="bought"))
-    for side in (-1, 1):
-        for index, z in enumerate(HINGE_MOUNT_Z):
-            origin = cq.Vector(hinge_bracket_mount_x(z), side * (block_y + T040), az + z)
-            screw = cheese_screw(5).rotate(cq.Vector(), cq.Vector(1, 0, 0), side * 90).translate(origin)
-            parts.append(stock(f"hinge_bracket_screw_{'a' if side < 0 else 'b'}_{index + 1}", screw, [loc()],
-                               "M2x5 DIN 84 slotted cheese head into end face of mounting block",
-                               group="case", kind="bought"))
-    for index, y in enumerate(HINGE_LID_MOUNTS):
-        origin = cq.Vector(HINGE_X + T040, y, az + HINGE_LID_MOUNT_Z)
-        screw = countersunk_screw(6, 1.6, 3.2).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90).translate(origin)
-        parts.append(stock(f"hinge_lid_screw_{index + 1}", screw, [loc()],
-                           "M1.6x6 DIN 963 slotted countersunk screw, 3.2 mm head", group="lid", kind="bought"))
-        nut = hexagon(3.2, 1.3, 0, 0, 0, 1.6).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90)
-        nut = nut.translate(cq.Vector(HINGE_X - T040 - T063, y, az + HINGE_LID_MOUNT_Z))
-        parts.append(stock(f"hinge_lid_nut_{index + 1}", nut, [loc()], "M1.6 hex nut, 3.2 mm AF x 1.3 mm",
-                           group="lid", kind="bought"))
+    # Flush countersunk screws from outside, hex nuts on the backing strips inside
+    inside = HINGE_X - T040 - T063
+    for prefix, seats, length, d, head, nut_af, nut_h, group in (
+        ("hinge_body", body_seats, HINGE_BODY_SCREW_LEN, 2.0, CASE_SCREW_HEAD_D, 4.0, HINGE_NUT_H, "case"),
+        ("hinge_lid", lid_seats, 6, 1.6, HINGE_LID_SCREW_HEAD_D, 3.2, 1.3, "lid"),
+    ):
+        size = f"M{d:g}"
+        for index, (y, z, _, _) in enumerate(seats):
+            screw = countersunk_screw(length, d, head).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
+                .translate(cq.Vector(HINGE_X + T040, y, az + z))
+            parts.append(stock(f"{prefix}_screw_{index + 1}", screw, [loc()],
+                               f"{size}x{length:g} DIN 963 slotted countersunk brass screw, from outside",
+                               group=group, kind="bought"))
+            nut = hexagon(nut_af, nut_h, 0, 0, 0, d).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
+                .translate(cq.Vector(inside, y, az + z))
+            parts.append(stock(f"{prefix}_nut_{index + 1}", nut, [loc()],
+                               f"{size} brass hex nut, {nut_af:g} mm AF, inside on the backing strip",
+                               group=group, kind="bought"))
     return parts
 
 
@@ -1132,7 +1060,7 @@ ALLOWED = [
     ("magnet_lid", "lid_overlay"), ("module_sockets", "motor_X27"),   # X27 pins inside their sockets
 ]
 
-def lid_open_location(angle: float = LID_OPEN_ANGLE) -> cq.Location:
+def lid_open_location(angle: float = LID_REST_ANGLE) -> cq.Location:
     ax, az = HINGE_AXIS
     return (cq.Location(cq.Vector(ax, 0, az)) * cq.Location(cq.Vector(), cq.Vector(0, 1, 0), angle)
             * cq.Location(cq.Vector(-ax, 0, -az)))

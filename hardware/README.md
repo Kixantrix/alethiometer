@@ -45,7 +45,8 @@ the interpretation aloud.
   like a watch case, and a hinged lid with a pierced rosette inside. The upper shell's top face
   carries the crystal window and a ring of 90 radial slots. Three bottom and four top DIN 963
   countersunk screws sit flush in hand-machined 90° seats; the rim is not a press-fit retainer.
-  The purchased hinge is screw-mounted through backing strips, with a removable stop assembly.
+  The purchased brass hinge is held by flush countersunk screws with nuts and backing strips
+  inside; nothing else is mounted outside the case.
 - **Dial.** A printed sticker on a brass dial plate: a cream ring with 36 sepia symbols in the
   website's order, Hourglass at 12. It uses Myth Made's hand-drawn, film-style symbols, which you
   generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
@@ -69,8 +70,9 @@ the interpretation aloud.
 - **Crown.** A small scalloped brass crown centred on the top-right corner, low on the case. Hold it to speak, release
   to ask. Triple-click opens Wi-Fi setup; five clicks starts calibration.
 - **Lid.** A magnet and reed switch wake the instrument when you open the lid and send it to
-  sleep when you close it. A brass cross-pin on two screwed end brackets stops the hinge at
-  **135°**, against the lid hinge leaf; it does not rely on pin friction. A USB-C charging port is tucked in the hinge-side wall. Battery is
+  sleep when you close it. It opens flat and stops just beyond (about 200°) when the hinge's
+  own leaves close on each other; on a table it rests on the tabletop. There is no separate
+  stop hardware. A USB-C charging port is tucked in the hinge-side wall. Battery is
   a ~350 mAh LiPo, good for roughly 40–55 readings per charge (estimated, not measured).
 
 ```mermaid
@@ -110,7 +112,7 @@ buys a build where nothing needs desoldering to reflash, probe or replace a part
 
 **Hinge fit must be resolved first.** The Guden hinge in CAD is a reference using published
 sheet, pin and pitch dimensions, with assumed curl and slot clearances. Obtain the actual
-cross-section/sample and update the pivot, mounting stack and stop before ordering related
+cross-section/sample and update the pivot and mounting stack before ordering related
 parts or drilling the shells ([ASSEMBLY.md §0](ASSEMBLY.md#0-before-you-order)).
 Nominal motion checks do not establish commercial-part compatibility.
 
@@ -147,11 +149,12 @@ The carrier PCB is generated from the same `cad/layout.py` positions by
 Every dimension lives in [`cad/design.py`](cad/design.py): case size, stack heights, gear
 module and tooth counts, hand lengths, and component positions. `build.py` runs a full pairwise
 **interference check** across the assembled parts (gear teeth included) and fails if anything
-collides, including lid travel in 5° steps through its 135° stop. It also checks SendCutSend's minimum part size, thin webs, holes left floating in
+collides, including lid travel in 5° steps up to where the hinge leaves meet. It also checks SendCutSend's minimum part size, thin webs, holes left floating in
 voids, and the minimum flange length.
 
-The focused checks exercise hinge travel in 1° steps, verify contact at 135° and blocked
-overtravel, and check flush head envelopes, seat thickness and screw engagement:
+The focused checks verify that the hinge leaves meet at the stop and block overtravel, that the
+lid clears everything through its travel, and check flush head envelopes, seat thickness and
+screw engagement:
 
 ```sh
 python -m unittest discover -s hardware/cad -p 'test_*.py'
@@ -161,11 +164,10 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
 
 - **Not yet built.** The geometry is checked in CAD but no physical prototype exists yet.
   Plan for a second SendCutSend order for small parts.
-- **Hinge procurement, stop and chassis stiffness.** The purchased hinge cross-section
-  remains unverified. The reference stop uses screwed blocks/backing strips and a
-  cross-drilled rod retained by washers and split pins, with no mechanical solder joints.
-  Dry-fit and check actual clip/washer clearances, angle, screw security and deflection.
-  The laser-cut backing strip requires a directly related clearance relief in P2.
+- **Hinge procurement and chassis stiffness.** The purchased hinge cross-section remains
+  unverified; its real curl sets the exact opening limit (about 200° as modelled). Dry-fit and
+  check the angle, flush heads and screw security. The laser-cut backing strip and its nuts
+  need a directly related clearance relief in P2.
   The shells are screw-fastened through the plate/standoff stack, not retained by a press fit
   (see [ASSEMBLY.md §7](ASSEMBLY.md#what-holds-the-two-shells-together)). Verify stiffness at
   the crown corner, where the fourth floor post is omitted. Fit checks are not a load test.
