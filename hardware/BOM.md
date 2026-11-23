@@ -23,25 +23,25 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
 | Part | Material | Qty | Notes |
 |---|---|---|---|
 | `case_lower_tray` | Brass 260 .040" | 1 | **Bent**: 8 × 90° flanges up. USB-C opening (right wall), crown hole (top-right chamfer) and the power-switch slot (back wall). Upload `case_lower_tray__formed.step` (preferred) or the DXF with its BEND layer. |
-| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window and 90-slot grille ring, 8 flanges 17.2 mm. Knob notches. |
-| `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum). |
+| `case_upper_shell` | Brass 260 .040" | 1 | **Bent**: top face with crystal window, 90-slot grille ring and two crystal-screw holes, 8 flanges 17.2 mm. Knob notches and four hinge holes (right wall). |
+| `case_lid` | Brass 260 .040" | 1 | **Bent**: 8 flanges 7.62 mm (just above SCS's .292" minimum), two hinge holes (right wall). |
 | `lid_overlay` | Brass 260 .040" | 1 | Pierced rosette, fixed inside the lid |
 | `dial_plate_P2` | Brass 260 .063" | 1 | Skeleton window; carries the dial sticker and top bearings |
 | `movement_base_plate_P1` | Brass 260 .063" | 1 | Hidden lattice; bottom bearings, X27 cutout. Aluminium 5052 .063" works too and saves ~45 g. |
-| `crystal_seat_spider` | Brass 260 .040" | 1 | |
-| `crystal_frame_spider` | Brass 260 .063" | 1 | Crystal pocket |
+| `crystal_seat_spider` | Brass 260 .040" | 1 | Lobes for the two crystal screws |
+| `crystal_frame_spider` | Brass 260 .063" | 1 | Crystal pocket; lobes for the two crystal screws |
 | `crystal` | **Clear cast acrylic .063"** | 1 | Ø88 mm. Upgrade: any Ø88 × 1.5 mm flat mineral watch/clock glass. |
 | `gear_hand_I/II/III_32T` | Brass 260 .040" | 1 each | Module 0.8, 20° PA. Bores differ to suit arbors I, II, III |
 | `gear_sensor_I/II/III_32T` | Brass 260 .040" | 1 each | |
 | `gear_needle_17T` | Brass 260 .040" | 1 | |
 | `gear_motor_34T` | Brass 260 .040" | 1 | Press fit on the X27's Ø1 shaft |
+| `gear_*_L` (8 files) | Brass 260 .040" | 1 each | **Mesh-tuning spares**: every laser-cut gear again with 0.16 mm thinner teeth, marked by a Ø0.5 mm hole in the rim. Fitted only if a pair binds on the dry run (ASSEMBLY.md §3.1, §11) |
 | `hand_I`, `hand_II`, `hand_III` | **1075 blue-tempered spring steel .015"** | 1 each | Comes blued: no finishing. SendCutSend's only thickness for this material |
 | `hand_needle` | **Copper 110 .032"** | 1 | The answering needle |
 | `hand_cap_rosette` | Brass 260 .040" | 1 | Ø10 centre cap |
 | `hinge_backing_body` | Brass 260 .063" | 1 | Load-spreading strip inside the upper shell |
-| `hinge_drill_guide` | Brass 260 .040" | 1 | **Tool**, one 90° bend: hooks over the closed lid and drills all six hinge holes. Upload `hinge_drill_guide__formed.step`. |
-| `hinge_trim_gauge` | Brass 260 .063" | 1 | **Tool**: marks the hinge's cut-to-length and the lid-leaf trim line |
-| `hand_setting_tool` | Brass 260 .063" | 1 | **Tool**: presses each hand flush with its arbor (ASSEMBLY.md §6) |
+| `hinge_gauge` | Brass 260 .063" | 1 | **Tool**: checks the hinge's cut and lid-leaf trim, and is the drilling template for the six leaf holes (ASSEMBLY.md §3.7) |
+| `hand_setting_tool` | Brass 260 .063" | 1 | **Tool**: presses each hand flush with its arbor (ASSEMBLY.md §7) |
 
 **Ordering notes**
 - Add **deburring** to the plates if offered for that thickness. The case parts will be hand-finished anyway.
@@ -49,12 +49,13 @@ and quantity, e.g. `gear_sensor_I_32T__brass-040in__qty1.dxf`. The same list is 
   4-sided boxes, so an 8-flange tray may go to manual review. Myth Made's published case is
   also an 8-bend folded tray. If it's rejected, ask for a custom quote. As a last resort, order the DXF
   flat and bend it yourself on a small box-and-pan brake.
-- Order a spare set of the small gears (`gear_*`). They're cheap, and laser-cut teeth sometimes
-  need a second try. The thumbwheels are bought gears (§C).
+- The `gear_*_L` files are the spare set of small gears, cut with thinner teeth on purpose: if the
+  order's teeth come out fat, they are the fix (ASSEMBLY.md §11). The thumbwheels are bought gears (§C).
 - Fits are sized for SendCutSend's ±0.13 mm. Shafts run in turned bushings, not in the cut
   holes, so nothing needs reaming (ASSEMBLY.md §1).
 - **Gear precision upgrade (optional).** The laser-cut gears are fine for this slow, hand-turned
-  mechanism: expect about a degree of play at the hands, and calibration absorbs any fixed offset.
+  mechanism: about 0.25 mm of backlash at the pitch circle, a degree or so of play at the hands, and
+  calibration absorbs any fixed offset (`cad/mesh.py` checks every pair).
   If you want tighter meshing, send the same `gear_*` DXFs to a wire-EDM service
   (e.g. Xometry, PCBWay) for about ±0.01 mm teeth. No design change is needed.
 
@@ -85,13 +86,14 @@ in a pinch the plain tubes and bushings can still be cut from K&S stock.
 |---|---|---|---|
 | M2 brass hex standoff, **female-female 12 mm**, 4 mm AF | 3 | 3 | Bay posts (carrier PCB → P1); none at the top-right corner (crown switch) |
 | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | 1 | Floor → carrier PCB (keeps the board off the brass) |
-| M2 brass hex nut | 1 | | Under P1 at the top-right corner |
+| M2 × 4 brass hex standoff, **female-female**, 4 mm AF | 1 | 1 | Under P1 at the top-right corner (no bay post there) |
+| M1.6 × 5 DIN 963 countersunk screw, 90°, Ø3.0 mm head + M1.6 hex nut (3.2 mm AF) | 2 each | Check | Crystal screws: top face → frame spider → seat spider → nut |
 | M2 brass hex standoff, **male-female 8 mm** (+3 mm thread) | 4 | 3 | Gear posts (P1 → P2) |
 | M2 brass hex standoff, **male-female 5 mm** (+3 mm thread) | 4 | 3 | Hand posts (P2 → crystal) |
 | M2 × 8 brass slotted **countersunk** screw, DIN 963, 90° | 3 | 2 | Flush in the floor → spacer → PCB → bay standoff; length includes head |
 | M2 × 6 brass slotted **countersunk** screw, DIN 963, 90° | 4 | | Flush in the top face; length includes head |
 | **Thumbwheel gear**: Misumi configurable spur gear, module 0.8, 20° PA, **brass, shape A (no hub)**, 26 teeth, face width 5 mm, round bore 4 mm H7 | 3 | Quote | One solid gear per knob, on the knob-shaft collar with Loctite 638 (misumi-ec.com; KHK's brass BSS0.8-26A has the right teeth but a long hub that doesn't fit) |
-| Brass hinge, **Guden BR05050404-72** (72" stock length) | 1 | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width. Cut your 5-knuckle piece with a Dremel and trim the lid leaf, using `hinge_trim_gauge` (ASSEMBLY.md §3). Plenty left over for spares. |
+| Brass hinge, **Guden BR05050404-72**, supplied cut to 63.5 mm | 1 | Quote | .040" sheet, .091" pin, .500" pitch, 1.060" open width. Ask for five knuckles with both end knuckles on one leaf, pin staked, and the other (lid) leaf trimmed to 5.6 mm from the pivot; quote it with the §0 sample. Cutting it from the 72" stock yourself is the fallback (ASSEMBLY.md §3.7). |
 | M2 × 6 DIN 963 countersunk screw, 90°, Ø3.8 mm head + M2 hex nut | 4 each | Check | Flush in the fixed hinge leaf → shell → body backing strip → nut |
 | M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.0 mm head | 2 | Check | Flush in the lid hinge leaf |
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm, and M1.6 DIN 125 washer (Ø4 × 0.3) | 2 each | Check | Inside the lid wall |
@@ -137,7 +139,9 @@ header with part numbers. Summary:
 | 28 mm, 8 Ω, 0.5–1 W thin speaker (≤ 5 mm) | 1 | 2–4 | e.g. Adafruit #1890 |
 | **INMP441** I2S MEMS microphone module (round, Ø14 mm) | 1 | 3 | |
 | **Omron B3F-3150** right-angle tactile switch | 1 | 0.5 | Crown, on the carrier |
-| 30 AWG silicone wire (optional small inline connectors), Kapton tape, thin double-sided foam tape,  | — | 6 | Off-board leads to J4 and J5 |
+| **Molex PicoBlade** 1.25 mm vertical headers **53047-0510** (5-pin, J4) and **53047-0210** (2-pin, J5) | 1 each | 2 | Mic and speaker plug in on the carrier |
+| PicoBlade-compatible pre-crimped pigtails (51021 housing), 5-way and 2-way, ~10 cm, 28–32 AWG | 1 each | 3 | Soldered at the mic and speaker |
+| Kapton tape, thin double-sided foam tape | — | 4 | Floor lining, battery |
 
 ## E. Dial, finish and consumables
 
@@ -161,26 +165,27 @@ The instrument talks to this repo's Azure Function (`/api/ask-voice`, `/api/spea
 
 Everything needed to build the instrument, with the assembly step that uses it. Consumables
 (solder, flux, glue, oil, abrasive paper) are in [§E](#e-dial-finish-and-consumables). The three
-laser-cut jigs, `hinge_trim_gauge`, `hinge_drill_guide` and `hand_setting_tool`, come with the
-SendCutSend order.
+laser-cut jigs, `hinge_gauge` and `hand_setting_tool`, come with the SendCutSend order.
 
 | Tool | Used for (ASSEMBLY.md) | ≈ $ | Notes |
 |---|---|---|---|
-| Temperature-controlled soldering iron, fine chisel tip (e.g. Pinecil) | §4 carrier PCB, §5 speaker and mic leads | 35 | Electronics only |
-| **90° zero-flute (cross-hole) countersink**, ~6 mm (1/4") body, for holes down to 1.6 mm, + T-handle | §1 seven case screw seats, §7 six hinge-leaf seats | 20 | Must be **90°**, not the common US 82°. Finished rim Ø3.8–3.9 mm (M2), Ø3.0–3.1 mm (M1.6) |
-| Digital calipers | §1 countersink rims, §2 identifying the turned parts | 20 | |
-| Rotary tool (Dremel) + reinforced cut-off wheels | §3 cutting the hinge from the 72" stock | 50 | Wear safety glasses |
-| Drill (cordless or drill press), low speed, with **Ø1.8 mm** and **Ø2.4 mm** HSS bits | §7 drilling the hinge through `hinge_drill_guide` | — | Assumed owned; bits ≈ $5 |
-| Automatic centre punch | §3 staking the hinge pin, §7 spotting the hinge holes | 10 | |
-| Small bench vise + two small spring or C-clamps | §3 hinge cutting/trim, §7 clamping the drill guide | 30 | Soft jaws or a scrap of card to protect the brass |
-| Needle file set | §1 deburring, §3 filing the hinge leaf to the gauge line | 12 | |
+| Temperature-controlled soldering iron, fine chisel tip (e.g. Pinecil) | §4 carrier PCB, §5 speaker and mic pigtails; releasing a Loctite 638 joint (§11) | 35 | Electronics only |
+| **90° zero-flute (cross-hole) countersink**, ~6 mm (1/4") body, for holes down to 1.6 mm, + T-handle | §1 nine case screw seats, §3 six hinge-leaf seats | 20 | Must be **90°**, not the common US 82°. Finished rim Ø3.8–3.9 mm (M2), Ø3.0–3.1 mm (M1.6) |
+| Digital calipers | §1 measuring the gears and countersink rims, §2 identifying the turned parts | 20 | |
+| **Drill blanks** (HSS gauge pins) **1/8" ×3 and 5/32" ×3**, 25 mm or longer | §1 lining up the bushing pairs while the Loctite cures | 10 | Exactly the shaft diameters; reusable |
+| Rotary tool (Dremel) + reinforced cut-off wheels | Only if you cut the hinge from stock yourself (§3.7) | 50 | Wear safety glasses |
+| Drill (cordless or drill press), low speed, with **Ø1.8 mm** and **Ø2.4 mm** HSS bits | §3 drilling the hinge leaves through `hinge_gauge` | — | Assumed owned; bits ≈ $5 |
+| Automatic centre punch | Only if you cut the hinge yourself (staking the pin) | 10 | |
+| Small bench vise + two small spring or C-clamps | §3 clamping the gauge to the hinge for drilling | 30 | Soft jaws or a scrap of card to protect the brass |
+| Needle file set | §1 deburring gears and plates, §3 touching up the lid leaf to the gauge | 12 | |
+| 10× loupe | §1 checking the gear teeth for burrs | 5 | |
 | Flat glass plate (or a tile) | §1 flattening and deburring on 600–2000 grit | 5 | |
 | Pin vise + small drill set (0.3–3 mm) | §1 opening a gear bore that comes out tight | 15 | |
-| Flat-nose pliers or an E-clip applicator | §7 snapping the crown's E-clip on | 8 | |
+| Flat-nose pliers or an E-clip applicator | §6 snapping the crown's E-clip on | 8 | |
 | Flat glass sheet (the same one) | §1 bushings flush, §3 gears flush with the arbor ends | — | |
 | Precision screwdrivers (slotted 1.5–2.5 mm) and nut drivers 3.2 mm and 4 mm | M1.6/M2 screws, nuts and hex standoffs throughout | 15 | |
 | Flush cutters and a 30 AWG wire stripper | Socket strips, speaker/mic leads, the USB-C cable for J7 | 18 | |
-| Fine tweezers | Wiring, nuts, seating arbor tips (§5) | 8 | |
+| Fine tweezers | Nuts, seating P2 on the shaft tips (§6), rocking gears in the tests | 8 | |
 | Multimeter | PCB bring-up and continuity checks (`pcb/README.md`) | 25 | |
 | USB-C data cable and a computer with PlatformIO | First firmware flash (`firmware/README.md`) | — | |
-| Safety glasses | Cutting the hinge, drilling | 5 | |
+| Safety glasses | Drilling | 5 | |

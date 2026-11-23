@@ -37,10 +37,14 @@ three.js is loaded from the jsDelivr CDN, so the page needs internet access. The
 reflections use an HDR environment from the same CDN. If that fails to load, the viewer falls
 back to a built-in studio environment.
 
-## What it does
+Two modes share the same model; switch with the **Explore / Assemble** tabs at the top of the
+panel (or <kbd>E</kbd> / <kbd>A</kbd>). Links like `http://localhost:8765/#assemble/hinge-drill` open a
+given assembly step.
 
-- **Layers:** checkboxes for case, lid, movement plates, gear train, hands, dial, electronics, and
-  hardware. Expand a group (â–¸) to toggle individual parts. **All** and **None** set everything at once.
+## Explore
+
+- **Layers:** checkboxes for case, lid, movement plates, gear train, hands, dial, electronics,
+  hardware, and the laser-cut jigs (off by default). Expand a group (â–¸) to toggle individual parts. **All** and **None** set everything at once.
 - **Explode:** lifts each layer by its place in the stack: tray, electronics, P1, gear train (each
   gear level slightly apart), P2 and dial, hands, crystal, upper shell, lid.
 - **Lid:** the slider sets the lid angle about the real hinge axis. The button animates it open
@@ -54,5 +58,21 @@ back to a built-in studio environment.
   info card, **Isolate** shows only that part and **Hide** hides it. <kbd>Esc</kbd> clears the
   selection.
 
+## Assemble
+
+The step-by-step build from [`../assembly/steps.yaml`](../assembly/steps.yaml) (the same source as
+`../ASSEMBLY.md`). Each step animates every part moving into place, along the path that
+`../assembly/check_paths.py` has swept for collisions, with screwdrivers shown at work and markers
+for what gets applied where (Loctite 638, epoxy, solder, oil, drilling, countersinking). The card
+lists the text, tools, checks and any **design review** findings for that step.
+
+- **⏮ ▶ ⏭**, the scrub bar and the speed menu play one step; **Play all steps in a row** runs the
+  whole build. <kbd>←</kbd> <kbd>→</kbd> step, <kbd>Space</kbd> plays or pauses.
+- **All steps** jumps anywhere; **Design review** lists every finding with links to its steps.
+- Parts that move are tinted while they move; click any part for its details.
+
+`export_viewer.py` writes `assets/assembly.json`; after editing only `steps.yaml`, the faster
+`python hardware/assembly/guide.py` rewrites it (and `ASSEMBLY.md`), then reload the page.
+
 The page exposes `window.viewer` (`setExplode`, `setLid`, `setSection`, `setView`, `setGroup`,
-`select`) for scripted screenshots.
+`select`, `setMode`, `assembly`) for scripted screenshots.

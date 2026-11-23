@@ -9,7 +9,9 @@ magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 standoff_bay,bought,3,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
 standoff_hand,bought,4,M2×5+3 M-F brass hex standoff
-nut_p1_corner,bought,1,M2 brass hex nut (top-right gear standoff under P1; no bay post there)
+standoff_corner,bought,1,"M2×4 F-F brass hex standoff, 4 mm AF (top-right gear standoff under P1; no bay post there because of the crown switch)"
+screw_crystal,bought,2,"M1.6×5 brass slotted countersunk screw, DIN 963, 90°: holds the crystal and spiders in the upper shell"
+nut_crystal,bought,2,"M1.6 brass hex nut, 3.2 mm AF, under the seat spider"
 spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
 screw_floor,bought,3,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 screw_top,bought,4,"M2×6 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
@@ -26,8 +28,10 @@ speaker,bought,1,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
 mic_INMP441,bought,1,INMP441 I2S MEMS mic module
 speaker_foam_ring,bought,1,"0.2 mm adhesive foam ring, Ø28 × Ø22: seats and seals the speaker on P1"
 mic_foam_tape,bought,1,"0.5 mm double-sided foam tape, Ø14 with a Ø2.5 hole over the mic port: sticks the INMP441 to the underside of P2 and seals the port"
-wire_speaker,bought,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
-wire_mic,bought,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
+conn_mic,bought,1,"J4: Molex PicoBlade 1.25 mm vertical header 53047-0510 on the carrier, with a 5-way 51021 crimp housing on the lead (pre-crimped pigtails)"
+conn_speaker,bought,1,"J5: Molex PicoBlade 1.25 mm vertical header 53047-0210 on the carrier, with a 2-way 51021 crimp housing on the lead (pre-crimped pigtails)"
+wire_speaker,bought,1,"speaker leads: 2 × 30 AWG, ~10 cm, from its back tabs down through the open centre of P1's speaker seat to a 2-way PicoBlade plug on J5 (+/−)"
+wire_mic,bought,1,"mic leads: 5 × 30 AWG, ~10 cm, from the INMP441 pins down through P1's open lattice to a 5-way PicoBlade plug on J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 battery_socket,bought,1,"JST S2B-PH-K-S side-entry 2-pin socket (J8), soldered to the carrier"
 battery_plug,bought,1,JST PH 2-pin plug on the LiPo's lead
 wire_battery,bought,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"

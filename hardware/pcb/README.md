@@ -54,7 +54,8 @@ boards plus shipping.
 | SW2 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 1 | Power, on the back edge; reached through a slot in the back wall |
 | J8 | **JST S2B-PH-K-S** side-entry 2-pin socket, 2.0 mm | 1 | Battery plug. Polarity is marked on the silkscreen. |
 | C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
-| — | 30 AWG silicone wire, ~1 m; optional 2-pin inline connectors | | Off-board parts to J4 and J5 |
+| J4, J5 | **Molex PicoBlade** 1.25 mm vertical headers **53047-0510** (5-pin) and **53047-0210** (2-pin) | 1 each | Mic and speaker plug in here |
+| — | PicoBlade-compatible pre-crimped pigtails, 5-way and 2-way, ~10 cm | 1 each | Soldered at the INMP441 and the speaker |
 | — | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | Between the case floor and the board |
 | — | M2 × 12 mm brass hex standoff, female-female | 3 | Board → P1 |
 | — | M2 × 8 mm brass slotted countersunk screw, DIN 963, 90° | 3 | Flush case floor → spacer → board → standoff; length includes head |
@@ -104,13 +105,14 @@ modules flat.
   single male pin into each of those holes. They carry the speaker signal to **J5** and support
   the board's far edge.
 - **X27.168 (M1).** Its four rear pins plug into two 1×4 sockets cut from the same 5 mm strip
-  (outer positions only). The holes are 1.3 mm, so the sockets can float about 0.3 mm. Solder them
-  only once the gear mesh is set (below).
+  (outer positions only). Solder them square with the other sockets: the board's hole positions set
+  the motor mesh, like every other gear centre (`cad/mesh.py`).
 
-**Off-board connections.** Solder the leads for J4 and J5 straight into the pads: there's no room
-under P1 for a plug standing up. If you want a part unpluggable, put a small inline connector
-partway along its lead. J1 and J2 take ordinary vertical male headers (8.5 mm fits under P1);
-you only plug into J1 on the bench, with the movement lifted off.
+**Off-board connections.** The mic and speaker plug into **J4** and **J5**, vertical PicoBlade
+headers: header and mated plug stand about 6.5 mm, well under P1 (12 mm). Solder pre-crimped
+pigtails to the INMP441 and the speaker; they plug in before the movement frame goes down
+(ASSEMBLY.md §6.4) and unplug when it is lifted out. J1 and J2 take ordinary vertical male headers
+(8.5 mm fits under P1); you only plug into J1 on the bench, with the movement lifted off.
 
 | Ref | Pins (silkscreen) | Goes to |
 |---|---|---|
@@ -140,8 +142,9 @@ you only plug into J1 on the bench, with the movement lifted off.
    your battery's red wire meets J8's **+** pin; if not, swap the two crimps in its plug (lift the
    tabs with a pin). Stick the cell to the `BATTERY` area with foam tape, lead end toward the top,
    and plug it into J8.
-6. **X27.** Plug the motor into its two 1×4 sockets, but **don't solder the sockets yet**.
-   ASSEMBLY.md §5 uses the board and P1 as a jig to set the gear mesh, then you solder them.
+6. **X27 sockets, J4 and J5.** Solder the X27's two 1×4 sockets (plug the motor in as a jig so they
+   stand square, then take it out again: it goes in through P1 in ASSEMBLY.md §6) and the two
+   PicoBlade headers.
 7. **SW1 and U7.** Solder the crown switch flat on the board. Screw U7 down: M2 × 10 screws from
    the top through U7, the 5 mm spacers and the board, with nuts underneath. Cut a USB-C cable
    about 6 cm from the plug, strip the four wires and solder them into J7 by colour. Plug it into

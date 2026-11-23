@@ -2,7 +2,7 @@
 
 Almost all of this is on the [carrier PCB](pcb/README.md): every module plugs into sockets
 on it and the board makes the connections below. The only wires are to the two off-board parts
-(mic, speaker), which solder to labelled pads J4 and J5, plus a short USB-C cable from the ProS3's
+(mic, speaker), which plug into PicoBlade headers J4 and J5, plus a short USB-C cable from the ProS3's
 port to J7. The battery plugs into J8. The crown and power switches and the wall USB-C port are
 all on the carrier. This page is the signal reference. For per-pad
 detail see [`pcb/NETLIST.md`](pcb/NETLIST.md).
@@ -70,14 +70,14 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | AS5600 ×3 | chips under the sensor shafts: (0, 25.2), (−25.2, 0), (0, −25.2) | 1×6 socket + rest post. Chip about 1.1 mm below its magnet. |
 | DRV8833 | centre (28, −31) | 1×8 + 1×6 sockets |
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
-| X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier; located sideways by P1's slot (slide to set mesh) |
+| X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier, soldered with the others: the board sets the motor mesh. Fitted down through P1's slot after the movement frame (ASSEMBLY.md §6) |
 | LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area, lead end toward the top; plugs into **J8** just to its left |
 | Power switch | carrier back (+x) edge, pin 1 at y −16, below the X27 | Soldered to the carrier. Its slider stays ~1.2 mm inside a slot in the back wall (the board drops straight in); flick it with a fingernail. Toward the USB port = on. |
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. P1's seat is a ring (Ø22 opening) so the speaker's back vents into the bay. Two leads from its back tabs drop through that opening onto **J5**, directly below. |
-| INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −17 … −27). |
+| INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −19.6 … −24.6). |
 | Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |
 | Wall USB-C | right wall, receptacle centre y = 23.5 | Adafruit #4090 on a socket, screwed to the carrier on two spacers |
 
-Make the off-board leads about 10 cm long, enough to lift the upper shell clear and lay it
-beside the base. Solder them into J4 and J5; a plug standing up wouldn't fit under P1. An inline
-connector partway along a lead makes that part unpluggable.
+Make the off-board leads about 10 cm long (pre-crimped PicoBlade pigtails), enough to lift the
+movement frame and unplug them. They plug into J4 and J5 before the frame goes down; header plus
+mated plug stand about 6.5 mm, under P1's 12 mm.

@@ -27,7 +27,7 @@
   "needle_ratio": 2.0,
   "knob_turns_per_rev": 1.2307692307692308
  },
- "weight_g": 816,
+ "weight_g": 819,
  "interference": [],
  "lid_check_angles": [
   0,
@@ -74,6 +74,78 @@
   204.35163803420676
  ],
  "manufacturability": [],
- "sendcutsend_files": 26,
+ "sendcutsend_files": 33,
+ "gear_mesh": [
+  {
+   "pair": "knob I \u2192 sensor I",
+   "ratio": "26:32",
+   "centre_mm": 23.3,
+   "theoretical_mm": 23.2,
+   "backlash_mm": 0.216,
+   "backlash_fat_mm": 0.078,
+   "backlash_loose_fat_mm": 0.158,
+   "margin_mm": 0.107
+  },
+  {
+   "pair": "sensor I \u2192 hand I",
+   "ratio": "32:32",
+   "centre_mm": 25.7,
+   "theoretical_mm": 25.6,
+   "backlash_mm": 0.278,
+   "backlash_fat_mm": 0.0,
+   "backlash_loose_fat_mm": 0.16,
+   "margin_mm": -0.001
+  },
+  {
+   "pair": "knob II \u2192 sensor II",
+   "ratio": "26:32",
+   "centre_mm": 23.3,
+   "theoretical_mm": 23.2,
+   "backlash_mm": 0.216,
+   "backlash_fat_mm": 0.078,
+   "backlash_loose_fat_mm": 0.158,
+   "margin_mm": 0.107
+  },
+  {
+   "pair": "sensor II \u2192 hand II",
+   "ratio": "32:32",
+   "centre_mm": 25.7,
+   "theoretical_mm": 25.6,
+   "backlash_mm": 0.278,
+   "backlash_fat_mm": 0.0,
+   "backlash_loose_fat_mm": 0.16,
+   "margin_mm": -0.001
+  },
+  {
+   "pair": "knob III \u2192 sensor III",
+   "ratio": "26:32",
+   "centre_mm": 23.3,
+   "theoretical_mm": 23.2,
+   "backlash_mm": 0.216,
+   "backlash_fat_mm": 0.078,
+   "backlash_loose_fat_mm": 0.158,
+   "margin_mm": 0.107
+  },
+  {
+   "pair": "sensor III \u2192 hand III",
+   "ratio": "32:32",
+   "centre_mm": 25.7,
+   "theoretical_mm": 25.6,
+   "backlash_mm": 0.278,
+   "backlash_fat_mm": 0.0,
+   "backlash_loose_fat_mm": 0.16,
+   "margin_mm": -0.001
+  },
+  {
+   "pair": "motor \u2192 needle",
+   "ratio": "34:17",
+   "centre_mm": 20.5,
+   "theoretical_mm": 20.4,
+   "backlash_mm": 0.276,
+   "backlash_fat_mm": 0.001,
+   "backlash_loose_fat_mm": 0.161,
+   "margin_mm": 0.001
+  }
+ ],
  "turned_parts": 31
 }

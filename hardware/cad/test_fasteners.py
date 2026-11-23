@@ -30,7 +30,7 @@ class FlushFastenerTests(unittest.TestCase):
             with self.subTest(case=case.name):
                 self.assertTrue(case.solid.isValid())
                 self.assertLess(case.solid.Volume(), case.tray.formed().Volume())
-                self.assertTrue(all(2 * r == D.POST_HOLE for _, _, r in case.profile.holes))
+                self.assertTrue(all(2 * r in (D.POST_HOLE, D.RETAIN_HOLE) for _, _, r in case.profile.holes))
 
     def test_screw_lengths_reach_the_standoffs(self):
         floor_grip = D.Z_CARRIER_TOP

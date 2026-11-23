@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Brass alethiometer: design viewer</title>
+  <title>Brass alethiometer: design viewer and assembly guide</title>
   <link rel="icon" href="data:,">
   <style>html, body { background: #17130f; }</style>
   <script>
@@ -26,7 +26,14 @@
       <h1>Brass alethiometer</h1>
       <button id="collapse" title="Hide panel">&#x2039;</button>
     </header>
+    <nav class="modes" role="tablist">
+      <button id="modeExplore" data-mode="explore" role="tab" class="active"
+              title="Explore the finished design (E)">Explore</button>
+      <button id="modeAssemble" data-mode="assemble" role="tab"
+              title="Step-by-step animated assembly guide (A)">Assemble</button>
+    </nav>
 
+    <div id="explorePanel" class="panel">
     <section class="controls">
       <div class="row">
         <label for="explode">Explode</label>
@@ -60,10 +67,46 @@
       </div>
       <ul id="groups"></ul>
     </section>
+    </div>
+
+    <div id="assemblePanel" class="panel" hidden>
+      <section class="step-head">
+        <div class="step-meta">
+          <span id="stepNum"></span>
+          <span id="stepSection"></span>
+        </div>
+        <h2 id="stepTitle"></h2>
+        <div class="transport">
+          <button id="stepPrev" title="Previous step (←)">&#x23EE;</button>
+          <button id="stepPlay" title="Play / pause (Space)">&#x25B6;</button>
+          <button id="stepNext" title="Next step (→)">&#x23ED;</button>
+          <input id="scrub" type="range" min="0" max="1" step="0.001" value="0" title="Scrub this step">
+          <select id="speed" title="Animation speed">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+          </select>
+        </div>
+        <label class="autoplay"><input id="playAll" type="checkbox"> Play all steps in a row</label>
+      </section>
+      <section id="stepCard" class="step-card"></section>
+      <section class="toc">
+        <details id="tocBox">
+          <summary>All steps <span id="tocCount"></span></summary>
+          <ol id="toc"></ol>
+        </details>
+        <details id="reviewBox">
+          <summary>Design review <span id="reviewCount"></span></summary>
+          <div id="review"></div>
+        </details>
+      </section>
+    </div>
 
     <footer>
-      Drag to orbit &middot; right-drag to pan &middot; scroll to zoom &middot; click a part for details &middot;
-      <kbd>Esc</kbd> clears.
+      <span class="explore-help">Drag to orbit &middot; right-drag to pan &middot; scroll to zoom &middot; click a part for details &middot;
+      <kbd>Esc</kbd> clears.</span>
+      <span class="assemble-help"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> step &middot; <kbd>Space</kbd> play &middot;
+      drag to orbit &middot; click a part for details.</span>
       <div id="stats"></div>
     </footer>
   </aside>
@@ -71,6 +114,7 @@
   <button id="expand" title="Show panel">&#x203A;</button>
   <main id="stage">
     <div id="status">Loading model&hellip;</div>
+    <div id="labels"></div>
     <div id="info" hidden>
       <button id="infoClose" title="Close">&times;</button>
       <h3 id="infoName"></h3>

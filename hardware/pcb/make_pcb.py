@@ -304,13 +304,18 @@ HEADERS = {
                                            ("IO0", "IO0"), ("RST", "RST"), ("+5V", "5V"), ("VBAT", "BAT")]),
     "J2": ("SPARE GPIO", 16.0, 24.5, 2.54, 0.0, [("GND", "GND"), ("IO3", "3"), ("IO38", "38"), ("IO34", "34"),
                                                  ("IO35", "35"), ("IO36", "36"), ("IO37", "37")]),
-    "J4": ("MIC", -46.0, -17.0, 0.0, -2.54, [("3V3_SW", "VDD"), ("GND", "GND"), ("BCLK", "SCK"),
-                                             ("WS", "WS"), ("MIC_SD", "SD")]),
-    "J5": ("SPKR", -18.5, 31.0, 0.0, -2.54, [("SPK+", "+"), ("SPK-", "-")]),
+    # mic and speaker leads plug in (Molex PicoBlade, 1.25 mm): row centres match the CAD lead routes
+    "J4": ("MIC", -46.0, -19.58, 0.0, -1.25, [("3V3_SW", "VDD"), ("GND", "GND"), ("BCLK", "SCK"),
+                                              ("WS", "WS"), ("MIC_SD", "SD")]),
+    "J5": ("SPKR", -18.5, 30.355, 0.0, -1.25, [("SPK+", "+"), ("SPK-", "-")]),
     # cut-down USB-C cable from the ProS3's own port: red, white, green, black
     "J7": ("USB CABLE", -35.0, 49.3, 0.0, -2.54, [("USB_VBUS", "VBUS red"), ("USB_D-", "D- white"),
                                                  ("USB_D+", "D+ green"), ("GND", "GND black")]),
 }
+
+# Headers that are Molex PicoBlade 53047 vertical connectors instead of 2.54 mm pin rows
+PICOBLADE = {"J4": "Molex_PicoBlade_53047-0510_1x05_P1.25mm_Vertical",
+             "J5": "Molex_PicoBlade_53047-0210_1x02_P1.25mm_Vertical"}
 
 # Resistors: ref -> (value, net pad1, net pad2, x, y, rot); 10.16 mm axial, pad 1 at (x, y)
 RESISTORS = {
@@ -457,19 +462,23 @@ def build() -> pcbnew.BOARD:
     # ---- wire pads / headers ----
     for ref, (title, x, y, dx, dy, pins) in HEADERS.items():
         n = len(pins)
-        fp = fp_std("Connector_PinHeader_2.54mm", f"PinHeader_1x{n:02d}_P2.54mm_Vertical")
-        add(fp, ref, title, (x, y), 0.0 if dy < 0 else 90.0, {str(i + 1): pins[i][0] for i in range(n)})
+        if ref in PICOBLADE:                         # pins run along +x in the footprint: turn to -y
+            fp = fp_std("Connector_Molex", PICOBLADE[ref])
+            add(fp, ref, title, (x, y), -90.0, {str(i + 1): pins[i][0] for i in range(n)})
+        else:
+            fp = fp_std("Connector_PinHeader_2.54mm", f"PinHeader_1x{n:02d}_P2.54mm_Vertical")
+            add(fp, ref, title, (x, y), 0.0 if dy < 0 else 90.0, {str(i + 1): pins[i][0] for i in range(n)})
         fp.Reference().SetVisible(False)
         fp.Value().SetVisible(False)
         for i, (_, lab) in enumerate(pins):
             px, py = x + i * dx, y + i * dy
-            pos = (px, py + 1.9) if dy == 0 else (px + 1.8, py)
+            pos = (px, py + 1.9) if dy == 0 else (px + (2.9 if ref in PICOBLADE else 1.8), py)
             for layer in (pcbnew.F_SilkS, pcbnew.B_SilkS):
                 t = text(lab, pos, 0.8, layer)
                 if dy != 0:
                     t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_RIGHT if layer == pcbnew.B_SilkS
                                       else pcbnew.GR_TEXT_H_ALIGN_LEFT)
-        tpos = (x + (n - 1) * dx / 2, y - 2.0) if dy == 0 else (x, y + 2.3)
+        tpos = (x + (n - 1) * dx / 2, y - 2.0) if dy == 0 else (x, y + (3.6 if ref in PICOBLADE else 2.3))
         if ref == "J7":                               # top-left corner: title below, clear of the post
             tpos = (x + 7.0, y + (n - 1) * dy - 2.4)
         text(f"{ref} {title}", tpos, 0.85)

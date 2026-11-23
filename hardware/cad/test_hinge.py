@@ -70,43 +70,44 @@ class HingeTests(unittest.TestCase):
 
 
 class HingeToolingTests(unittest.TestCase):
-    """The drill guide sits on the closed case over the hinge; the trim gauge on the hinge."""
+    """The hinge holes are laser-cut in the case; the trim gauge only checks the hinge."""
 
     @classmethod
     def setUpClass(cls):
-        cls.guide, cls.gauge = D.hinge_drill_guide(), D.hinge_trim_gauge()
+        cls.gauge = D.hinge_gauge()
         cls.fixed = D.hinge() + [D.upper_shell(), D.lid(), D.lid_overlay()]
 
-    def test_guide_and_gauge_fit_over_the_mounted_hinge(self):
-        for tool in (self.guide, self.gauge):
-            shape = tool.placed()[0]
-            for part in self.fixed:
-                for s in part.placed():
-                    with self.subTest(tool=tool.name, part=part.name):
-                        self.assertLess(shape.intersect(s).Volume(), 1e-3)
+    def test_gauge_fits_over_the_mounted_hinge(self):
+        shape = self.gauge.placed()[0]
+        for part in self.fixed:
+            for s in part.placed():
+                with self.subTest(part=part.name):
+                    self.assertLess(shape.intersect(s).Volume(), 1e-3)
 
-    def test_guide_lip_rests_on_the_lid_and_plate_on_the_leaves(self):
-        guide = self.guide.placed()[0]
-        lid = D.lid().placed()[0]
-        leaf = next(p for p in D.hinge() if p.name == "hinge_leaf_body").placed()[0]
-        self.assertLess(guide.distance(lid), 0.01)
-        self.assertLess(guide.distance(leaf), 0.01)
+    def test_hinge_holes_are_in_the_laser_blanks(self):
+        """Every hinge screw axis is open through the supplier's bent blank, not drilled later."""
+        seats = [(D.upper_shell(), y, z, D.HINGE_MOUNT_CLEAR) for y, z in D.hinge_body_mounts()]
+        seats += [(D.lid(), y, D.HINGE_LID_MOUNT_Z, D.HINGE_LID_CLEAR) for y in D.HINGE_LID_MOUNTS]
+        for part, y, z, d in seats:
+            blank = part.tray.formed().moved(part.placements[0])
+            probe = cq.Solid.makeCylinder(d / 2 - 0.02, 6, cq.Vector(D.HINGE_X - 3, y, D.Z_TOP + z),
+                                          cq.Vector(1, 0, 0))
+            with self.subTest(part=part.name, y=y):
+                self.assertLess(probe.intersect(blank).Volume(), 1e-6)
 
-    def test_guide_holes_are_on_the_screw_axes(self):
-        guide = self.guide.placed()[0]
+    def test_gauge_holes_are_on_the_screw_axes(self):
+        gauge = self.gauge.placed()[0]
         seats = [(y, z, D.HINGE_MOUNT_CLEAR) for y, z in D.hinge_body_mounts()]
         seats += [(y, D.HINGE_LID_MOUNT_Z, D.HINGE_LID_CLEAR) for y in D.HINGE_LID_MOUNTS]
         for y, z, d in seats:
-            probe = cq.Solid.makeCylinder(d / 2 - 0.01, 10, cq.Vector(D.HINGE_X - 5, y, D.Z_TOP + z),
+            probe = cq.Solid.makeCylinder(d / 2 - 0.02, 10, cq.Vector(D.HINGE_X - 5, y, D.Z_TOP + z),
                                           cq.Vector(1, 0, 0))
             with self.subTest(y=y, z=z):
-                self.assertLess(probe.intersect(guide).Volume(), 1e-6)
+                self.assertLess(probe.intersect(gauge).Volume(), 1e-6)
 
     def test_tools_are_manufacturable(self):
-        self.assertEqual(build.manufacturability([self.guide, self.gauge]), [])
-        self.assertEqual(len(self.guide.bends), 1)
-        for tool in (self.guide, self.gauge):
-            self.assertTrue(tool.solid.isValid())
+        self.assertEqual(build.manufacturability([self.gauge]), [])
+        self.assertTrue(self.gauge.solid.isValid())
 
 
 if __name__ == "__main__":

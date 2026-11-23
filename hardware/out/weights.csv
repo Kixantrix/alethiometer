@@ -1,7 +1,7 @@
 part,qty,grams,material
 case_lower_tray,1,166.1,"brass .040"""
 case_lid,1,126.1,"brass .040"""
-case_upper_shell,1,104.4,"brass .040"""
+case_upper_shell,1,104.6,"brass .040"""
 dial_plate_P2,1,79.3,"brass .063"""
 lid_overlay,1,48.9,"brass .040"""
 movement_base_plate_P1,1,44.8,"brass .063"""
@@ -10,7 +10,7 @@ crystal_seat_spider,1,14.9,"brass .040"""
 knob_I_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
 knob_II_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
 knob_III_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-crystal_frame_spider,1,12.7,"brass .063"""
+crystal_frame_spider,1,12.8,"brass .063"""
 crystal,1,11.6,"clear acrylic .063"""
 hinge_leaf_body,1,9.7,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_backing_body,1,9.3,"brass .063"""
@@ -19,7 +19,7 @@ battery,1,7,LiPo 1S 402535 (~350 mAh)
 mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
 hinge_leaf_lid,1,4.2,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
-shaft_knob,3,3.6,brass C360 (CNC turned)
+shaft_knob,3,3.8,brass C360 (CNC turned)
 standoff_bay,3,3.3,M2×12 F-F brass hex standoff
 gear_sensor_I_32T,1,3.1,"brass .040"""
 gear_sensor_II_32T,1,3.1,"brass .040"""
@@ -45,8 +45,10 @@ module_sockets,1,1,5 mm female header sockets
 mic_INMP441,1,1,INMP441 I2S MEMS mic module
 speaker_foam_ring,1,1,foam ring
 mic_foam_tape,1,1,foam tape
-wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~6 cm, from its back tabs down through the open centre of P1's speaker seat to J5 (+/−)"
-wire_mic,1,1,"mic leads: 5 × 30 AWG, ~8 cm, from the INMP441 pins down through P1's open lattice to J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
+conn_mic,1,1,Molex PicoBlade
+conn_speaker,1,1,Molex PicoBlade
+wire_speaker,1,1,"speaker leads: 2 × 30 AWG, ~10 cm, from its back tabs down through the open centre of P1's speaker seat to a 2-way PicoBlade plug on J5 (+/−)"
+wire_mic,1,1,"mic leads: 5 × 30 AWG, ~10 cm, from the INMP441 pins down through P1's open lattice to a 5-way PicoBlade plug on J4 (VDD GND SCK WS SD; tie L/R to GND at the mic)"
 battery_socket,1,1,"JST S2B-PH-K-S side-entry 2-pin socket (J8), soldered to the carrier"
 battery_plug,1,1,JST PHR-2 plug
 wire_battery,1,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from the cell's top end to J8"
@@ -72,6 +74,7 @@ magnet_lid_closure,1,0.6,Ø5×4 mm N52 magnet
 dial_sticker,1,0.5,printed vinyl
 hand_cap_rosette,1,0.5,"brass .040"""
 bushing_3_16,6,0.4,brass C360 (CNC turned)
+standoff_corner,1,0.4,M2×4 F-F brass hex standoff
 hand_II,1,0.3,"spring steel .015"""
 hand_III,1,0.3,"spring steel .015"""
 arbor_II,1,0.3,brass C360 (CNC turned)
@@ -81,11 +84,12 @@ hand_I,1,0.2,"spring steel .015"""
 arbor_III,1,0.2,brass C360 (CNC turned)
 arbor_needle,1,0.2,brass C360 (CNC turned)
 cannon,1,0.2,brass C360 (CNC turned)
+screw_crystal,2,0.2,M1.6×5 DIN 963
+nut_crystal,2,0.2,M1.6 hex nut
 hinge_body_screw_1,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_2,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_3,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
 hinge_body_screw_4,1,0.2,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-nut_p1_corner,1,0.1,M2 brass hex nut
 hinge_body_nut_1,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"
 hinge_body_nut_2,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"
 hinge_body_nut_3,1,0.1,"M2 brass hex nut, 4 mm AF, inside the wall"

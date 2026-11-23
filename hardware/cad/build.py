@@ -389,7 +389,8 @@ def main() -> int:
     log(json.dumps(D.summary(), indent=1))
 
     tools = D.tooling()
-    notes = manufacturability(parts + tools)
+    spares = D.mesh_tuning_gears()
+    notes = manufacturability(parts + tools + spares)
     log("manufacturability: " + ("OK" if not notes else ""))
     for n in notes:
         log("  ! " + n)
@@ -401,13 +402,24 @@ def main() -> int:
     for pr in problems:
         log("  X " + pr)
 
+    import mesh
+    t1 = time.time()
+    gear_mesh = mesh.report()
+    log(f"gear mesh ({time.time() - t1:.0f}s), mm at the driven pitch circle:")
+    for r in gear_mesh:
+        log(f"  {r['pair']:<22} backlash {r['backlash_mm']:.2f}, worst-case cut {r['backlash_fat_mm']:.2f}"
+            f" (with the loose spare {r['backlash_loose_fat_mm']:.2f}), centre margin {r['margin_mm']:+.2f}")
+    mesh_problems = mesh.problems(gear_mesh)
+    for pr in mesh_problems:
+        log("  X " + pr)
+
     rows, grams = weight_report(parts)
     log(f"estimated weight: {grams:.0f} g")
     if args.check:
-        return 1 if problems else 0
+        return 1 if problems or mesh_problems else 0
 
     OUT.mkdir(exist_ok=True)
-    order = export_fabrication(parts + tools)
+    order = export_fabrication(parts + tools + spares)
     export_stock_list(parts)
     turned = export_turned(parts)
     export_assembly(parts)
@@ -417,14 +429,14 @@ def main() -> int:
         w.writerows(sorted(rows, key=lambda r: -r["grams"]))
     report = dict(summary=D.summary(), weight_g=round(grams), interference=problems,
                   lid_check_angles=angles,
-                  manufacturability=notes, sendcutsend_files=len(order),
+                  manufacturability=notes, sendcutsend_files=len(order), gear_mesh=gear_mesh,
                   turned_parts=sum(p.qty for p in turned))
     (OUT / "build_report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     log(f"exported {len(order)} SendCutSend files")
     if not args.no_render:
         renders(parts)
     log(f"done in {time.time() - t0:.0f}s")
-    return 1 if problems else 0
+    return 1 if problems or mesh_problems else 0
 
 
 if __name__ == "__main__":

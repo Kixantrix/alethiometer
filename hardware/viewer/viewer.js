@@ -175,6 +175,9 @@ async function load() {
   const pcbLoaded = pcbGltf ? attachPcb(pcbGltf) : false;
 
   buildSidebar();
+  for (const g of manifest.groups) {
+    if (g.hidden && groupEls[g.id]) { for (const r of groupEls[g.id].recs) setPartVisible(r, false); syncGroup(g.id); }
+  }
   $('lid').disabled = false;
   $('lidToggle').disabled = false;
   updateMatrices();
@@ -186,6 +189,61 @@ async function load() {
     + ` · lid stop: ${Math.round(manifest.hinge.open_deg)}°`
     + (manifest.dial.source ? ` · dial: ${manifest.dial.source}` : ' · no dial texture')
     + (pcbLoaded ? ` · carrier: ${manifest.pcb.source}` : '');
+
+  const { createAssembly } = await import(`./assembly.js?v=${window.VIEWER_V ?? Date.now()}`);
+  assembly = createAssembly({ root, parts, manifest, lidMatrix, $, state, select, frame: frameBox });
+  if (await assembly.load()) {
+    $('modeAssemble').disabled = false;
+    $('modeAssemble').title = `Step-by-step animated assembly guide: ${assembly.data.steps.length} steps (A)`;
+    const m = location.hash.match(/^#assemble(?:\/([\w-]+))?/);
+    if (m) setMode('assemble', m[1]);
+  } else {
+    $('modeAssemble').disabled = true;
+    $('modeAssemble').title = 'No assembly guide yet: run python hardware/assembly/guide.py';
+  }
+}
+
+// ---------------------------------------------------------------- modes
+let mode = 'explore', assembly = null;
+
+function setMode(next, stepId) {
+  if (next === 'assemble' && !assembly?.loaded) return;
+  if (next === mode && !stepId) return;
+  mode = next;
+  document.body.classList.toggle('assemble', mode === 'assemble');
+  $('explorePanel').hidden = mode !== 'explore';
+  $('assemblePanel').hidden = mode !== 'assemble';
+  $('modeExplore').classList.toggle('active', mode === 'explore');
+  $('modeAssemble').classList.toggle('active', mode === 'assemble');
+  resize();
+  if (mode === 'assemble') {
+    if (state.section) setSection(false);
+    assembly.enter(stepId);
+  } else {
+    assembly?.leave();
+    history.replaceState(null, '', '#explore');
+    dirty = true;
+    updateMatrices();
+    setView(activeView ?? 'iso');
+  }
+}
+
+// Frame a CAD-space box along a preset or CAD direction (keeps the current direction if none).
+function frameBox(cadBox, view) {
+  if (!cadBox || cadBox.isEmpty()) return;
+  root.updateMatrixWorld(true);
+  const size = cadBox.getSize(new THREE.Vector3());
+  const grow = new THREE.Vector3(Math.max(0, 70 - size.x), Math.max(0, 70 - size.y), Math.max(0, 40 - size.z)).multiplyScalar(0.5);
+  const box = cadBox.clone().expandByVector(grow).applyMatrix4(root.matrixWorld);
+  let dir = null;
+  if (Array.isArray(view)) dir = cadDir(...view);
+  else if (view && VIEWS[view]) dir = VIEWS[view].clone();
+  if (!dir) dir = camera.position.clone().sub(controls.target).normalize();
+  activeView = typeof view === 'string' && VIEWS[view] ? view : null;
+  document.querySelectorAll('[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === activeView));
+  const { center, d } = fitDistance(box, dir, 1.25);
+  tween = { t0: performance.now(), dur: 900, fromPos: camera.position.clone(), toPos: center.clone().addScaledVector(dir, d),
+            fromT: controls.target.clone(), toT: center.clone() };
 }
 
 // The real carrier board exported from KiCad (export_viewer.py). Its meshes become the
@@ -226,12 +284,15 @@ function attachPcb(gltf) {
 
 // ---------------------------------------------------------------- transforms
 function updateMatrices() {
+  dirty = false;
+  if (mode === 'assemble') return;          // assembly.js poses every instance itself
   const lidM = lidMatrix(state.lid);
   const m = new THREE.Matrix4();
   for (const rec of parts) {
     const dz = state.explode * rec.meta.explode;
     for (const mesh of rec.meshes) {
-      m.makeTranslation(0, 0, dz);
+      const off = rec.meta.explore_offset;
+      m.makeTranslation(off?.[0] ?? 0, off?.[1] ?? 0, dz + (off?.[2] ?? 0));
       if (rec.lidPart) m.multiply(lidM);
       mesh.matrix.copy(m.multiply(mesh.userData.base));
       mesh.matrixWorldNeedsUpdate = true;
@@ -325,8 +386,10 @@ function syncGroup(id) {
   g.cb.indeterminate = n > 0 && n < g.recs.length;
 }
 
+// "All" means the instrument: the jigs layer is switched on with its own checkbox.
 function setAll(on) {
-  for (const r of parts) setPartVisible(r, on);
+  const hidden = new Set(manifest.groups.filter((g) => g.hidden).map((g) => g.id));
+  for (const r of parts) setPartVisible(r, on && !hidden.has(r.meta.group));
   Object.keys(groupEls).forEach(syncGroup);
 }
 
@@ -374,7 +437,7 @@ function pick(ev) {
   const r = renderer.domElement.getBoundingClientRect();
   const ndc = new THREE.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
   raycaster.setFromCamera(ndc, camera);
-  const meshes = parts.filter((p) => p.visible).flatMap((p) => p.meshes);
+  const meshes = parts.flatMap((p) => p.meshes).filter((m) => m.visible);
   const hits = raycaster.intersectObjects(meshes, false)
     .filter((h) => !state.section || clipPlane.distanceToPoint(h.point) >= 0);
   const hit = hits.find((h) => h.object.userData.rec.meta.finish !== 'glass') ?? hits[0];
@@ -394,6 +457,10 @@ const VIEWS = {
   top: cadDir(0, -0.0001, 1),
   side: cadDir(0, -1, 0.12),
   under: cadDir(0.45, -0.7, -0.8),
+  front: cadDir(0, -1, 0.35),
+  back: cadDir(0, 1, 0.35),
+  right: cadDir(1, -0.25, 0.35),
+  left: cadDir(-1, -0.25, 0.35),
 };
 
 // Distance along `dir` from the box centre at which every box corner fits the frustum.
@@ -494,7 +561,26 @@ $('hidePart').addEventListener('click', () => {
 });
 $('collapse').addEventListener('click', () => document.body.classList.add('collapsed'));
 $('expand').addEventListener('click', () => document.body.classList.remove('collapsed'));
-window.addEventListener('keydown', (e) => { if (e.key === 'Escape') select(null); });
+window.addEventListener('keydown', (e) => {
+  if (e.target.closest?.('input, select, textarea') && e.key !== 'Escape') return;
+  if (e.key === 'Escape') select(null);
+  else if (e.metaKey || e.ctrlKey || e.altKey) return;
+  else if (e.key === 'a' || e.key === 'A') setMode('assemble');
+  else if (e.key === 'e' || e.key === 'E') setMode('explore');
+  else if (mode === 'assemble' && e.key === 'ArrowRight') { assembly.next(); e.preventDefault(); }
+  else if (mode === 'assemble' && e.key === 'ArrowLeft') { assembly.prev(); e.preventDefault(); }
+  else if (mode === 'assemble' && e.key === ' ') { assembly.togglePlay(); e.preventDefault(); }
+});
+document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+window.addEventListener('hashchange', () => {
+  const m = location.hash.match(/^#assemble(?:\/([\w-]+))?/);
+  if (m && assembly?.loaded) {
+    if (mode !== 'assemble') setMode('assemble', m[1]);
+    else if (m[1] && assembly.data.steps[assembly.state.index]?.id !== m[1]) {
+      assembly.go(assembly.data.steps.findIndex((s) => s.id === m[1]), false);
+    }
+  } else if (location.hash === '#explore') setMode('explore');
+});
 
 // ---------------------------------------------------------------- loop
 function resize() {
@@ -510,13 +596,18 @@ resize();
 const approach = (cur, target, k, eps) => (Math.abs(target - cur) < eps ? target : cur + (target - cur) * k);
 const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
+let lastFrame = performance.now();
 renderer.setAnimationLoop(() => {
-  if (state.explode !== state.explodeTarget || state.lid !== state.lidTarget) {
+  const now = performance.now();
+  const dt = Math.min(0.1, (now - lastFrame) / 1000);
+  lastFrame = now;
+  if (mode === 'explore' && (state.explode !== state.explodeTarget || state.lid !== state.lidTarget)) {
     state.explode = approach(state.explode, state.explodeTarget, 0.14, 0.001);
     state.lid = approach(state.lid, state.lidTarget, 0.1, 0.1);
     dirty = true;
   }
   if (dirty) updateMatrices();
+  if (mode === 'assemble') assembly.tick(dt);
   if (tween) {
     const t = Math.min(1, (performance.now() - tween.t0) / tween.dur), k = ease(t);
     camera.position.lerpVectors(tween.fromPos, tween.toPos, k);
@@ -525,14 +616,17 @@ renderer.setAnimationLoop(() => {
   }
   controls.update();
   renderer.render(scene, camera);
+  if (mode === 'assemble') assembly.placeLabels(camera, renderer.domElement);
 });
 
 // Small hook for scripted screenshots / debugging from the console.
 window.viewer = {
-  state, scene, renderer, setExplode, setLid, setSection, setView, setAll,
+  state, scene, renderer, setExplode, setLid, setSection, setView, setAll, setMode,
   select: (name) => select(parts.find((p) => p.meta.name === name) ?? null),
   setGroup: (id, on) => { for (const r of groupEls[id].recs) setPartVisible(r, on); syncGroup(id); },
   get ready() { return parts.length > 0; },
+  get mode() { return mode; },
+  get assembly() { return assembly; },
 };
 
 load().catch((err) => { console.error(err); status('Failed to load: ' + err.message); });

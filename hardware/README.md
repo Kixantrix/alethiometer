@@ -18,7 +18,8 @@ the interpretation aloud.
 |---|---|
 | [`SETUP.md`](SETUP.md) | **Start here on a new computer**: tools, regenerating everything, what to check before ordering |
 | [`BOM.md`](BOM.md) | Everything to buy, with sources and rough costs |
-| [`ASSEMBLY.md`](ASSEMBLY.md) | Step-by-step build |
+| [`ASSEMBLY.md`](ASSEMBLY.md) | Step-by-step build, generated from [`assembly/steps.yaml`](assembly/steps.yaml); animated in the viewer's **Assemble** tab |
+| [`assembly/`](assembly) | Assembly guide source, its generator and collision sweep, and the design review [`FINDINGS.md`](assembly/FINDINGS.md) |
 | [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
 | [`pcb/`](pcb/README.md) | **Carrier PCB**: all through-hole, every module socketed, test pads; Gerbers ready for JLCPCB/PCBWay |
 | [`viewer/`](viewer/README.md) | Local 3D viewer: toggle layers and parts, explode, open the lid, section cut |
@@ -166,6 +167,16 @@ screw engagement:
 
 ```sh
 python -m unittest discover -s hardware/cad -p 'test_*.py'
+python hardware/cad/mesh.py      # gear mesh table: backlash, worst-case cut, centre margin
+```
+
+The assembly guide lives in [`assembly/steps.yaml`](assembly/steps.yaml). After editing it or the
+CAD, regenerate `ASSEMBLY.md`, `assembly/FINDINGS.md` and the viewer's guide, and sweep every motion
+in the guide for collisions and screwdriver access (about 3 minutes):
+
+```sh
+python hardware/assembly/guide.py
+python hardware/assembly/check_paths.py
 ```
 
 ## Known risks and open questions
@@ -177,7 +188,7 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
   check the angle, flush heads and screw security. The laser-cut backing strip and its nuts
   need a directly related clearance relief in P2.
   The shells are screw-fastened through the plate/standoff stack, not retained by a press fit
-  (see [ASSEMBLY.md §7](ASSEMBLY.md#what-holds-the-two-shells-together)). Verify stiffness at
+  (see [ASSEMBLY.md §8](ASSEMBLY.md#what-holds-the-two-shells-together)). Verify stiffness at
   the crown corner, where the fourth floor post is omitted. Fit checks are not a load test.
 - **Permanent mechanical joints.** Gears, hands, bushings and the cannon are fixed with
   Loctite 638 against turned shoulders and flush ends; nothing in the movement is soldered.
@@ -188,11 +199,14 @@ python -m unittest discover -s hardware/cad -p 'test_*.py'
   a shop may prefer precision tube cut to length.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
 - **Laser-cut module-0.8 gears** in .040" brass are fine at hand-setting speeds and for a gauge
-  motor, but expect some backlash. Every pair is spaced 0.1 mm wider than theoretical and the
-  teeth are thinned, so a worst-case cut still turns freely. Shafts run in turned bushings,
-  which locate them to about 0.05 mm. The firmware approaches every needle target from the
-  same direction to hide the backlash. Wire-EDM gears from the same DXFs are a drop-in
-  upgrade (BOM.md §A).
+  motor, with 0.22–0.28 mm of designed backlash. Every pair is spaced 0.1 mm wider than
+  theoretical and the teeth are thinned, so a cut 0.03 mm fat per side still turns freely; a
+  worst-case cut (0.065 mm) binds, and the order includes a looser `_L` spare of every laser-cut
+  gear for exactly that. `cad/mesh.py` turns every pair through a full revolution in the CAD and
+  reports backlash and margins (`out/build_report.json`), and the guide dry-runs the whole train
+  before anything is glued (ASSEMBLY.md §3.1, §11). Shafts run in turned bushings, which locate
+  them to about 0.05 mm. The firmware approaches every needle target from the same direction to
+  hide the backlash. Wire-EDM gears from the same DXFs are a drop-in upgrade (BOM.md §A).
 - **Fit tolerances** are collected at the top of `cad/design.py` (*Tolerance budget*). They're
   sized for SendCutSend's ±0.13 mm cuts and ±0.25–0.5 mm bends, so parts should assemble
   without filing.

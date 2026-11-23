@@ -1,0 +1,1292 @@
+# Assembly guide source. Run `python hardware/assembly/guide.py` after editing: it validates this file
+# against the CAD, then writes ../ASSEMBLY.md, FINDINGS.md and the viewer's assets/assembly.json.
+# `python hardware/assembly/check_paths.py` sweeps every motion for collisions and tool access.
+#
+# Poses are deltas from each part instance's installed place, in the CAD frame (mm; +x hinge side,
+# +y 12 o'clock, +z up). `up: dz` is shorthand for t: [0, 0, dz]. Selectors: part name, glob
+# (`hinge_body_*`), instance (`bushing_5_32#0,2,4`), `all`, or a list (YAML anchors below).
+# A step with `test: true` is a checkpoint: `checks` are its pass criteria, `fixes` what to adjust.
+#
+# Where things wait while not yet installed (so sub-assemblies drop straight into place):
+#   carrier and its modules ......... up 45         movement frame on its bay standoffs .. up 90
+#   movement parts being prepared ... up 125        X27 + motor gear ................... up 75
+#   upper shell upside down .......... flipped, up 70   upper shell + lid upright ........ up 50
+#   hinge on the bench ............... t [25, 0, 50]
+
+title: Assembly
+
+groups:
+  p1_bushings: &p1_bushings ["bushing_1_8", "bushing_5_32#0,2,4", "bushing_3_16#0,2,4"]
+  p2_bushings: &p2_bushings ["bushing_5_32#1,3,5", "bushing_3_16#1,3,5"]
+  arbors: &arbors [arbor_I, arbor_II, arbor_III, arbor_needle, gear_hand_I_32T, gear_hand_II_32T,
+                   gear_hand_III_32T, gear_needle_17T]
+  sensors: &sensors ["shaft_sensor_*", "gear_sensor_*"]
+  knobs: &knobs [shaft_knob, "knob_*_26T"]
+  magnets: &magnets [magnet_cup, magnet_I, magnet_II, magnet_III]
+  hands: &hands [hand_needle, hand_III, hand_II, hand_I, hand_cap_rosette]
+  p2_group: &p2_group [dial_plate_P2, *p2_bushings, cannon, mic_INMP441, mic_foam_tape, wire_mic]
+  frame: &frame [movement_base_plate_P1, *p1_bushings, standoff_bay, standoff_gear, standoff_corner]
+  train: &train [*arbors, *sensors, *knobs, sleeve_knob]
+  movement: &movement [*frame, *train, *magnets, speaker, speaker_foam_ring, wire_speaker, *p2_group,
+                       standoff_hand, dial_sticker, *hands]
+  carrier: &carrier [pcb_carrier, module_sockets, crown_switch, switch_power, battery_socket, conn_mic,
+                     conn_speaker, mcu_ProS3, driver_DRV8833, amp_MAX98357A, "sensor_AS5600_*", usb_c_breakout,
+                     spacer_usb, screw_usb, nut_usb, wire_usb]
+  x27: &x27 [motor_X27_168, gear_motor_34T]
+  pins: &pins [align_pin_1_8, align_pin_5_32]
+  shell: &shell [case_upper_shell, crystal_frame_spider, crystal, crystal_seat_spider, magnet_body, screw_crystal,
+                 nut_crystal]
+  hinge_body: &hinge_body [hinge_leaf_body, hinge_pin, hinge_backing_body, "hinge_body_*"]
+  lid: &lid [case_lid, hinge_leaf_lid, "hinge_lid_*", lid_overlay, magnet_lid_closure]
+  hinge: &hinge [hinge_leaf_body, hinge_pin, hinge_leaf_lid]
+
+markers:
+  loctite638: {label: Loctite 638, color: "#3fb950", kind: apply}
+  epoxy: {label: 5-minute epoxy, color: "#e3a72f", kind: apply}
+  oil: {label: Clock oil, color: "#58a6ff", kind: apply}
+  graphite: {label: Pencil graphite, color: "#8b949e", kind: apply}
+  solder: {label: Solder (electrical), color: "#c9d1d9", kind: apply}
+  kapton: {label: Kapton tape, color: "#d18616", kind: apply}
+  foam: {label: Double-sided foam tape, color: "#b1bac4", kind: apply}
+  glue: {label: Contact glue, color: "#e3a72f", kind: apply}
+  plug: {label: Plug in, color: "#a371f7", kind: apply}
+  countersink: {label: Countersink 90°, color: "#f78166", kind: tool}
+  drill: {label: Drill, color: "#ff7b72", kind: tool}
+  measure: {label: Measure, color: "#ffd33d", kind: tool}
+  abrasive: {label: 600–2000 grit on glass, color: "#a5a5a5", kind: tool}
+  check: {label: Check, color: "#39c5cf", kind: check}
+
+preface: |
+  This is an unbuilt prototype. The hinge is one purchased brass hinge held by flush screws.
+  The thumbwheels are bought solid gears, and every arbor, shaft, bushing and the crown come
+  finished from a CNC-turning kit, so nothing in the movement is cut, measured or soldered: each
+  part is pushed on until it stops, with a drop of Loctite. The only soldering is electrical (the
+  carrier PCB and the speaker and mic leads, which plug into the carrier). Read the fabrication hold
+  and joint status below before buying parts.
+
+  **Animated version.** Every step below is also an animation in the design viewer
+  ([`viewer/`](viewer/README.md), **Assemble** tab), showing each part moving into place, what
+  gets applied where, and the tools. This file is generated from
+  [`assembly/steps.yaml`](assembly/steps.yaml); edit that and run `python hardware/assembly/guide.py`.
+  [`assembly/FINDINGS.md`](assembly/FINDINGS.md) records the design review that shaped this order.
+
+  **Tests as you go.** Steps marked *Test* are checkpoints: do them before going on, because each one
+  is the last moment the parts it checks are easy to reach. Each says what passes and what to adjust
+  if it doesn't; §11 collects them. The gear meshes are designed with 0.22–0.28 mm of backlash, and
+  every laser-cut gear has a looser spare in the order (marked with a small hole in its rim) for a
+  pair that binds (`cad/mesh.py` checks every pair, including a worst-case laser cut).
+
+  **Conventions.** "Up" is toward the dial. Positions along a shaft are measured from the
+  **bottom face of P1** (the movement base plate). Every dimension comes from
+  [`cad/design.py`](cad/design.py). If you change the design, re-run `cad/build.py` and
+  the guide script.
+
+  | Level | Height above P1 bottom | What lives there |
+  |---|---|---|
+  | P1 (base plate) | 0 – 1.6 | tube bushings for every shaft |
+  | L0 | 2.1 | hand-I gear + sensor-I gear; bottom of all knob stacks |
+  | L1 | 4.1 | hand-II gear + sensor-II gear |
+  | L2 | 6.1 | hand-III gear + sensor-III gear (knob stacks end at 7.1) |
+  | L3 | 8.1 | needle gear + X27 motor gear |
+  | P2 (dial plate) | 9.6 – 11.2 | top bushings, cannon, dial sticker |
+
+  Above the dial (measured from the top of P2): cannon tip +0.35, needle +0.45, hand III +1.61,
+  hand II +2.34, hand I +3.07, cap +3.46 (top of cap +4.47). The crystal's underside sits at +6.0.
+  You never measure these: every height is set by a shoulder or a flush end on the turned parts.
+
+  ## Tools and consumables
+
+  The full tool list, with the step that uses each tool, is in
+  [BOM.md §G](BOM.md#g-tools); consumables are in [BOM.md §E](BOM.md#e-dial-finish-and-consumables).
+  The one to get right is the countersink: a **90° zero-flute** cutter, not an 82° one.
+
+findings_intro: |
+  Found while building the step-by-step animated assembly guide (`steps.yaml`) and sweeping every
+  motion through the CAD (`check_paths.py`). Each finding says what made that step harder than it
+  needed to be, the recommendation, and what was done. **Status:** *done* = the CAD, PCB, BOM and
+  guide now follow the recommendation; *guide updated* = the old written procedure could not be
+  followed as written, and the guide now shows an order that works.
+
+sections:
+  - number: 0
+    title: Before you order
+    intro: |
+      **Hinge fabrication hold.** The purchased hinge in CAD is a reference, not a verified supplier
+      model. Guden's [BR05050404-72 drawing](https://www.guden.com/itemdetail/BR05050404-72) specifies
+      .040" sheet, a .091" pin, .500" knuckle pitch and 1.060" open width, but not the curl/leaf offset
+      or knuckle-slot clearance. Obtain a sample or a complete drawing first, together with a quote for
+      the cut piece (§3.7). Confirm the five-knuckle cut, retained pin and trimmed leaf heights; update
+      the CAD pivot to match before ordering the case. The current model's 0.1 mm curl and slot
+      clearances are assumptions, not vendor tolerances. The opening limit is set by the hinge's own
+      leaves closing on each other (§9), so the real curl also sets that angle.
+
+      1. Generate the dial with Myth Made's symbols (see [`dial/README.md`](dial/README.md)). Print
+         `dial/local/dial_print_letter.pdf` at 100 % on plain paper and check the 50 mm bar.
+         It confirms the printer scale before you buy sticker stock.
+      2. Upload the files in `out/sendcutsend/` and check the instant quote (see *Ordering* in
+         [README.md](README.md)). The `_L` gears are the mesh-tuning spares: order them with the rest.
+    steps:
+      - id: overview
+        title: What you're building
+        md: false
+        text: |
+          The finished instrument, lid open. Step through with **Next** (or the → key); each step
+          plays its animation, and **Play all** runs the whole build. Parts that move in a step are
+          tinted; markers show what gets applied where. Steps marked **Test** are checkpoints, with
+          what passes and what to adjust. Click any part for its details.
+        view: iso
+        motions:
+          - {parts: all, dur: 0.4, nocheck: true}
+          - {lid: 180, at: 0.4, dur: 1.6}
+
+  - number: 1
+    title: Prepare the laser-cut parts
+    steps:
+      - id: deburr
+        title: Deburr and flatten
+        text: |
+          Deburr and flatten everything. Rub each face on 600 grit on glass, then finer.
+          Gears only need their faces deburred; don't round the teeth.
+        tools: [600–2000 grit wet-and-dry paper on a flat glass plate, needle files]
+        view: iso
+        motions:
+          - {parts: all, fade: out, dur: 0.6, nocheck: true}
+          - {lid: 0, at: 0.6, dur: 0.01}
+          - {parts: [movement_base_plate_P1, dial_plate_P2], to: {up: 0}, fade: in, at: 0.7, dur: 0.6, nocheck: true}
+          - {parts: [dial_plate_P2], to: {up: 25}, dur: 1.0, nocheck: true}
+        apply:
+          - {what: abrasive, at: movement_base_plate_P1, anchor: top, note: both faces of every flat part}
+          - {what: abrasive, at: dial_plate_P2, anchor: top}
+
+      - id: gear-check
+        title: Measure the gears
+        test: true
+        text: |
+          Before anything is glued, measure the tip diameter of one 32T gear and the 17T and 34T gears
+          with calipers, across opposite teeth (or over two teeth and a gap on the 17T). Nominal:
+          **27.2 mm** (32T), **15.2 mm** (17T), **28.8 mm** (34T). A cut that comes out large has
+          fat teeth everywhere in the order, and that is what makes a mesh bind. Look over every tooth
+          for a burr or a stuck dross bead at the root.
+
+          Keep the spares with an extra **Ø0.5 mm hole in the rim** (`_L` in the order) separate: they
+          have 0.16 mm thinner teeth.
+        tools: [digital calipers, 10× loupe]
+        checks: ["Tip diameters within +0.06 / -0.10 mm of nominal", "No burrs or beads on the teeth"]
+        fixes:
+          - "Over +0.06 mm: expect tight meshes; plan to fit the `_L` spares for the gear-to-gear pairs (hand/sensor and needle) and confirm on the dry run (§3.1)"
+          - "Burr or bead: remove with a fine needle file along the tooth, not across it"
+        view: iso
+        motions:
+          - {parts: [movement_base_plate_P1, dial_plate_P2], fade: out, dur: 0.5}
+          - {parts: [gear_sensor_I_32T, gear_needle_17T], to: {up: 125}, fade: in, dur: 0.5, with: prev, nocheck: true}
+        apply:
+          - {what: measure, at: gear_sensor_I_32T, anchor: +x, note: "tip Ø 27.2 mm (32T)"}
+          - {what: measure, at: gear_needle_17T, anchor: +x, note: "tip Ø 15.2 mm (17T)"}
+
+      - id: countersink-case
+        title: Countersink the case screw seats
+        text: |
+          **Flush case screw seats, after forming.** The supplier DXFs and `__formed.step` files
+          retain plain through-holes. On the outside of the lower tray, countersink its three floor
+          holes (Ø2.7 mm); on the outside of the upper shell, its four top holes (Ø2.7 mm) and the two
+          small crystal-screw holes (Ø1.8 mm, either side of the window, just inside the grille ring).
+          Use **90° DIN 963 slotted countersunk brass screws**, not raised/oval countersunk or
+          larger-headed ISO alternatives. Work by hand with the thin sheet firmly supported, and test
+          the actual screw frequently until its head is flush, not below the surrounding face.
+          Countersink each M2 hole until its rim measures **Ø3.8–3.9 mm** (about 0.55 mm deep,
+          leaving about **0.47 mm** of straight hole in the 1.016 mm sheet), and each M1.6 hole to
+          **Ø3.0–3.1 mm**, then drop a screw in and check it sits flush. Light pressure, a few turns
+          at a time: the cutter centres itself in the existing hole. Stop as soon as the head is flush.
+          The hinge holes in the walls come laser-cut and are not countersunk (the leaves are).
+          Clean off chips and deburr before fitting any electronics.
+        tools: ["90° zero-flute countersink + T-handle", digital calipers]
+        checks: ["Rims Ø3.8–3.9 mm (M2) and Ø3.0–3.1 mm (M1.6); a screw dropped in sits flush"]
+        view: [0.35, -0.8, -0.45]
+        motions:
+          - {parts: [gear_sensor_I_32T, gear_needle_17T], fade: out, dur: 0.5}
+          - {parts: case_lower_tray, fade: in, dur: 0.6, with: prev, nocheck: true}
+          - {parts: case_upper_shell, to: {up: 40}, fade: in, dur: 0.6, with: prev, nocheck: true}
+        apply:
+          - {what: countersink, at: screw_floor, anchor: bottom, note: "3 floor holes, outside"}
+          - {what: countersink, at: screw_top, anchor: top, offset: [0, 0, 40], note: "4 top holes, outside"}
+          - {what: countersink, at: screw_crystal, anchor: top, offset: [0, 0, 40], note: "2 crystal-screw holes, M1.6"}
+
+      - id: bushings-glue
+        title: Glue the bushings into P1 and P2
+        text: |
+          No shaft runs in a laser-cut hole. Each plate hole takes a turned bushing exactly as thick
+          as the plate (§2), and its shaft slides inside it with about 0.08 mm of play, so every shaft
+          is located precisely whatever the laser tolerance. One end of each bushing's bore is
+          chamfered: fit them **chamfer down** (the collars sit on the plain end).
+
+          Lay P1 on a flat glass plate. Put a dab of Loctite 638 on each of its seven bushings and drop
+          it into its hole until it touches the glass: it is then flush both sides. The plate holes are
+          drawn 0.1 mm over the bushing, so they go in by hand. Do the same with P2's six, on the glass
+          beside it, then go straight on to the next step while the 638 is wet (it takes about 10
+          minutes to grab).
+        tools: [flat glass plate, tweezers]
+        findings: [F1]
+        view: iso
+        motions:
+          - {parts: [case_lower_tray, case_upper_shell], fade: out, dur: 0.5}
+          - {parts: movement_base_plate_P1, to: {up: 90}, fade: in, dur: 0.5, with: prev, nocheck: true}
+          - {parts: *p1_bushings, from: {up: 104}, to: {up: 90}, dur: 0.9, stagger: 0.25}
+        apply:
+          - {what: loctite638, at: *p1_bushings, anchor: top, note: "outside of each bushing; chamfer down"}
+
+      - id: bushings-align
+        title: Line up the bushing pairs with drill blanks
+        text: |
+          Screw P1 onto its three **M2×12 F-F** bay standoffs and the short **M2×4 F-F** corner standoff
+          with the four **M2×8 M-F** gear standoffs from above. Lower P2 (with its wet bushings) onto the
+          gear standoffs and screw the four **M2×5 M-F** hand standoffs through it.
+
+          Slide a **1/8" drill blank** through each sensor bushing pair and a **5/32" blank** through each
+          knob pair, from the top through both plates: each blank lines its two bushings up as the 638
+          cures. Spin each blank once, then leave the frame standing on its standoffs for an hour.
+        tools: [3 × 1/8" and 3 × 5/32" drill blanks (gauge pins), 4 mm nut driver]
+        checks: ["Each blank slides through its pair without forcing"]
+        findings: [F1, F8]
+        view: iso
+        motions:
+          - {parts: [standoff_bay, standoff_corner], from: {up: 76}, to: {up: 90}, dur: 1.0}
+          - {parts: standoff_gear, from: {up: 104}, to: {up: 90}, spin: 3, stagger: 0.2, driver: {d: 6, len: 40}}
+          - {parts: [dial_plate_P2, *p2_bushings], from: {up: 120}, to: {up: 90}, dur: 1.4}
+          - {parts: standoff_hand, from: {up: 104}, to: {up: 90}, spin: 3, stagger: 0.2, driver: {d: 6, len: 40}}
+          - {parts: *pins, from: {up: 125}, to: {up: 90}, dur: 1.2, stagger: 0.15}
+          - {parts: *pins, spin: 1, dur: 1.0}
+        apply:
+          - {what: loctite638, at: *p2_bushings, anchor: top, note: "P2's bushings, glued on the glass; chamfer down"}
+
+      - id: bushings-cured
+        title: Take P2 off again
+        text: |
+          Once the 638 has cured, pull the drill blanks out, unscrew the hand standoffs and lift P2 off.
+          P1 stays on its standoffs: it is the movement frame from here on.
+        view: iso
+        motions:
+          - {parts: *pins, by: {up: 30}, remove: true, dur: 1.0}
+          - {parts: standoff_hand, by: {up: 14}, spin: -3, remove: true, dur: 0.8}
+          - {parts: [dial_plate_P2, *p2_bushings], by: {up: 30}, remove: true, dur: 1.0}
+
+  - number: 2
+    title: Check the turned-parts kit
+    intro: |
+      Nothing to cut. The kit arrives finished; [`out/turned/README.md`](out/turned/README.md) is its
+      drawing (also `out/turned/turned_parts.csv`). Unpack it onto a tray and check each part's
+      length with calipers against that table, so you know which is which:
+
+      | Part | Qty | What sets its position |
+      |---|---|---|
+      | `arbor_I` (stepped rod) | 1 | Its collar rests on P1's centre bushing; gear I sits on the collar; hand I sits on the top shoulder; the cap is flush with the top |
+      | `arbor_II`, `arbor_III`, `arbor_needle` (plain tubes) | 1 each | Gear flush with the bottom end, hand flush with the top end |
+      | `cannon` (flanged tube) | 1 | Flange on P2's top face |
+      | `bushing_1_8`, `bushing_5_32`, `bushing_3_16` | 1, 6, 6 | Flush with both faces of the plate, chamfered end down |
+      | `shaft_sensor_I/II/III` | 1 each | Collar on the P1 bushing (0.5, 2.5 and 4.5 mm tall: the gear sits on it); top tip chamfered |
+      | `magnet_cup` | 3 | Pushed onto the sensor shaft's bottom tip until it stops |
+      | `shaft_knob` | 3 | Collar on the P1 bushing; the thumbwheel sits on it; top tip chamfered, 0.6 mm proud of P2 |
+      | `sleeve_knob` | 3 | Slides down onto the thumbwheel |
+      | `crown_turned` | 1 | E-clip in its groove inside the wall |
+
+      Check the chamfers are there: the knob shafts are the longest shafts so that P2 picks them up
+      first (§6). The **hinge body backing** (.063" brass, 63.5 × 11 mm) comes laser-cut with the
+      SendCutSend order.
+
+  - number: 3
+    title: Dry run and sub-assemblies
+    intro: |
+      ### Mechanical joint status
+
+      Prefer removable mechanical joints wherever practical, rather than automatically replacing
+      solder with permanent adhesive. Current construction of every joint:
+
+      | Joint | Current construction |
+      |---|---|
+      | Hinge knuckles and pin | One purchased formed hinge, supplied cut to length and trimmed. Supplier fit is still on hold above. |
+      | Hinge to body/lid | Flush countersunk screws from outside; nuts on a backing strip (body) or washers (lid) inside; removable. |
+      | Opening stop | None added: the hinge leaves close on each other just past flat. |
+      | Crystal and spiders | Two M1.6 countersunk screws through the top face, nuts under the seat spider; removable. |
+      | Thumbwheels | One bought solid gear each, on the knob-shaft collar, Loctite 638. |
+      | Sensor, hand and needle gears | On a turned collar or flush with a tube end, Loctite 638 (no solder). |
+      | Cannon | Flanged; pushed into P2's 0.1 mm-clearance hole, Loctite 638. |
+      | Crown | One turned piece, held by a DIN 6799 E-clip; removable. |
+      | Speaker and mic leads | Soldered at the speaker and mic; plug into PicoBlade headers J5 / J4 on the carrier. |
+      | Bushings, hands, magnets, magnet cups | Loctite 638 / epoxy; not designed to be taken apart. |
+
+      Do not put ordinary radial set screws directly into the thin nested hand tubes: denting them
+      can bind the adjacent arbor.
+
+      Every gear goes on the same way: a drop of Loctite 638 on the shaft, slide the gear down until it
+      stops, wipe off the excess and keep it out of any bore. Leave each one an hour before handling.
+      Loctite 638 lets go at about 250 °C: a soldering iron held on the part for 20–30 s releases a
+      gear or bushing that has to come off. Clean both parts back to bare metal before refitting.
+    steps:
+      - id: dry-run
+        title: Dry-run the gear train
+        test: true
+        text: |
+          Before anything is glued, put the whole hand train together dry and turn it. Gear bores are
+          drawn only 0.08 mm over the turned diameter, so each gear runs centred; if one won't slide
+          on, turn the matching drill through it by hand.
+
+          Slide each gear onto its shaft or arbor without glue: thumbwheels onto the knob shafts, sensor
+          gears onto the sensor shafts, hand gears onto the arbors. Nest the arbors in P1's centre
+          bearing, stand the sensor and knob shafts in their bushings, slide the sleeves on, lower P2 and
+          screw the hand standoffs in. Then turn each thumbwheel through **two full turns** each way
+          (its hand goes round 1.6 times), slowly, feeling for a tight spot; and hold each hand gear
+          still and rock its sensor gear to feel the play. Loose gears may slip on their shafts here:
+          that doesn't matter, it's the teeth you're testing.
+        checks:
+          - "Every thumbwheel turns its train through two full turns with an even, light feel"
+          - "A just-visible rock (about 1°) between each pair, everywhere round"
+          - "Turning one knob doesn't move the other two hands"
+        fixes:
+          - "Tight spot or binding in one pair: swap the laser-cut gear of that pair for its `_L` spare (sensor gear for knob → sensor, hand gear first for sensor → hand) and try again; swap both if it still binds"
+          - "Every pair tight: the order was cut fat (§1.2); fit the `_L` sensor and hand gears throughout"
+          - "A train drags without a tight spot: a shaft is rubbing in a bushing; turn it alone, and if it is the bushing pair, release the 638 with heat and redo §1.5 for that pair"
+          - "A knob moves another hand: gears on neighbouring levels are touching; check each sits on its collar or flush with its tube end"
+        view: iso
+        motions:
+          - {parts: *train, from: {up: 125}, to: {up: 90}, fade: in, dur: 1.0, nocheck: true}
+          - {parts: [dial_plate_P2, *p2_bushings], from: {up: 120}, to: {up: 90}, dur: 1.4}
+          - {parts: standoff_hand, from: {up: 104}, to: {up: 90}, spin: 3, stagger: 0.2, driver: {d: 6, len: 40}}
+          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I], spin: -1.625, dur: 4.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I], spin: 1.625, dur: 4.0, with: prev}
+          - {parts: standoff_hand, by: {up: 14}, spin: -3, remove: true, dur: 0.8}
+          - {parts: [dial_plate_P2, *p2_bushings], by: {up: 30}, remove: true, dur: 1.0}
+          - {parts: *train, by: {up: 35}, remove: true, dur: 1.2}
+        apply:
+          - {what: check, at: knob_I_26T, anchor: center, time: 5.4, note: two full turns each way, feeling for tight spots}
+          - {what: check, at: gear_sensor_I_32T, anchor: top, time: 5.4, note: rock against the held hand gear}
+
+      - id: thumbwheels
+        title: Thumbwheels (×3)
+        text: |
+          Each is one bought brass gear (module 0.8, 26 teeth, 5 mm wide, 4 mm bore; see BOM.md §C).
+          Slide it down a `shaft_knob` until it sits on the collar. No layers to align.
+        only: *knobs
+        view: iso
+        motions:
+          - {parts: shaft_knob, to: {up: 125}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: "knob_*_26T", from: {up: 150}, to: {up: 125}, stagger: 0.3}
+        apply:
+          - {what: loctite638, at: shaft_knob, anchor: center, note: on the shaft above the collar}
+
+      - id: sensor-shafts
+        title: Sensor shafts (×3)
+        text: |
+          Slide each 32T sensor gear (the one that passed the dry run) down its shaft until it sits on
+          the collar (I has the 0.5 mm collar, II 2.5 mm, III 4.5 mm). The magnet cup goes on later
+          (§5), once the shaft is in its bearings, because it's wider than the bearing hole.
+        only: *sensors
+        view: iso
+        motions:
+          - {parts: "shaft_sensor_*", to: {up: 125}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: "gear_sensor_*", from: {up: 150}, to: {up: 125}, stagger: 0.3}
+        apply:
+          - {what: loctite638, at: "shaft_sensor_*", anchor: center, note: above each collar}
+
+      - id: arbors
+        title: Arbors
+        text: |
+          Stand arbors II and III and the needle arbor on end on a sheet of glass. Slide each gear down
+          until it touches the glass: it is then flush with the bottom end. Hand-II gear on `arbor_II`,
+          hand-III gear on `arbor_III`, the 17T needle gear on `arbor_needle`. The hand-I gear goes on
+          `arbor_I` from the thin top end and down onto its collar.
+        only: *arbors
+        tools: [flat glass sheet]
+        view: iso
+        motions:
+          - {parts: [arbor_I, arbor_II, arbor_III, arbor_needle], to: {up: 125}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: [gear_hand_I_32T, gear_hand_II_32T, gear_hand_III_32T, gear_needle_17T],
+             from: {up: 150}, to: {up: 125}, stagger: 0.35}
+        apply:
+          - {what: loctite638, at: [arbor_II, arbor_III, arbor_needle], anchor: bottom, note: bottom end of each tube}
+          - {what: loctite638, at: arbor_I, anchor: center, note: above arbor I's collar}
+
+      - id: cannon
+        title: Cannon into P2
+        text: |
+          Push the cannon into P2's centre hole from the top until its flange sits on the plate, with a
+          little Loctite 638 on the outside only. The needle arbor runs inside it.
+        only: *p2_group
+        view: iso
+        motions:
+          - {parts: [dial_plate_P2, *p2_bushings], to: {up: 125}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: cannon, from: {up: 140}, to: {up: 125}}
+        apply:
+          - {what: loctite638, at: cannon, anchor: center, note: outside of the cannon only}
+
+      - id: motor-gear
+        title: Motor gear onto the X27
+        text: |
+          The 34T gear sits on the X27's **Ø1 output shaft**, with its bottom face 5.5 mm above the
+          motor's front face (level L3). Press it on with a drop of Loctite 638 and trim the shaft
+          0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
+        only: *x27
+        cautions: ["Support the motor body from behind; pushing on the shaft alone can damage its internal stop"]
+        view: iso
+        motions:
+          - {parts: motor_X27_168, to: {up: 75}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: gear_motor_34T, from: {up: 95}, to: {up: 75}}
+        apply:
+          - {what: loctite638, at: gear_motor_34T, anchor: center, note: one drop on the Ø1 shaft}
+          - {what: check, at: gear_motor_34T, anchor: top, offset: [0, 0, 0.3], time: 1.3, note: trim the shaft 0.3 mm above the gear}
+
+      - id: hinge-gauge
+        title: "Hinge: check it and drill the leaves"
+        text: |
+          The hinge comes from Guden cut to five knuckles (63.5 mm, both end knuckles on the fixed leaf),
+          pin staked, lid leaf trimmed to 5.6 mm from the pivot (§0). The laser-cut `hinge_gauge` checks
+          that and drills the leaves:
+
+          1. Lay the hinge closed and flat on a scrap of wood, barrel up, and drop the gauge over it so
+             the barrel sits in its slot. The slot ends should meet the cut ends of the barrel, and the
+             lid leaf's edge should line up with the gauge's top edge.
+          2. Clamp the gauge to the hinge and drill through its six holes: four **Ø2.4 mm** in the
+             fixed (case) leaf, two **Ø1.8 mm** in the lid leaf. They match the holes laser-cut in the
+             case and lid.
+          3. Unclamp, deburr, and countersink the six leaf holes from the outside with the same 90°
+             countersink until the screw heads sit flush: rim **Ø3.8–3.9 mm** on the M2 holes,
+             **Ø3.0–3.1 mm** on the M1.6 holes.
+
+          If you cut the hinge from stock yourself instead, the same gauge marks it: cut across the
+          barrel at the slot ends, right in the knuckle joints, centre-punch the pin ends, and scribe and
+          file the lid leaf to the gauge's top edge.
+        only: [*hinge, hinge_gauge]
+        tools: [drill with Ø1.8 mm and Ø2.4 mm bits, two small clamps, "90° zero-flute countersink", digital calipers]
+        checks: ["Slot ends meet the barrel's cut ends; lid leaf edge on the gauge's top edge",
+                 "All six leaf countersinks let a screw sit flush"]
+        fixes: ["Lid leaf proud of the gauge edge: file it to the edge", "Cut a knuckle short or long: ask the supplier for a new piece"]
+        findings: [F6, F7]
+        view: [1, -0.6, 0.35]
+        motions:
+          - {parts: *hinge, to: {t: [25, 0, 50]}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: hinge_gauge, from: {t: [45, 0, 50]}, to: {t: [25, 0, 50]}, dur: 1.2}
+          - {parts: hinge_gauge, by: {t: [20, 0, 0]}, at: 5.5, dur: 0.8, remove: true}
+        apply:
+          - {what: check, at: hinge_leaf_body, anchor: +y, time: 1.7, note: "slot ends at the barrel's cut ends"}
+          - {what: drill, at: "hinge_body_screw_*", anchor: +x, offset: [25, 0, 50], time: 2.6, note: "four Ø2.4 mm through the gauge (case leaf)"}
+          - {what: drill, at: "hinge_lid_screw_*", anchor: +x, offset: [25, 0, 50], time: 2.6, note: "two Ø1.8 mm through the gauge (lid leaf)"}
+          - {what: countersink, at: ["hinge_body_screw_*", "hinge_lid_screw_*"], anchor: +x, offset: [25.8, 0, 50], time: 6.4,
+             note: leaf holes, from outside, until the heads sit flush}
+
+  - number: 4
+    title: Carrier PCB and bench test (before anything goes in the case)
+    steps:
+      - id: carrier-populate
+        title: Populate the carrier
+        text: |
+          Populate the carrier per [`pcb/README.md`](pcb/README.md#assembly-order): resistors, C1, pin
+          headers, the two PicoBlade headers J4 (mic, 5 pins) and J5 (speaker, 2 pins), then the module
+          sockets, using each module as its own soldering jig. Solder the X27's two 1×4 sockets with the
+          rest: the motor mesh is set by the board's hole positions, like every other mesh. The crown
+          switch, power switch and battery socket J8 are soldered to the board too.
+        only: [pcb_carrier, module_sockets, crown_switch, switch_power, battery_socket, conn_mic, conn_speaker]
+        tools: [temperature-controlled soldering iron, flush cutters, multimeter]
+        findings: [F3, F5]
+        view: iso
+        motions:
+          - {parts: pcb_carrier, to: {up: 45}, fade: in, dur: 0.6, nocheck: true}
+          - {parts: [crown_switch, switch_power, battery_socket, conn_mic, conn_speaker], from: {up: 55}, to: {up: 45},
+             stagger: 0.2, dur: 0.8}
+          - {parts: module_sockets, from: {up: 55}, to: {up: 45}, dur: 0.8}
+        apply:
+          - {what: solder, at: pcb_carrier, anchor: bottom, time: 1.0, note: "every through-hole joint from below, X27 sockets included"}
+
+      - id: carrier-modules
+        title: Plug in the modules and the wall USB-C board
+        text: |
+          Plug the ProS3, the DRV8833, the MAX98357A and the three AS5600 boards into their sockets.
+          Solder the cut end of the short USB-C cable (red, white, green, black) into J7 and plug it
+          into the ProS3.
+
+          The wall USB-C breakout stands on its 8-pin socket and two 5 mm nylon spacers; fix it with
+          two **M2×10** cheese-head screws from the top and M2 nuts under the carrier.
+        only: [*carrier]
+        tools: [soldering iron, 30 AWG wire stripper, slotted screwdriver 1.5–2.5 mm, 4 mm nut driver]
+        view: iso
+        motions:
+          - {parts: [mcu_ProS3, driver_DRV8833, amp_MAX98357A, "sensor_AS5600_*"], from: {up: 65}, to: {up: 45},
+             stagger: 0.25, dur: 0.9}
+          - {parts: wire_usb, to: {up: 45}, fade: in, dur: 0.6}
+          - {parts: spacer_usb, from: {up: 60}, to: {up: 45}, dur: 0.8}
+          - {parts: usb_c_breakout, from: {up: 65}, to: {up: 45}, dur: 0.9}
+          - {parts: screw_usb, from: {up: 60}, to: {up: 45}, spin: 4, stagger: 0.3, driver: {d: 2.5, len: 40}}
+          - {parts: nut_usb, from: {up: 33}, to: {up: 45}, spin: -3, stagger: 0.3, with: prev, driver: {d: 6, len: 30, bore: 2.6}}
+        apply:
+          - {what: solder, at: wire_usb, anchor: bottom, time: 2.6, note: USB-C cable into J7}
+
+      - id: bench-test
+        title: Bench test
+        test: true
+        text: |
+          Work through the [bring-up checklist](pcb/README.md#bring-up-checklist) one module at a
+          time. Flash the firmware (see [`../firmware/README.md`](../firmware/README.md)) once the
+          ProS3 is in, then check `hands`, `home`, `sweep`, `tone` and `rec` from the serial console,
+          probing the test pads if anything misbehaves. Turning a magnet over each AS5600 should walk
+          through all 36 symbols. Plug the X27 into its sockets for `home` and `sweep`, then take it out
+          again: it goes in through P1 in §6.
+
+          Run `wifi` and **write down the setup-portal password** it prints. Once the board is
+          inside the case you'll need it.
+        only: [*carrier, *x27]
+        tools: [USB-C data cable + computer with PlatformIO, multimeter, a spare Ø6 mm magnet]
+        checks: ["`hands`, `home`, `sweep`, `tone` and `rec` all pass", "Setup-portal password written down"]
+        fixes: ["Follow the bring-up checklist's per-module checks and test pads (pcb/README.md)"]
+        view: top
+        motions:
+          - {parts: *x27, from: {up: 75}, to: {up: 45}, dur: 1.2}
+          - {parts: *x27, to: {up: 75}, at: 4.0, dur: 1.2}
+        apply:
+          - {what: check, at: "sensor_AS5600_*", anchor: top, note: turn a magnet over each AS5600}
+          - {what: check, at: usb_c_breakout, anchor: top, note: flash and test over USB}
+
+  - number: 5
+    title: Movement on the bench
+    intro: |
+      The movement is built on P1 standing on its bay standoffs, and goes into the case in §6 as a frame
+      with its arbors and shafts. The X27, P2, dial and hands are fitted in the case: the X27's motor
+      gear cannot pass through P1's slot (see [F9](assembly/FINDINGS.md#f9)).
+    steps:
+      - id: nest-arbors
+        title: Nest the arbors
+        text: |
+          Nest arbors I, II and III and the needle arbor in the centre bearing, in that order, each
+          sliding over the last.
+        only: [*frame, *arbors]
+        view: iso
+        motions:
+          - {parts: [arbor_I, gear_hand_I_32T], from: {up: 125}, to: {up: 90}, dur: 1.2}
+          - {parts: [arbor_II, gear_hand_II_32T], from: {up: 125}, to: {up: 90}, dur: 1.2}
+          - {parts: [arbor_III, gear_hand_III_32T], from: {up: 125}, to: {up: 90}, dur: 1.2}
+          - {parts: [arbor_needle, gear_needle_17T], from: {up: 125}, to: {up: 90}, dur: 1.2}
+
+      - id: drop-shafts
+        title: Drop in the sensor and knob shafts
+        text: |
+          Drop in the three sensor shafts, gears already on their collars, then the three knob shafts,
+          thumbwheels already on their collars. Slide a `sleeve_knob` down onto each thumbwheel.
+        only: [*frame, *train]
+        view: iso
+        motions:
+          - {parts: *sensors, from: {up: 125}, to: {up: 90}, dur: 1.2, stagger: 0.3}
+          - {parts: *knobs, from: {up: 125}, to: {up: 90}, dur: 1.2, stagger: 0.3}
+          - {parts: sleeve_knob, from: {up: 108}, to: {up: 90}, dur: 0.9, stagger: 0.2}
+
+      - id: magnets
+        title: Magnets
+        text: |
+          Push a Ø6×2.5 diametric magnet into each `magnet_cup` with a little epoxy until it bottoms.
+          Then, from underneath, put a drop of Loctite 638 on each sensor shaft's thin bottom tip and
+          push a cup on until it stops on the shoulder, while you hold the shaft down from above. The
+          cup then hangs 0.3 mm below P1 and the magnet is centred automatically.
+        only: [*frame, *train, *magnets]
+        checks: ["Each sensor shaft still turns freely, with a little up-and-down play"]
+        view: [0.4, -0.75, -0.6]
+        motions:
+          - {parts: magnet_cup, to: {up: 72}, fade: in, dur: 0.5, nocheck: true}
+          - {parts: [magnet_I, magnet_II, magnet_III], from: {up: 60}, to: {up: 72}, stagger: 0.25}
+          - {parts: *magnets, to: {up: 90}, dur: 1.2, stagger: 0.25}
+        apply:
+          - {what: epoxy, at: magnet_cup, anchor: bottom, note: in each cup's pocket}
+          - {what: loctite638, at: "shaft_sensor_*", anchor: bottom, time: 2.0, note: each sensor shaft's thin bottom tip}
+
+      - id: speaker
+        title: Speaker
+        text: |
+          Solder a 2-way PicoBlade pigtail (~10 cm, pre-crimped) to the speaker's back tabs, thread it
+          down through the open centre of P1's speaker seat (top-left) and seat the speaker on its foam
+          ring. The seat is a ring so the speaker's back can breathe into the bay below.
+        only: [*frame, *train, *magnets, speaker, speaker_foam_ring, wire_speaker]
+        tools: [soldering iron]
+        findings: [F5]
+        view: iso
+        motions:
+          - {parts: speaker_foam_ring, from: {up: 105}, to: {up: 90}, dur: 0.8}
+          - {parts: [speaker, wire_speaker], from: {up: 112}, to: {up: 90}, dur: 1.1, nocheck: true}
+        apply:
+          - {what: solder, at: speaker, anchor: bottom, note: 2-way pigtail to the back tabs (red to +)}
+
+      - id: mic
+        title: Microphone under P2
+        text: |
+          Solder a 5-way PicoBlade pigtail (~10 cm) to the INMP441 (VDD GND SCK WS SD, with L/R bridged
+          to GND at the mic) and stick it under P2's 7-hole mic port, port up, with foam tape that has a
+          hole over the port. Its lead hangs down through P1's open lattice once P2 goes on.
+        only: [*p2_group]
+        tools: [soldering iron]
+        findings: [F5]
+        view: [0.5, -0.8, -0.5]
+        motions:
+          - {parts: mic_foam_tape, from: {up: 113}, to: {up: 125}, dur: 0.8}
+          - {parts: [mic_INMP441, wire_mic], from: {up: 108}, to: {up: 125}, dur: 1.0, nocheck: true}
+        apply:
+          - {what: solder, at: mic_INMP441, anchor: bottom, note: "5-way pigtail; bridge L/R to GND"}
+          - {what: foam, at: mic_foam_tape, anchor: bottom, note: hole over the mic port}
+
+  - number: 6
+    title: Movement into the case
+    steps:
+      - id: tray-carrier
+        title: Carrier into the lower tray
+        text: |
+          Line the floor with one layer of Kapton. Put the three nylon spacers over the floor holes and
+          lower the populated carrier straight in: U7's receptacle lines up with the wall opening, the
+          crown switch goes into the top-right corner, and the power switch's slider lines up behind its
+          slot in the back wall. Fit the crown afterwards: its stem reaches about 1 mm over the board's
+          edge, so the carrier can't be lowered past it.
+        only: [case_lower_tray, spacer_carrier, *carrier]
+        findings: [F10]
+        view: iso
+        motions:
+          - {parts: case_lower_tray, fade: in, dur: 0.5, nocheck: true}
+          - {parts: spacer_carrier, from: {up: 15}, dur: 0.8, stagger: 0.2}
+          - {parts: [*carrier], to: {up: 0}, dur: 2.2}
+        apply:
+          - {what: kapton, at: case_lower_tray, anchor: bottom, offset: [0, 0, 1.1], note: one layer over the floor}
+
+      - id: crown
+        title: Crown
+        text: |
+          Push `crown_turned` in from outside through the lower tray's top-right chamfer hole and snap
+          the DIN 6799 E-clip into its groove from inside (flat-nose pliers or an E-clip applicator),
+          between the wall and the crown switch. The groove's position gives the 0.3 mm of play.
+        only: [case_lower_tray, spacer_carrier, *carrier, crown_turned, crown_eclip]
+        tools: [flat-nose pliers or E-clip applicator]
+        findings: [F10]
+        checks: ["The crown clicks the switch and springs back"]
+        view: [0.9, 0.35, 0.5]
+        motions:
+          - {parts: crown_turned, from: {t: [10, 10, 0]}, dur: 1.2}
+          - {parts: crown_eclip, from: {up: 9}, dur: 0.9}
+          - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.25, nocheck: true}
+          - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.25, nocheck: true}
+
+      - id: battery
+        title: Battery
+        text: |
+          Stick the cell down with thin double-sided foam tape and plug it into J8. Check with a meter
+          first that its red wire lands on the **+** mark: JST-PH polarity isn't standardised.
+        only: [case_lower_tray, spacer_carrier, *carrier, crown_turned, crown_eclip, battery, battery_plug,
+               wire_battery]
+        tools: [multimeter]
+        checks: ["Red lead on J8's + mark (measure before plugging in)"]
+        view: [0.2, -0.9, 0.55]
+        motions:
+          - {parts: [battery, wire_battery], from: {up: 14}, dur: 1.0, nocheck: true}
+          - {parts: battery_plug, from: {t: [0, 6, 0]}, dur: 0.8}
+        apply:
+          - {what: foam, at: battery, anchor: bottom, note: under the cell}
+
+      - id: plug-leads
+        title: Plug in the speaker and mic leads
+        text: |
+          With P1's frame and P2 standing beside the tray, plug the speaker lead into **J5** and the mic
+          lead into **J4**: both headers sit right under their pass-throughs (see WIRING.md, *Where
+          things go*). They are covered by P1 from the next step on; the leads are long enough to lift
+          the movement out again and unplug them.
+        hide: [*x27]
+        findings: [F5]
+        view: iso
+        apply:
+          - {what: plug, at: conn_speaker, anchor: top, note: speaker lead into J5}
+          - {what: plug, at: conn_mic, anchor: top, note: mic lead into J4}
+
+      - id: lower-movement
+        title: Lower the movement frame onto the carrier
+        text: |
+          Lower P1's frame straight down onto the carrier, threading the mic lead through P1's lattice.
+          The magnet cups come to rest just above the AS5600 chips. Fix it with three **M2×8
+          countersunk** screws from under the floor, through the spacers and board into the bay
+          standoffs.
+        hide: [*x27, *p2_group]
+        tools: [slotted screwdriver 2.5 mm]
+        view: iso
+        motions:
+          - {parts: [*frame, *train, *magnets, speaker, speaker_foam_ring], to: {up: 0}, dur: 2.6}
+          - {parts: wire_speaker, to: {up: 0}, dur: 2.6, with: prev, nocheck: true, note: flexible lead}
+          - {parts: screw_floor, from: {up: -14}, spin: 4, stagger: 0.3, driver: {d: 2.5, len: 40}}
+
+      - id: x27-in
+        title: X27 in through P1's slot
+        test: true
+        text: |
+          Lower the X27 (motor gear on) through P1's slot into its sockets. The motor gear slides into
+          mesh with the needle gear (rock the needle arbor a hair if the teeth butt). Then, with USB
+          connected, run `home` and `sweep` and watch the needle gear: it should follow smoothly in both
+          directions. Gently rock the needle arbor with tweezers: you should feel a little play.
+        hide: [*p2_group]
+        findings: [F3, F9]
+        checks: ["The X27 sits fully down in its sockets", "`sweep` runs smoothly both ways without the motor buzzing or skipping",
+                 "A little rock at the needle gear (about 1.5°)"]
+        fixes:
+          - "Buzzing, stalling or a tight spot: lift the X27 out, turn the needle arbor alone (it must spin freely); if it does, the pair is tight: release the needle gear with heat and fit `gear_needle_17T_L`, or press the `gear_motor_34T_L` onto the shaft"
+          - "No play at all: as above; too much (needle wanders by more than half a symbol): the order was cut thin, keep the standard gears and rely on calibration"
+          - "Needle moves the wrong way on `sweep`: set `MOTOR_PHASE_DIR = -1` in firmware/src/config.h"
+        view: iso
+        motions:
+          - {parts: *x27, to: {up: 0}, dur: 2.0}
+          - {parts: [arbor_needle, gear_needle_17T], spin: 0.5, dur: 2.0}
+        apply:
+          - {what: check, at: gear_needle_17T, anchor: top, time: 2.0, note: "`sweep`, then rock the needle arbor"}
+
+      - id: lower-p2
+        title: Lower P2 onto the shaft tips
+        text: |
+          Lower P2 over the cannon and onto the shaft tips. The three knob shafts stand 0.6 mm taller
+          than the rest and every tip is chamfered, so P2 drops onto the knob shafts first; they hold it
+          level while you coax the sensor shafts and the arbors into their holes with tweezers. Screw the
+          four **M2×5 M-F** standoffs through P2 into the gear standoffs.
+        tools: [tweezers, 4 mm nut driver]
+        findings: [F4]
+        view: iso
+        motions:
+          - {parts: [dial_plate_P2, *p2_bushings, cannon, mic_INMP441, mic_foam_tape], to: {up: 0}, dur: 2.2}
+          - {parts: wire_mic, to: {up: 0}, dur: 2.2, with: prev, nocheck: true, note: flexible lead}
+          - {parts: standoff_hand, from: {up: 14}, spin: 3, stagger: 0.25, driver: {d: 6, len: 40, bore: 2.6}}
+
+      - id: train-test
+        title: The whole movement, then oil
+        test: true
+        text: |
+          Repeat the dry run's feel test on the finished movement: two full turns of each thumbwheel
+          each way, a rock between each pair, and no cross-talk between trains. Then with USB connected
+          run `hands` while you turn each knob: its hand's reading should change smoothly, by 360° per
+          1.23 turns of the wheel, and the other two shouldn't move. Run `sweep` once more. Finally add a
+          small drop of clock oil to each top bearing and the cannon.
+        checks:
+          - "Smooth, light turning; about 1° of rock at each pair"
+          - "`hands`: the turned train's angle tracks the knob, the other two stay put"
+          - "`sweep` still runs cleanly with P2 on"
+        fixes:
+          - "Tighter than on the dry run: P2's bushings pinch a shaft; loosen the hand standoffs a quarter turn and retighten them evenly; if it persists, check that shaft's tip has its chamfer and no burr"
+          - "A reading jumps or reverses: the magnet cup has slipped or a magnet isn't diametric; check §5.3"
+          - "Otherwise as the dry run (§3.1): swap the binding pair's laser-cut gear for its `_L` spare"
+        view: iso
+        motions:
+          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 2.4}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.8125, dur: 2.4, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I], spin: 0.8125, dur: 2.4, with: prev}
+        apply:
+          - {what: check, at: knob_I_26T, anchor: center, note: "two full turns each way; `hands` alongside"}
+          - {what: oil, at: *p2_bushings, anchor: top, time: 2.6, note: one small drop per top bearing}
+          - {what: oil, at: cannon, anchor: top, time: 2.6}
+
+  - number: 7
+    title: Dial and hands
+    steps:
+      - id: dial-sticker
+        title: Dial sticker
+        text: |
+          Apply the dial sticker to P2, centred on the cannon. The cut-line circle ID is Ø58 mm.
+          Line up **Hourglass** with the top (12 o'clock) knob.
+        view: top
+        checks: ["Hourglass points at the 12 o'clock thumbwheel"]
+        motions:
+          - {parts: dial_sticker, from: {up: 20}, dur: 1.4}
+
+      - id: hands
+        title: Hands
+        text: |
+          The framing hands come blued (spring steel): no finishing. Polish the copper needle. Handle
+          the hands by the hub; they are thin.
+
+          Fit them in this order, each with a dot of Loctite 638 on its arbor and pointing at Hourglass.
+          The laser-cut **`hand_setting_tool`** does the positioning: press it down over the arbors
+          until it bottoms, and the hand under it is flush with its own arbor's end.
+
+          - Needle on the needle arbor: press with the **one-dot** hole.
+          - Hand III on arbor III: press with the **two-dot** hole.
+          - Hand II on arbor II: press with the **three-dot** hole.
+          - Hand I: push it down arbor I's thin top until it sits on the shoulder.
+          - The cap: press it with the tool's plain end until the tool touches the top of arbor I.
+        frame: [arbor_I, hand_needle, hand_II, dial_sticker]
+        view: [0.55, -0.85, 0.45]
+        motions:
+          - {parts: hand_needle, from: {up: 14}}
+          - {parts: hand_setting_tool, from: {t: [24, 121, 50]}, to: {t: [24, 121, 29.59]}, dur: 1.0}
+          - {parts: hand_setting_tool, by: {up: 20.41}, dur: 0.6}
+          - {parts: hand_setting_tool, to: {t: [24, 81, 50]}, dur: 0.6}
+          - {parts: hand_III, from: {up: 14}}
+          - {parts: hand_setting_tool, to: {t: [10, 121, 50]}, dur: 0.8}
+          - {parts: hand_setting_tool, to: {t: [10, 121, 30.32]}, dur: 0.8}
+          - {parts: hand_setting_tool, by: {up: 19.68}, dur: 0.6}
+          - {parts: hand_setting_tool, to: {t: [10, 81, 50]}, dur: 0.6}
+          - {parts: hand_II, from: {up: 14}}
+          - {parts: hand_setting_tool, to: {t: [-4, 121, 50]}, dur: 0.8}
+          - {parts: hand_setting_tool, to: {t: [-4, 121, 31.05]}, dur: 0.8}
+          - {parts: hand_setting_tool, by: {up: 18.95}, dur: 0.6}
+          - {parts: hand_setting_tool, to: {t: [-4, 81, 50]}, dur: 0.6}
+          - {parts: hand_I, from: {up: 14}}
+          - {parts: hand_cap_rosette, from: {up: 14}}
+          - {parts: hand_setting_tool, to: {t: [-28, 121, 50]}, dur: 0.8}
+          - {parts: hand_setting_tool, to: {t: [-28, 121, 32.80]}, dur: 0.8}
+          - {parts: hand_setting_tool, by: {up: 17.2}, dur: 0.6}
+          - {parts: hand_setting_tool, by: {t: [0, -60, 0]}, dur: 0.8, remove: true}
+        apply:
+          - {what: loctite638, at: [arbor_needle, arbor_III, arbor_II, arbor_I], anchor: top,
+             note: a dot on each arbor top before its hand}
+
+      - id: hands-test
+        title: Hand clearances
+        test: true
+        text: |
+          Turn each thumbwheel so its hand passes over the other two and the needle, all the way round,
+          and run `sweep`. Slide a strip of thin paper (about 0.1 mm) between the hands where they
+          cross: it should pass between every pair without dragging either hand. The needle must not
+          touch the dial anywhere.
+        checks: ["Paper passes between every pair of hands", "No hand or the needle touches the dial or a neighbour anywhere round"]
+        fixes:
+          - "Two hands touch: press the lower one down again with the setting tool (it may not have gone fully flush); a bent spring-steel hand can be flattened on glass under a fingertip"
+          - "The needle touches the dial: the sticker is lifted at its inner edge, or the needle wasn't pressed fully down with the one-dot hole"
+        view: [0.4, -0.8, 0.5]
+        frame: [hand_needle, hand_I, hand_II, hand_III]
+        motions:
+          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 3.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.8125, dur: 3.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], spin: 0.8125, dur: 3.0, with: prev}
+          - {parts: [arbor_needle, gear_needle_17T, hand_needle], spin: 0.6, dur: 3.0}
+        apply:
+          - {what: check, at: hand_I, anchor: top, note: paper between the hands where they cross}
+
+  - number: 8
+    title: Upper shell, hinge and lid
+    steps:
+      - id: shell-inside
+        title: Upper shell, upside down
+        text: |
+          Push the two **M1.6×5 countersunk** crystal screws in from outside, then lay the shell upside
+          down on their heads (they're flush, so it sits flat). Glue a ring of speaker cloth under the
+          grille slots and epoxy the body closure magnet (top-left, between grille and wall) to the
+          underside of the top face. Drop the frame spider over the two screws, the crystal into its
+          pocket and the seat spider on top, then run an **M1.6 nut** down each screw. The crystal stack
+          is now part of the shell.
+        only: [*shell]
+        findings: [F2]
+        tools: [slotted screwdriver 1.5 mm, 3.2 mm nut driver or tweezers]
+        view: iso
+        motions:
+          - {parts: case_upper_shell, to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, fade: in,
+             dur: 0.6, nocheck: true}
+          - {parts: screw_crystal, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 58},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+          - {parts: magnet_body, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 88},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+          - {parts: crystal_frame_spider, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 90},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+          - {parts: crystal, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 90},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+          - {parts: crystal_seat_spider, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 90},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+          - {parts: nut_crystal, from: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 82},
+             to: {rot: {axis: x, deg: 180, about: [0, 0, 28.33]}, up: 70}, dur: 1.0}
+        apply:
+          - {what: glue, at: case_upper_shell, anchor: center, time: 1.2, note: speaker cloth ring under the grille slots}
+          - {what: epoxy, at: magnet_body, anchor: center, time: 1.2, note: body closure magnet}
+
+      - id: shell-flip
+        title: Turn the shell back over
+        text: |
+          Turn the shell the right way up. The two crystal screws hold the crystal and both spiders in
+          place.
+        only: [*shell]
+        findings: [F2]
+        view: iso
+        motions:
+          - {parts: *shell, to: {rot: {axis: x, deg: 0, about: [0, 0, 28.33]}, up: 50}, dur: 2.0, nocheck: true}
+
+      - id: lid-overlay
+        title: Overlay and lid magnet
+        text: |
+          Turn the lid over so its inside faces up and epoxy the pierced overlay inside it, keeping the
+          two hinge holes in the wall clear. Epoxy the lid magnet into the overlay's hole, its pole
+          attracting the body magnet. Do this before the hinge screws: their tips stand proud of the
+          inside wall, in the overlay's way.
+        only: [*shell, case_lid, lid_overlay, magnet_lid_closure]
+        view: [0.9, -0.6, 0.75]
+        frame: [case_lid]
+        motions:
+          - {parts: case_lid, from: {up: 70}, to: {up: 50}, dur: 1.0}
+          - {lid: 180, dur: 1.6}
+          - {parts: lid_overlay, from: {up: 66}, to: {up: 50}, dur: 1.2}
+          - {parts: magnet_lid_closure, from: {up: 66}, to: {up: 50}, dur: 1.0}
+        apply:
+          - {what: epoxy, at: lid_overlay, anchor: center, time: 2.6, note: "a thin bead round the rim, clear of the hinge holes"}
+          - {what: epoxy, at: magnet_lid_closure, anchor: center, time: 3.8, note: "lid magnet; poles attract the body magnet"}
+
+      - id: hinge-lid
+        title: Screw the hinge to the lid
+        text: |
+          Hold the drilled hinge against the lid's hinge wall, lid upright, and screw the moving leaf on:
+          two **M1.6×4 DIN 963** screws from outside through the leaf and the laser-cut holes, an M1.6
+          washer and nut inside each, beside the overlay. Every head must finish flush: when the lid is
+          fully open the leaves close face to face.
+        only: [*shell, *lid, *hinge]
+        tools: [slotted screwdriver 1.5 mm, 3.2 mm nut driver or tweezers]
+        view: [1, -0.7, 0.2]
+        motions:
+          - {parts: [case_lid, lid_overlay, magnet_lid_closure], to: {up: 110}, dur: 1.2}
+          - {lid: 90, dur: 1.4}
+          - {parts: *hinge, from: {up: 124}, to: {up: 110}, fade: in, dur: 1.4}
+          - {parts: "hinge_lid_washer_*", from: {up: 124}, to: {up: 110}, dur: 0.9}
+          - {parts: "hinge_lid_nut_*", from: {up: 124}, to: {up: 110}, spin: -3, stagger: 0.3, dur: 1.0}
+          - {parts: "hinge_lid_screw_*", from: {up: 96}, to: {up: 110}, spin: 4, stagger: 0.3, with: prev,
+             driver: {d: 2, len: 35}}
+
+      - id: hinge-body
+        title: Screw the hinge to the shell
+        text: |
+          Close the lid onto the shell and screw the fixed leaf on: four **M2×6 DIN 963** screws from
+          outside through the leaf and the laser-cut wall holes, the laser-cut backing strip and four M2
+          nuts inside. Bring the strip up against the wall from below: it can't come in sideways past the
+          crystal spiders.
+        only: [*shell, *lid, *hinge_body]
+        tools: [slotted screwdriver 2.5 mm, 4 mm nut driver]
+        view: [1, -0.55, 0.4]
+        motions:
+          - {lid: 0, dur: 1.4}
+          - {parts: [case_lid, lid_overlay, magnet_lid_closure, *hinge, "hinge_lid_*"], to: {up: 50}, dur: 1.2}
+          - {parts: hinge_backing_body, from: {t: [-2, 0, 34]}, to: {t: [-2, 0, 50]}, dur: 1.0}
+          - {parts: hinge_backing_body, to: {up: 50}, dur: 0.5}
+          - {parts: "hinge_body_screw_*", from: {t: [14, 0, 50]}, to: {up: 50}, spin: 4, stagger: 0.3,
+             driver: {d: 2.5, len: 40}}
+          - {parts: "hinge_body_nut_*", from: {t: [-14, 0, 50]}, to: {up: 50}, spin: -3, stagger: 0.3, with: prev,
+             driver: {d: 6, len: 40, bore: 2.6}}
+
+      - id: lower-shell
+        title: Lower the shell over the movement
+        text: |
+          Lower the shell over the movement. The thumbwheels must pass through the three notches.
+          Open the lid and fix the shell with four **M2×6 countersunk** screws through the top face.
+          Countersunk lengths include the head. These give about **2.37 mm** of thread engagement in
+          the hand standoffs; the bottom M2×8 screws engage about **2.88 mm** in the bay standoffs.
+          Check the actual standoffs' usable thread depths before tightening: each screw must clamp
+          the stack without bottoming out, and all external heads must finish flush.
+        tools: [slotted screwdriver 2.5 mm]
+        checks: ["The rim slides on freely before the top screws are tightened", "All external heads flush"]
+        view: iso
+        motions:
+          - {parts: [*shell, *hinge_body, *lid], to: {up: 0}, dur: 2.4}
+          - {lid: 180, dur: 1.6}
+          - {parts: screw_top, from: {up: 14}, spin: 4, stagger: 0.3, driver: {d: 2.5, len: 40}}
+
+      - id: case-test
+        title: Everything that moves, in the case
+        test: true
+        text: |
+          With the case closed up: turn each thumbwheel through two full turns each way, watching its hand
+          under the crystal; run `sweep`; press the crown; push a USB-C cable into the wall port; and
+          press gently on the crown corner while turning knob I.
+        checks:
+          - "Thumbwheels turn freely in their notches (1.2 mm clearance each side), with the same feel as before"
+          - "No hand touches the crystal anywhere round (0.6 mm gap)"
+          - "The crown clicks; the USB-C plug goes in straight"
+          - "Pressing the crown corner doesn't stiffen knob I"
+        fixes:
+          - "A wheel rubs its notch: loosen the four top screws, centre the shell on the tray and retighten evenly"
+          - "A hand touches the crystal: that hand wasn't pressed fully flush (§7.2); lift the shell (four screws) and re-press it"
+          - "The crown corner flexes into the train: tighten the corner standoff and gear standoff there; if it still flexes, report it in the design review (F8)"
+        view: iso
+        motions:
+          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -1.625, dur: 4.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], spin: 1.625, dur: 4.0, with: prev}
+        apply:
+          - {what: check, at: knob_I_26T, anchor: +y, note: each thumbwheel through its notch}
+          - {what: check, at: crown_turned, anchor: +x, time: 2.0, note: crown click}
+    subsections:
+      - title: What holds the two shells together
+        text: |
+          The overlapping rim is an **alignment skirt with 0.45 mm radial clearance**, not a press-fit
+          retainer. The fastener path is:
+
+          **Four top screws → hand standoffs → P2 → gear standoffs → P1 → three bay standoffs →
+          three bottom screws through the PCB and nylon spacers.**
+
+          At the crown corner, the gear standoff ends in a short **M2×4 F-F standoff under P1**, instead
+          of a fourth bay standoff, to leave room for the crown switch. That corner is connected through
+          the plates to the other three floor mounts; it has no direct post to the floor.
+
+          For servicing, remove the four top screws and lift off the upper shell and its hinged lid (the
+          crystal stays in it); leave the three bottom screws fitted unless removing the movement. To lift
+          the movement out: pull the X27 up through P1 first (its gear can't pass P1's slot), take out the
+          three bottom screws, lift the frame a little and unplug J4 and J5. No pulling against a friction
+          fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
+
+          The short hex posts and clamped plates are intended to resist sideways motion, but the
+          CAD checks establish fit, not structural stiffness. The §8.8 test checks the unsupported crown
+          corner on the prototype. Do not rely on the clearance skirt as rigid bracing.
+
+  - number: 9
+    title: Lid
+    intro: |
+      The lid is already hinged and lined (§8).
+    steps:
+      - id: lid-travel
+        title: The lid's travel
+        test: true
+        text: |
+          Open the lid through its full travel. It passes flat (180°) and stops a little beyond, about
+          200° with the modelled hinge, when the two leaves close face to face. On a table the lid's far
+          edge comes to rest on the tabletop first. Close it: the magnets should pull it shut over the
+          last few millimetres.
+        checks: ["Nothing binds anywhere in the travel", "The leaf screw heads don't touch",
+                 "The magnets close it and it sits flat all round"]
+        fixes:
+          - "Binds or a head touches: that screw isn't flush; countersink the leaf a little more"
+          - "Sits proud at the hinge side: the leaf holes were drilled off the gauge's line; open them 0.2 mm toward the pivot"
+          - "Doesn't snap shut: flip the lid magnet (poles repelling)"
+        view: [0.1, -1, 0.25]
+        motions:
+          - {lid: 0, dur: 1.6}
+          - {lid: 204, dur: 2.2}
+          - {lid: 180, dur: 0.8}
+
+  - number: 10
+    title: Finish and first run
+    steps:
+      - id: finish
+        title: Polish and protect
+        text: |
+          Polish, then protect the case with Renaissance Wax or a clear lacquer. Unprotected brass will
+          patina.
+        view: iso
+        motions:
+          - {lid: 0, dur: 1.4}
+
+      - id: first-run
+        title: Charge, connect and calibrate
+        text: |
+          1. Charge through the side USB-C port.
+          2. Triple-click the crown to open the **Alethiometer** Wi-Fi portal. Join it with the password
+             you noted in §4, then enter your Wi-Fi, API URL and device key.
+          3. Click the crown five times to **calibrate**: set all hands to Hourglass and press, set all
+             hands to Moon and press, then jog the needle onto Hourglass with knob I and press.
+          4. Hold the crown, ask your question, release, and watch the needle.
+        view: [0.75, -0.5, 0.6]
+        motions:
+          - {lid: 180, dur: 1.4}
+          - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.2, nocheck: true}
+          - {parts: [hand_needle, arbor_needle, gear_needle_17T], spin: 1.6, dur: 3.0}
+        apply:
+          - {what: check, at: usb_c_breakout, anchor: +x, note: charge over USB-C}
+          - {what: check, at: crown_turned, anchor: +x, time: 1.4, note: triple-click for the Wi-Fi portal}
+
+      - id: accuracy-test
+        title: Accuracy
+        test: true
+        text: |
+          With USB connected and the serial console open: set each hand to four symbols round the dial
+          (Hourglass, Sun, Moon, Owl) and run `hands` each time; then `needle 0`, `needle 9`,
+          `needle 18`, `needle 27` and back to `needle 0`, approaching from both sides, and check where it
+          stops.
+        checks:
+          - "`hands` names the symbol each hand points at, every time"
+          - "The needle stops within a quarter of a symbol (2.5°) of each target, from either side"
+        fixes:
+          - "A hand reads the neighbouring symbol at one place only: the AS5600 isn't level or the magnet is off-centre; check §5.3, then recalibrate"
+          - "A hand reads off by the same amount everywhere: recalibrate (five clicks)"
+          - "The needle is off by the same amount everywhere: recalibrate the needle offset"
+          - "The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit the standard needle gear if an `_L` one is in"
+        view: top
+        motions:
+          - {parts: [hand_needle, arbor_needle, gear_needle_17T], spin: 0.75, dur: 3.0}
+        apply:
+          - {what: check, at: hand_needle, anchor: top, note: "`needle 0/9/18/27`, from both sides"}
+
+  - number: 11
+    title: Tests and adjustments at a glance
+    intro: |
+      | Where | Test | Passes when | If not |
+      |---|---|---|---|
+      | §1.2 | Measure the gears | Tip Ø within +0.06 / −0.10 mm of 27.2 (32T), 15.2 (17T), 28.8 (34T) | Plan on the `_L` spares |
+      | §1.5 | Bushing pairs | Each drill blank slides through its pair | Release the 638 with heat, redo the pair |
+      | §3.1 | Dry run | Two full turns each way, even feel, ~1° rock, no cross-talk | Swap the binding pair's laser gear for its `_L` spare |
+      | §4.3 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
+      | §6.6 | Motor mesh | `sweep` smooth both ways, a little rock | `_L` needle or motor gear |
+      | §6.8 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; `_L` spare |
+      | §7.3 | Hand clearances | Paper passes between hands; nothing on the dial | Re-press with the setting tool |
+      | §8.8 | In the case | Wheels clear the notches, hands clear the crystal, crown corner stiff | Re-centre the shell; re-press a hand |
+      | §9.1 | Lid | Full travel, flush heads, magnets close it | Countersink more; flip the magnet |
+      | §10.3 | Accuracy | `hands` right everywhere; needle within 2.5° | Recalibrate; check the sensor |
+
+      **The mesh-tuning spares.** Every laser-cut gear has an `_L` twin in the order with teeth 0.16 mm
+      thinner, marked by a Ø0.5 mm hole in its rim. The design gives each pair 0.22–0.28 mm of backlash at
+      the pitch circle; a cut whose teeth come out 0.03 mm fat per side still runs, and with the `_L`
+      gears a worst-case cut (0.065 mm fat per side) does too (`cad/mesh.py`, reported in
+      `out/build_report.json`). Swap one gear at a time, starting with the laser-cut one in the binding
+      pair, and only after the dry run says so: the standard gears read more precisely.
+
+      **Releasing a Loctite 638 joint.** Hold a soldering iron (about 300 °C) on the part for 20–30 s and
+      twist it off while hot. Clean both surfaces back to bare metal (a fibreglass pen, then
+      isopropanol) before refitting with fresh 638.
+
+troubleshooting: |
+  | Symptom | Fix |
+  |---|---|
+  | A knob is stiff | Check the thumbwheel sits flat on its collar and no Loctite reached the sleeve or bushings; the case notch leaves 1.2 mm each side. Then the §3.1 dry-run checks. |
+  | A hand drags its neighbour | Re-press the lower hand flush with the setting tool (§7.3). |
+  | Hand reads the wrong symbol near one spot | Check the AS5600 is fully seated in its socket and level on its rest post (chip about 0.7 mm under the magnet), then recalibrate. |
+  | Something electrical misbehaves | Lift the movement out (§8, *What holds the two shells together*) and probe the labelled test pads (see the [bring-up checklist](pcb/README.md#bring-up-checklist)). Any module can be pulled and swapped. |
+  | The needle buzzes at the wrong end on wake | Set `MOTOR_PHASE_DIR = -1` in `firmware/src/config.h`. |
+  | Nothing happens on a crown press | Power switch on (slid toward the USB port)? Check the battery plug polarity and charge it over USB with the switch on. |
+  | It never speaks | It's muted: four clicks of the crown toggle mute (`status` shows it). Check the J5 plug is fully home. |
+
+findings:
+  - id: F1
+    title: Bushing alignment procedure can't be followed as written
+    impact: high
+    area: Movement plates (§1)
+    status: done
+    observation: |
+      The old §1 said to screw P1 and P2 together, drop all 13 bushings in "until they touch the
+      surface", then slide the sensor and knob shafts and arbor I "through both plates" while the 638
+      is wet. With the plates stacked neither is on a flat surface, and every sensor and knob shaft's
+      collar is wider than the bushing bore, so the shafts can only go in from P1's side before P2.
+    recommendation: |
+      Align with plain drill blanks, exactly the shaft diameters, slid through both plates from above.
+    resolution: |
+      Each plate's bushings are glued flat on glass (chamfer down), the frame is screwed together on its
+      standoffs, and three 1/8" and three 5/32" drill blanks (`align_pin_*`, in the tool list) line the
+      pairs up while the 638 cures (§1.4). The shafts are fitted once.
+
+  - id: F2
+    title: Nothing held the crystal and spiders while the shell was turned over and lowered
+    impact: high
+    area: Upper shell (§8)
+    status: done
+    observation: |
+      The crystal, frame spider and seat spider were loaded into the shell upside down and only clamped
+      once the four top screws reached the hand standoffs, so they had to be held while the shell was
+      turned over and lowered over the thumbwheels.
+    recommendation: |
+      Retain the spider stack to the shell independently of the top screws.
+    resolution: |
+      Two M1.6×5 countersunk screws (`screw_crystal`) pass through the top face and both spiders at 2°
+      and 182°, between the crystal and the grille ring, with nuts under the seat spider. The spiders have
+      lobes for them; the grille ring now starts 1 mm further out (48.6 mm) to leave room for the heads.
+      The crystal can be serviced without unscrewing the movement.
+
+  - id: F3
+    title: The motor mesh was set by solder-joint play, using the carrier as a jig
+    impact: high
+    area: Movement (§4, §6)
+    status: done
+    observation: |
+      Setting the X27 mesh took five jig steps (bay standoffs on the bare carrier, P1, arbors, X27,
+      solder its sockets from below, pull it out again), although the only adjustment was the socket
+      pins' play in their holes.
+    recommendation: |
+      Rely on the designed centre distance and solder the X27 sockets with the other sockets.
+    resolution: |
+      The X27 sockets are soldered in §4.1; the jig steps are gone. The motor pair has the same 0.28 mm
+      backlash as the other laser-cut pairs and an `_L` spare each side if it binds (§6.6 test).
+
+  - id: F4
+    title: P2 had to find seven shaft tips at once
+    impact: medium
+    area: Movement (§6)
+    status: done
+    observation: |
+      All shaft tips ended at P2's top face, with 0.08 mm clearance in the bushings, so P2 had to be
+      coaxed onto all of them together.
+    recommendation: |
+      Lead-in chamfers on the tips and bushing bores, and knob shafts slightly longer.
+    resolution: |
+      The turned kit specifies a 0.2 mm × 45° chamfer on every shaft tip and on one end of every bushing
+      bore (fitted chamfer down), and the knob shafts stand 0.6 mm proud of P2 so it picks them up first.
+      Sensor shafts stay flush: the needle sweeps 0.45 mm above them.
+
+  - id: F5
+    title: Speaker and mic leads were soldered in with the movement dangling beside the tray
+    impact: medium
+    area: Electronics (§5, §6)
+    status: done
+    observation: |
+      The leads were soldered to J5/J4 with the finished movement standing beside the tray, and had to be
+      desoldered to lift the movement out.
+    recommendation: |
+      Put connectors on both leads.
+    resolution: |
+      J4 and J5 are Molex PicoBlade 53047 vertical headers (5 and 2 pins) on the carrier, at the same
+      places, rerouted with 0 DRC violations. The leads are pre-crimped pigtails soldered at the mic and
+      speaker on the bench, and plug in before the frame goes down (§6.4).
+
+  - id: F6
+    title: Six hinge holes were hand-drilled through the finished case
+    impact: medium
+    area: Hinge (§3, §8)
+    status: done
+    observation: |
+      The shell and lid came without hinge holes and were drilled on the bench through a drill guide
+      hooked over the closed case: the riskiest moment in the build.
+    recommendation: |
+      Laser-cut the holes in the case blanks and drill only the leaf.
+    resolution: |
+      The holes are laser-cut in the shell and lid walls. The hinge is drilled flat on the bench through
+      `hinge_gauge`, which also checks its cut and trim (§3.7); the hooked drill guide is gone. The hinge
+      is screwed to the lid first, while both sides can be reached.
+
+  - id: F7
+    title: The hinge was cut from 72-inch stock by hand
+    impact: low
+    area: Parting out (§0, §3)
+    status: done
+    observation: |
+      Guden sells the brass hinge in 72" lengths, and the guide had you cut a five-knuckle piece with a
+      Dremel, stake the pin and file the lid leaf to a scribed line.
+    recommendation: |
+      Ask Guden to supply it cut and trimmed.
+    resolution: |
+      The BOM asks Guden for one 63.5 mm piece, both end knuckles on the fixed leaf, pin staked, lid leaf
+      trimmed to 5.6 mm from the pivot, quoted with the §0 sample. The gauge checks it; cutting it
+      yourself remains a fallback.
+
+  - id: F8
+    title: The crown corner was held by a loose nut
+    impact: low
+    area: Chassis (§1, §8)
+    status: done
+    observation: |
+      The fourth gear standoff ended in a loose M2 nut held under P1 with tweezers, right above the crown
+      switch, in the corner that takes the crown presses.
+    recommendation: |
+      Replace the nut with a short M2×4 F-F standoff; check the corner on the prototype.
+    resolution: |
+      `standoff_corner` (M2×4 F-F, 0.6 mm above the crown switch) replaces the nut. A fourth floor post
+      still has no room past the crown switch; §8.8 tests the corner's stiffness on the prototype.
+
+  - id: F9
+    title: The motor gear can't pass P1's slot, so the movement can't be finished on the bench
+    impact: high
+    area: Movement and case (§5, §6)
+    status: guide updated
+    observation: |
+      The old guide lowered the finished movement onto the carrier "with the X27 and its gear rising up
+      through P1's slot". The 34T motor gear (Ø28.8 mm, offset from the motor body) is wider than the
+      slot, and the hand gears have to pass the motor gear's level.
+    recommendation: |
+      Fit the frame into the case first, then the X27 through the slot, then P2, dial and hands.
+    resolution: |
+      That is the order in §6 and §7. With F3 there is no jig to pull the X27 out of; the X27 is only
+      lifted out for servicing.
+
+  - id: F10
+    title: The crown stem blocks the carrier if the crown goes in first
+    impact: medium
+    area: Case (§6)
+    status: guide updated
+    observation: |
+      The crown stem's inner end reaches about 1 mm inside the carrier outline at switch height, so the
+      board can't be lowered past an installed crown.
+    recommendation: |
+      Fit the carrier first, then the crown and its E-clip.
+    resolution: |
+      §6.1 and §6.2 are in that order.

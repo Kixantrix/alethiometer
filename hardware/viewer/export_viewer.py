@@ -59,7 +59,13 @@ GROUPS = [
     ("dial", "Dial"),
     ("electronics", "Electronics"),
     ("hardware", "Hardware"),
+    ("tools", "Jigs and tools"),
 ]
+HIDDEN_GROUPS = {"tools"}    # laser-cut jigs: shown by the assembly guide, off in Explore
+# Explore shows the jigs laid out beside the instrument (left of it, clear of the opening lid);
+# their placements are where they are used, which the assembly guide animates.
+EXPLORE_OFFSETS = {"hinge_gauge": (-190.0, 0.0, -24.9), "align_pin_1_8": (0.0, -150.0, -14.1),
+                   "align_pin_5_32": (0.0, -150.0, -14.1)}
 
 
 def view_group(p) -> str:
@@ -196,6 +202,7 @@ def find_kicad_cli() -> str | None:
         for root in ([Path(base) / "Programs" / "KiCad", Path(base) / "KiCad"] if base else []):
             cands += root.glob("*/bin/kicad-cli.exe")
     cands += [Path("/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"),
+              Path.home() / "Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli",
               Path("/usr/local/bin/kicad-cli"), Path("/usr/bin/kicad-cli")]
     cands = [c for c in cands if c.is_file()]
     version = lambda c: [int(n) for n in re.findall(r"\d+", c.parent.parent.name)]  # noqa: E731
@@ -419,7 +426,7 @@ def main() -> int:
     args = ap.parse_args()
 
     t0 = time.time()
-    parts = D.all_parts()
+    parts = D.all_parts() + D.tooling()
     print(f"built {len(parts)} part types in {time.time() - t0:.1f}s", flush=True)
     ASSETS.mkdir(exist_ok=True)
 
@@ -444,6 +451,7 @@ def main() -> int:
             z=[round(zmin, 3), round(zmax, 3)], explode=explode_dz(p, zmin),
             placements=[[round(x, 6) for x in m] for m in mats],
             open=[round(x, 6) for x in open_m] if p.group == "lid" else None,
+            explore_offset=EXPLORE_OFFSETS.get(p.name),
             triangles=len(tris),
         ))
 
@@ -457,12 +465,15 @@ def main() -> int:
     ax, az = D.HINGE_AXIS
     manifest = dict(
         units="mm", up="z", generated=int(time.time()),
-        groups=[dict(id=g, label=lbl) for g, lbl in GROUPS],
+        groups=[dict(id=g, label=lbl, hidden=g in HIDDEN_GROUPS) for g, lbl in GROUPS],
         hinge=dict(point=[ax, 0.0, az], axis=[0.0, 1.0, 0.0], open_deg=D.LID_OPEN_ANGLE, rest_deg=D.LID_REST_ANGLE),
         dial=dict(texture="dial.png" if dial_src else None, source=dial_src, half=DIAL_HALF),
         pcb=pcb, z_top=D.Z_TOP, summary=D.summary(), parts=manifest_parts,
     )
     (ASSETS / "parts.json").write_text(json.dumps(manifest, indent=1, default=str), encoding="utf-8")
+    sys.path.insert(0, str(HERE.parent / "assembly"))
+    import guide  # noqa: E402
+    guide.write_viewer_json(parts)
 
     tri = sum(m["triangles"] for m in manifest_parts)
     size = sum(f.stat().st_size for f in ASSETS.iterdir()) / 1e6
