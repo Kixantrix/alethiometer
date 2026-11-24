@@ -205,6 +205,7 @@ class Segment:
     driver: dict | None = None
     nocheck: bool = False
     remove: bool = False
+    pivot: str | None = None        # spin about this instance's centre axis instead of each part's own
 
     def at(self, t: float) -> dict:
         if t <= self.t0:
@@ -214,7 +215,7 @@ class Segment:
         return lerp_pose(self.a, self.b, ease((t - self.t0) / (self.t1 - self.t0)))
 
 
-MOTION_KEYS = {"parts", "from", "to", "by", "dur", "at", "with", "stagger", "spin", "remove", "fade",
+MOTION_KEYS = {"parts", "from", "to", "by", "dur", "at", "with", "stagger", "spin", "pivot", "remove", "fade",
                "driver", "lid", "note", "nocheck"}
 
 
@@ -250,6 +251,12 @@ def step_timeline(step: dict, cat: Catalogue, state: dict, lid: float, where: st
             raise ValueError(f"{ctx}: use `from` or `by`, not both")
         if mo.get("fade") not in (None, "in", "out"):
             raise ValueError(f"{ctx}: fade must be in or out")
+        pivot = None
+        if "pivot" in mo:
+            piv = cat.select(mo["pivot"])
+            if len(piv) != 1 or not mo.get("spin"):
+                raise ValueError(f"{ctx}: pivot must select exactly one part, on a spinning motion")
+            pivot = piv[0].key
         stagger = float(mo.get("stagger", 0.0))
         end = t0
         for n, inst in enumerate(insts):
@@ -278,7 +285,7 @@ def step_timeline(step: dict, cat: Catalogue, state: dict, lid: float, where: st
             gone = bool(mo.get("remove")) or mo.get("fade") == "out"
             tracks.setdefault(inst.key, []).append(Segment(
                 s0, s0 + dur, a, b, float(mo.get("spin", 0.0)), mo.get("fade"), mo.get("driver"),
-                bool(mo.get("nocheck")), gone))
+                bool(mo.get("nocheck")), gone, pivot))
             state[inst.key] = dict(pose=b, shown=True)
             if gone:
                 removed.add(inst.key)
@@ -499,7 +506,7 @@ def write_markdown(guide: dict) -> tuple[str, str]:
 
 def _seg_json(s: Segment) -> dict:
     return dict(t0=round(s.t0, 3), t1=round(s.t1, 3), a=s.a, b=s.b, spin=s.spin, fade=s.fade,
-                driver=s.driver, remove=s.remove)
+                driver=s.driver, remove=s.remove, pivot=s.pivot)
 
 
 def viewer_json(guide: dict, cat: Catalogue, runs: list[dict]) -> dict:

@@ -162,7 +162,7 @@ export function createAssembly(ctx) {
         const d = new THREE.Vector3().fromArray(seg.b.t).sub(new THREE.Vector3().fromArray(seg.a.t));
         if (d.lengthSq() > 1e-9) axis = d.normalize();
       }
-      const c = inst.center.clone().applyMatrix4(out);
+      const c = (insts.get(seg?.pivot) ?? inst).center.clone().applyMatrix4(out);   // parts in a motion share its pose
       out.premultiply(new THREE.Matrix4().makeTranslation(-c.x, -c.y, -c.z))
         .premultiply(new THREE.Matrix4().makeRotationAxis(axis, spin))
         .premultiply(new THREE.Matrix4().makeTranslation(c.x, c.y, c.z));

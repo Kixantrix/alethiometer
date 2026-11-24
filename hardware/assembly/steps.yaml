@@ -875,8 +875,8 @@ sections:
         motions:
           - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 3.0}
           - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.8125, dur: 3.0, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], spin: 0.8125, dur: 3.0, with: prev}
-          - {parts: [arbor_needle, gear_needle_17T, hand_needle], spin: 0.6, dur: 3.0}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 0.8125, dur: 3.0, with: prev}
+          - {parts: [arbor_needle, gear_needle_17T, hand_needle], pivot: arbor_needle, spin: 0.6, dur: 3.0}
         apply:
           - {what: check, at: hand_I, anchor: top, note: paper between the hands where they cross}
 
@@ -1017,7 +1017,7 @@ sections:
         motions:
           - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
           - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -1.625, dur: 4.0, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], spin: 1.625, dur: 4.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 1.625, dur: 4.0, with: prev}
         apply:
           - {what: check, at: knob_I_26T, anchor: +y, note: each thumbwheel through its notch}
           - {what: check, at: crown_turned, anchor: +x, time: 2.0, note: crown click}
@@ -1099,7 +1099,7 @@ sections:
           - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.2, nocheck: true}
           - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.2, nocheck: true}
           - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.2, nocheck: true}
-          - {parts: [hand_needle, arbor_needle, gear_needle_17T], spin: 1.6, dur: 3.0}
+          - {parts: [hand_needle, arbor_needle, gear_needle_17T], pivot: arbor_needle, spin: 1.6, dur: 3.0}
         apply:
           - {what: check, at: usb_c_breakout, anchor: +x, note: charge over USB-C}
           - {what: check, at: crown_turned, anchor: +x, time: 1.4, note: triple-click for the Wi-Fi portal}
@@ -1122,7 +1122,7 @@ sections:
           - "The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.6)"
         view: top
         motions:
-          - {parts: [hand_needle, arbor_needle, gear_needle_17T], spin: 0.75, dur: 3.0}
+          - {parts: [hand_needle, arbor_needle, gear_needle_17T], pivot: arbor_needle, spin: 0.75, dur: 3.0}
         apply:
           - {what: check, at: hand_needle, anchor: top, note: "`needle 0/9/18/27`, from both sides"}
 
