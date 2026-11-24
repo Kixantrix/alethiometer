@@ -46,7 +46,7 @@ class HingeTests(unittest.TestCase):
                     self.assertAlmostEqual(part.placed()[0].BoundingBox().xmax, D.HINGE_X + D.T040, places=6)
 
     def test_screws_pass_through_their_nuts(self):
-        body_grip = 2 * D.T040 + D.T063 + D.HINGE_NUT_H
+        body_grip = 2 * D.T040 + D.T063                     # the tapped backing strip is the nut
         lid_grip = 2 * D.T040 + D.HINGE_LID_WASHER_T + D.HINGE_LID_NUT_H
         self.assertGreater(D.HINGE_BODY_SCREW_LEN - body_grip, 0.3)
         self.assertGreater(D.HINGE_LID_SCREW_LEN - lid_grip, 0.3)
@@ -64,9 +64,18 @@ class HingeTests(unittest.TestCase):
             probe = cq.Solid.makeCylinder(D.HINGE_MOUNT_CLEAR / 2 - 0.01, 5,
                                           cq.Vector(D.HINGE_X - D.T040 - D.T063 - 0.1, y, D.Z_TOP + z),
                                           cq.Vector(1, 0, 0))
-            for name, sheet in (("shell", shell), ("backing", backing), ("leaf", self.body_leaf)):
+            for name, sheet in (("shell", shell), ("leaf", self.body_leaf)):
                 with self.subTest(y=y, sheet=name):
                     self.assertLess(probe.intersect(sheet).Volume(), 1e-6)
+            tap = cq.Solid.makeCylinder(D.HINGE_BACKING_TAP / 2 - 0.01, 5,
+                                        cq.Vector(D.HINGE_X - D.T040 - D.T063 - 0.1, y, D.Z_TOP + z),
+                                        cq.Vector(1, 0, 0))
+            with self.subTest(y=y, sheet="backing (tap drill)"):
+                self.assertLess(tap.intersect(backing).Volume(), 1e-6)
+
+    def test_case_hinge_screws_have_no_loose_nuts(self):
+        names = {p.name for p in self.hinge}
+        self.assertFalse(any(n.startswith("hinge_body_nut") for n in names))
 
 
 class HingeToolingTests(unittest.TestCase):

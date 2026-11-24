@@ -8,7 +8,7 @@ CNC-turning service (PCBWay, JLCPCB CNC, Xometry, Protolabs Network, or any Swis
 upload the `.step` files and this table, which is the drawing.
 
 - **Material:** brass C360 (free-machining), natural finish.
-- **Tolerances:** ODs 0/-0.02 mm, bores +0.02/0 mm, lengths and shoulder positions ±0.03 mm, ends square and lightly deburred (0.05 mm max chamfer).
+- **Tolerances:** diameters marked ★ (running fits): OD 0/-0.02 mm, bore +0.02/0 mm; everything else, including every length and shoulder position, ISO 2768-f (±0.05 mm); ends square and lightly deburred (0.05 mm max chamfer).
 - **Thin walls:** the plain tubes have 0.36 mm walls (K&S telescoping sizes, so they slide inside
   each other). A shop may quote precision brass tube cut to length and faced instead of turning
   them; that is equally good if the ODs, bores and lengths meet the table.
@@ -17,22 +17,23 @@ upload the `.step` files and this table, which is the drawing.
   to lose.
 
 Segments are listed from the bottom of the part up (as fitted), as OD × length; a bore runs through
-that segment only. "—" = solid.
+that segment only. "—" = solid. **★** = running fit, held to OD 0/-0.02 mm, bore +0.02/0 mm; quote the kit both ways
+(★ only, and everything at the tight tolerance) if the shop prices them differently.
 
 | Part | Qty | Length | Segments (bottom up) | How it is fitted |
 |---|---|---|---|---|
-| `arbor_I` | 1 | 15.672 | Ø2.381 — × 1.600; Ø3.969 — × 0.500; Ø2.381 — × 12.175; Ø1.800 — × 1.397 | Drop into the P1 bushing; gear I on the collar, hand I on the shoulder, cap flush with the top. |
-| `arbor_II` | 1 | 9.825 | Ø3.175 (bore Ø2.464) × 9.825 | Gear II flush with the bottom end, hand II flush with the top end. |
-| `arbor_III` | 1 | 7.094 | Ø3.969 (bore Ø3.258) × 7.094 | Gear III flush with the bottom end, hand III flush with the top end. |
-| `arbor_needle` | 1 | 4.363 | Ø4.762 (bore Ø4.051) × 4.363 | Needle gear flush with the bottom end, needle flush with the top. |
-| `cannon` | 1 | 1.950 | Ø5.556 (bore Ø4.845) × 1.600; Ø7.500 (bore Ø4.845) × 0.350 | Push into P2 from the top until the flange stops; Loctite 638. |
-| `bushing_1_8` | 1 | 1.600 | Ø3.175 (bore Ø2.464) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
-| `bushing_5_32` | 6 | 1.600 | Ø3.969 (bore Ø3.258) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
-| `bushing_3_16` | 6 | 1.600 | Ø4.762 (bore Ø4.051) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
-| `shaft_sensor_I` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175 — × 1.900; Ø3.969 — × 0.500; Ø3.175 — × 9.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
-| `shaft_sensor_II` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175 — × 1.900; Ø3.969 — × 2.500; Ø3.175 — × 7.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
-| `shaft_sensor_III` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175 — × 1.900; Ø3.969 — × 4.500; Ø3.175 — × 5.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
+| `arbor_I` | 1 | 15.672 | Ø2.381★ — × 1.600; Ø3.969 — × 0.500; Ø2.381★ — × 12.175; Ø1.800 — × 1.397 | Drop into the P1 bushing; gear I on the collar, hand I on the shoulder, cap flush with the top. |
+| `arbor_II` | 1 | 9.825 | Ø3.175★ (bore Ø2.464★) × 9.825 | Gear II flush with the bottom end, hand II flush with the top end. |
+| `arbor_III` | 1 | 7.094 | Ø3.969★ (bore Ø3.258★) × 7.094 | Gear III flush with the bottom end, hand III flush with the top end. |
+| `arbor_needle` | 1 | 4.363 | Ø4.762★ (bore Ø4.051★) × 4.363 | Needle gear flush with the bottom end, needle flush with the top. |
+| `cannon` | 1 | 1.950 | Ø5.556 (bore Ø4.845★) × 1.600; Ø7.500 (bore Ø4.845★) × 0.350 | Push into P2 from the top until the flange stops; Loctite 638. |
+| `bushing_1_8` | 1 | 1.600 | Ø3.175 (bore Ø2.464★) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
+| `bushing_5_32` | 6 | 1.600 | Ø3.969 (bore Ø3.258★) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
+| `bushing_3_16` | 6 | 1.600 | Ø4.762 (bore Ø4.051★) × 1.600 | Plate bushing: lay the plate on a flat surface, drop it in with Loctite 638; it is flush both sides. 0.2 mm × 45° chamfer on ONE end of the bore only: fit it chamfer down. |
+| `shaft_sensor_I` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175★ — × 1.900; Ø3.969 — × 0.500; Ø3.175★ — × 9.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
+| `shaft_sensor_II` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175★ — × 1.900; Ø3.969 — × 2.500; Ø3.175★ — × 7.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
+| `shaft_sensor_III` | 1 | 11.900 | Ø2.500 — × 0.400; Ø3.175★ — × 1.900; Ø3.969 — × 4.500; Ø3.175★ — × 5.100 | Drop into P1 from above; sensor gear on the collar; magnet cup on the bottom tip. 0.2 mm × 45° lead-in chamfer on the top end. |
 | `magnet_cup` | 3 | 2.900 | Ø7.000 (bore Ø6.050) × 2.500; Ø7.000 (bore Ø2.520) × 0.400 | Magnet pushed into the pocket until it bottoms (epoxy); cup pushed onto the sensor-shaft tip until it stops (Loctite 638). |
-| `shaft_knob` | 3 | 11.800 | Ø3.969 — × 1.600; Ø4.762 — × 0.500; Ø3.969 — × 9.700 | Drop into P1 from above; thumbwheel on the collar, sleeve on the thumbwheel. Top end 0.6 mm proud of P2 with a 0.2 mm × 45° lead-in chamfer. |
+| `shaft_knob` | 3 | 11.800 | Ø3.969★ — × 1.600; Ø4.762 — × 0.500; Ø3.969★ — × 9.700 | Drop into P1 from above; thumbwheel on the collar, sleeve on the thumbwheel. Top end 0.6 mm proud of P2 with a 0.2 mm × 45° lead-in chamfer. |
 | `sleeve_knob` | 3 | 2.300 | Ø4.762 (bore Ø4.051) × 2.300 | Slides on the knob shaft down onto the thumbwheel (keeps it in mesh). |
 | `crown_turned` | 1 | 6.600 | Ø2.381 — × 1.264; Ø1.500 — × 0.440; Ø2.381 — × 1.896; Ø10.000 — × 3.000 | Stem through the case wall from outside, E-clip in the groove inside; knurl the cap (straight or diamond, 0.5 mm pitch). |

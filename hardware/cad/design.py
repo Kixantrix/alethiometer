@@ -28,14 +28,15 @@ IN = 25.4
 # Materials (SendCutSend stock) and bend spec for .040" brass
 # ---------------------------------------------------------------------------
 T040 = 0.040 * IN            # 1.016  brass 260
-T063 = 0.063 * IN            # 1.600  brass 260 / clear acrylic
+T063 = 0.063 * IN            # 1.600  brass 260 / aluminium 5052 / clear acrylic
+ALU063 = "aluminium 5052 .063\""   # the two tools: cheaper than brass, never in the instrument
 T032 = 0.032 * IN            # 0.813  copper 110
 T_HAND = 0.015 * IN          # 0.381  1075 blue-tempered spring steel (SendCutSend's only thickness)
 HAND_MATERIAL = "spring steel .015\""
 BEND_IR = 0.040 * IN         # SendCutSend inside radius, brass .040
 K_FACTOR = 0.38
 MIN_FLANGE = 0.292 * IN
-DENSITY = {"brass": 8.53e-3, "copper": 8.94e-3, "acrylic": 1.19e-3, "steel": 7.9e-3, "fr4": 1.85e-3}  # g/mm³
+DENSITY = {"aluminium": 2.68e-3, "brass": 8.53e-3, "copper": 8.94e-3, "acrylic": 1.19e-3, "steel": 7.9e-3, "fr4": 1.85e-3}  # g/mm³
 
 # ---------------------------------------------------------------------------
 # Case outline
@@ -49,13 +50,13 @@ SEAM_GAP = 0.45                       # radial gap where upper shell telescopes 
 PLATE_CLEAR = 1.0                     # internal plates to case wall
 KNOB_NOTCH_SIDE = 1.2                 # thumbwheel to wall-notch edge, each side
 KNOB_NOTCH_BELOW, KNOB_NOTCH_ABOVE = 1.0, 1.5   # notch beyond the wheel stack, below / above
-POST_HOLE = 2.7                       # M2 clearance in case, spiders and PCB (heads/standoffs cover it)
+POST_HOLE = 2.7                       # M2 clearance in case and PCB (heads/standoffs cover it)
 POST_HOLE_PLATE = 2.5                 # M2 standoff thread through P1/P2
 CASE_SCREW_D, CASE_SCREW_HEAD_D = 2.0, 3.8   # DIN 963 slotted, 90-degree countersunk
-FLOOR_SCREW_LEN, TOP_SCREW_LEN = 8.0, 6.0    # countersunk lengths include the head
-CRYSTAL_CLEAR = 0.4                   # radial, crystal in its frame pocket
-GEAR_BACKLASH = 0.20                  # tooth thinning per laser-cut gear (plus layout.CENTER_SLOP)
-GEAR_BACKLASH_LOOSE = 0.36            # mesh-tuning spares: still turn freely with worst-case fat cuts
+FLOOR_SCREW_LEN, TOP_SCREW_LEN = 8.0, 4.0    # countersunk lengths include the head
+GEAR_BACKLASH = 0.20                  # tooth thinning: sensor and motor gears, and the tight alternates
+GEAR_BACKLASH_LOOSE = 0.36            # driven hand and needle gears: run free even with a worst-case fat cut
+DRIVEN_GEARS = ("gear_hand_I_32T", "gear_hand_II_32T", "gear_hand_III_32T", "gear_needle_17T")
                                       # (cad/mesh.py checks both; ASSEMBLY.md says when to swap one in)
 LOWER_OUTER = octagon(CASE_W, CASE_CHAMFER)
 LOWER_INNER = offset(LOWER_OUTER, -T040)
@@ -69,7 +70,7 @@ UPPER_INNER = offset(UPPER_OUTER, -T040)
 # The bay height is set by the AS5600 chain: socket (L.MODULE_LIFT) + module + chip
 # + air gap + sensor magnet + magnet drop below P1.
 CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 12.0
-GEAR_STANDOFF, HAND_STANDOFF = 8.0, 5.0    # M2 hex standoff lengths
+GEAR_STANDOFF = HAND_STANDOFF = 8.0       # M2×8+3 M-F hex standoffs, one part for both levels
 Z_FLOOR_TOP = T040
 Z_CARRIER = Z_FLOOR_TOP + CARRIER_SPACER   # carrier PCB (bottom face)
 Z_CARRIER_TOP = Z_CARRIER + CARRIER_T
@@ -77,9 +78,7 @@ Z_P1 = Z_CARRIER_TOP + CARRIER_STANDOFF    # movement base plate (bottom face)
 Z_P1_TOP = Z_P1 + T063
 Z_P2 = Z_P1_TOP + GEAR_STANDOFF            # dial plate
 Z_P2_TOP = Z_P2 + T063
-Z_SEAT = Z_P2_TOP + HAND_STANDOFF          # crystal seat spider
-Z_FRAME = Z_SEAT + T040                    # crystal frame spider / crystal bottom
-Z_TOPFACE = Z_FRAME + T063                 # inside of the case top
+Z_TOPFACE = Z_P2_TOP + HAND_STANDOFF       # inside of the case top: rests on the hand standoffs
 Z_TOP = Z_TOPFACE + T040                   # outside of the case top
 GEAR_PITCH_Z = 2.0
 LEVELS = [Z_P1_TOP + 0.5 + i * GEAR_PITCH_Z for i in range(4)]   # L0..L3 gear bottoms
@@ -89,6 +88,7 @@ UPPER_H = Z_TOP - Z_UPPER_BOTTOM
 LID_H = 0.300 * IN                         # lid flange (>= SCS min flange .292")
 STICKER_T = 0.15
 CRYSTAL_T = T063
+Z_CRYSTAL = Z_TOPFACE - CRYSTAL_T          # glued under the top face, like a watch crystal
 
 # ---------------------------------------------------------------------------
 # Gear train (module 0.8, 20° PA): thin gears laser-cut in .040 brass, thumbwheels bought.
@@ -130,8 +130,34 @@ BUSH_FIT = 0.10                           # plate holes for the K&S tube bushing
 # Turned-parts kit (CNC lathe, brass C360): every arbor, shaft, bushing, sleeve and the crown is made
 # to exact length with its shoulders, so assembly is "push it on until it stops" plus a drop of
 # Loctite. Nothing is cut or measured by hand.
-TURNED_TOL = ("ODs 0/-0.02 mm, bores +0.02/0 mm, lengths and shoulder positions ±0.03 mm, "
-              "ends square and lightly deburred (0.05 mm max chamfer)")
+# Only the running fits need precision: the diameters that turn inside a bushing or another arbor
+# (marked ★ on the drawing). Everything else is ISO 2768-f, which keeps gears and hands visibly flush
+# and lets a shop quote ordinary turning instead of Swiss-lathe work.
+TURNED_TOL_RUNNING = "OD 0/-0.02 mm, bore +0.02/0 mm"
+TURNED_TOL = ("diameters marked ★ (running fits): " + TURNED_TOL_RUNNING + "; everything else, including "
+              "every length and shoulder position, ISO 2768-f (±0.05 mm); ends square and lightly "
+              "deburred (0.05 mm max chamfer)")
+RUNNING_PARTS = ("arbor_", "shaft_", "bushing_", "cannon")     # bushing ODs and the cannon OD are glued
+
+
+def running_marks(part: str, segments) -> list[tuple[bool, bool]]:
+    """(OD, bore) running-fit flags per segment, ★ on the drawing: every bore of an arbor, shaft,
+    bushing or cannon, and the K&S-size ODs of arbors and shafts that turn in a bushing or arbor.
+    Not collars (wider than both neighbours), glued seats, the cup, the sleeves or the crown."""
+    out = []
+    ks = (ROD_332, ROD_18, ROD_532, TUBE_316)
+    for i, (od, bore, _) in enumerate(segments):
+        if not part.startswith(RUNNING_PARTS):
+            out.append((False, False))
+            continue
+        nb = [segments[k][0] for k in (i - 1, i + 1) if 0 <= k < len(segments)]
+        collar = len(nb) == 2 and all(od > n for n in nb)
+        run_od = (part.startswith(("arbor_", "shaft_")) and not collar
+                  and any(abs(od - k) < 1e-3 for k in ks))
+        out.append((run_od, bool(bore)))
+    return out
+
+
 COLLAR_I_D = ks_od("5/32")                # arbor I seat: rests on its P1 bushing, gear I sits on it
 ARBOR_I_PIN = 1.8                         # arbor I top: hand I rests on the shoulder, cap flush on top
 SENSOR_PIN_D = 2.5                        # sensor-shaft tip that the magnet cup is pressed on
@@ -159,12 +185,10 @@ DIAL_R_IN, DIAL_R_OUT = 29.0, 41.4         # sticker (see hardware/dial)
 SKELETON_R = 28.4
 CRYSTAL_R = 44.0
 WINDOW_R = 42.0
-SEAT_R_IN, SPIDER_R_OUT = 41.5, 46.6
-SLOT_R0, SLOT_R1, SLOT_N, SLOT_W = 48.6, 52.0, 90, 1.1   # inner end clear of the crystal retaining screws
-# Two M1.6 screws hold the crystal and both spiders to the top face (nuts under the seat spider),
-# so the shell can be turned over and lowered as one piece. Between two grille slots (every 4°).
-RETAIN_R, RETAIN_ANGLES, RETAIN_HOLE, RETAIN_LOBE = 46.4, (2.0, 182.0), 1.8, 1.7
-RETAIN_SCREW_LEN, RETAIN_NUT = 5.0, (3.2, 1.3)                  # DIN 963 M1.6×5; nut AF × height
+SLOT_R0, SLOT_R1, SLOT_N, SLOT_W = 48.6, 52.0, 90, 1.1   # inner end well clear of the crystal's glue land
+# The crystal (Ø88) is glued to the underside of the top face over the Ø84 window: a 2 mm land all
+# round, so the shell turns over and lowers as one piece with nothing loose.
+CRYSTAL_LAND = CRYSTAL_R - WINDOW_R
 POST_R = L.POST_R
 POSTS = L.POSTS
 
@@ -186,10 +210,11 @@ USB_OPENING = (10.0, 4.4)                                 # receptacle 8.94 × 3
 USB_SCREW_LEN, USB_SCREW_HEAD = 10.0, (3.8, 1.3)           # DIN 84 M2: head Ø3.8 × 1.3
 USB = dict(y=L.USBC_PLACE["c"][1], z=USB_BOARD_Z + 1.6 + 1.63)   # receptacle centre, right wall
 CROWN_Z = Z_CARRIER_TOP + L.CROWN_SW_ACT_H                # crown axis = switch actuator height
-SLIDE_SLOT_CLEAR = 0.6                                    # slider to slot edge, every side
+SLIDE_SLOT_CLEAR = 0.6                                    # slider to slot top and bottom
+SLIDE_SLOT_END = 1.5                                      # slider to slot end: room for a fingernail behind it
 SLIDE_SW_ON_OFFSET = L.SLIDE_SW_TRAVEL                    # slider x from pin 1 in the "on" position
 SLIDE_SLOT = (L.SLIDE_SW_TRAVEL / 2 + L.SLIDE_SW_ACT[0] / 2,                 # centre x from pin 1
-              L.SLIDE_SW_ACT[0] + L.SLIDE_SW_TRAVEL + 2 * SLIDE_SLOT_CLEAR,  # width
+              L.SLIDE_SW_ACT[0] + L.SLIDE_SW_TRAVEL + 2 * SLIDE_SLOT_END,    # width
               L.SLIDE_SW_ACT[3] - L.SLIDE_SW_ACT[2] + 2 * SLIDE_SLOT_CLEAR)  # height
 SLIDE_SLOT_Z = Z_CARRIER_TOP + (L.SLIDE_SW_ACT[2] + L.SLIDE_SW_ACT[3]) / 2
 # Guden BR05050404-72: .040 sheet, .091 pin, .500 knuckle pitch.
@@ -200,14 +225,15 @@ HINGE_PIN_D = 0.091 * IN
 HINGE_BARREL_D = HINGE_PIN_D + 0.1 + 2 * T040
 HINGE_BODY_DEPTH = 1.060 / 2 * IN               # fixed leaf left at full width (pivot to edge)
 HINGE_LID_HEIGHT = LID_H - BEND_IR - T040       # lid leaf trimmed to the lid wall's flat (~5.6 mm)
-HINGE_BODY_MOUNTS = (-25.4, -9.5, 9.5, 25.4)   # along the hinge; M2 countersunk from outside, nuts inside
+HINGE_BODY_MOUNTS = (-25.4, -9.5, 9.5, 25.4)   # along the hinge; M2 countersunk from outside into the tapped strip
 HINGE_BODY_MOUNT_Z = -8.0                      # below the pivot
 HINGE_LID_MOUNTS = (-12.7, 12.7)
 HINGE_LID_MOUNT_Z = 3.6
-HINGE_NUT_H, HINGE_BODY_SCREW_LEN, HINGE_LID_SCREW_HEAD_D = 1.6, 6.0, 3.0   # DIN 963 M1.6 head ?3.0
+HINGE_NUT_H, HINGE_BODY_SCREW_LEN, HINGE_LID_SCREW_HEAD_D = 1.6, 4.0, 3.0   # DIN 963 M1.6 head ?3.0
 HINGE_LID_SCREW_LEN, HINGE_LID_NUT_H = 4.0, 1.3
 HINGE_LID_WASHER_D, HINGE_LID_WASHER_T = 4.0, 0.3          # DIN 125 M1.6 washer under each lid nut
 HINGE_MOUNT_CLEAR = 2.4
+HINGE_BACKING_TAP = 1.6                        # M2×0.4 tap drill: the backing strip is tapped by hand
 HINGE_LID_CLEAR = 1.8
 HINGE_REFERENCE_NOTE = (
     "Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel "
@@ -252,6 +278,7 @@ BRASS_DARK = (0.62, 0.46, 0.20)
 COPPER = (0.78, 0.42, 0.26)
 BLUED = (0.16, 0.20, 0.32)
 STEEL = (0.62, 0.63, 0.66)
+ALUMINIUM = (0.78, 0.79, 0.80)
 PCB = (0.10, 0.35, 0.18)
 BLACK = (0.08, 0.08, 0.09)
 IVORY = (0.93, 0.89, 0.78)
@@ -322,7 +349,7 @@ def wall_point(poly: Polygon, angle_deg: float) -> tuple[float, float]:
 
 def countersunk_tray(tray: Tray) -> cq.Shape:
     """Finished case; the laser-cut blank retains plain pilot holes. Heads: M2 Ø3.8, M1.6 Ø3.0."""
-    head = {POST_HOLE: CASE_SCREW_HEAD_D, RETAIN_HOLE: HINGE_LID_SCREW_HEAD_D}
+    head = {POST_HOLE: CASE_SCREW_HEAD_D}
     seats = [cq.Solid.makeCone(head[2 * r] / 2, 0, head[2 * r] / 2, cq.Vector(x, y, 0), cq.Vector(0, 0, 1))
              for x, y, r in ((x, y, d / 2) for x, y, d in tray.floor_holes)]
     return tray.formed().cut(*seats)
@@ -383,7 +410,6 @@ def upper_shell() -> Part:
         x1, y1 = polar(SLOT_R1, a)
         face.append(slot(x0, y0, x1, y1, SLOT_W))
     holes = [(x, -y, POST_HOLE) for x, y in POSTS]
-    holes += [(x, -y, RETAIN_HOLE) for x, y in (polar(RETAIN_R, a) for a in RETAIN_ANGLES)]
 
     cuts = []
     knob_top = LEVELS[0] + KNOB_FACE + KNOB_NOTCH_ABOVE
@@ -497,7 +523,7 @@ def p1_plate() -> Part:
     # and its leads drop straight through to J5
     p.cut(circle(*SPEAKER["c"], SPK_SEAT_OPEN / 2))
     return flat_part("movement_base_plate_P1", p, T063, material="brass .063\"",
-                     placements=[loc(z=Z_P1)], spec="brass .063\" (hidden; skeletonised)",
+                     placements=[loc(z=Z_P1)], spec="brass .063\" (skeletonised; partly visible through P2)",
                      color=BRASS_DARK)
 
 
@@ -538,28 +564,12 @@ def p2_plate() -> Part:
                      placements=[loc(z=Z_P2)], spec="brass .063\"")
 
 
-def spider(name, r_in, t, z) -> Part:
-    shape = annulus(r_in, SPIDER_R_OUT)
-    for x, y in POSTS:
-        a = math.degrees(math.atan2(y, x))
-        shape = shape.union(slot(*polar(SPIDER_R_OUT - 1, a), x, y, 6.0)).union(circle(x, y, 3.4))
-    for a in RETAIN_ANGLES:                    # lobes for the crystal retaining screws
-        shape = shape.union(circle(*polar(RETAIN_R, a), RETAIN_LOBE))
-    shape = shape.difference(circle(0, 0, r_in))
-    p = Profile(shape)
-    for x, y in POSTS:
-        p.hole(x, y, POST_HOLE)
-    for a in RETAIN_ANGLES:
-        p.hole(*polar(RETAIN_R, a), RETAIN_HOLE)
-    return flat_part(name, p, t, material=f"brass {'.040' if t < 1.2 else '.063'}\"",
-                     placements=[loc(z=z)], group="case")
-
-
 def crystal() -> Part:
     p = Profile(circle(0, 0, CRYSTAL_R))
     return flat_part("crystal", p, CRYSTAL_T, material="clear acrylic .063\"",
-                     placements=[loc(z=Z_FRAME)], color=GLASS, group="case",
-                     spec="clear cast acrylic .063\" (or Ø88×1.5 mineral glass)", density="acrylic")
+                     placements=[loc(z=Z_CRYSTAL)], color=GLASS, group="case",
+                     spec="clear cast acrylic .063\" (or Ø88×1.5 mineral glass); glued under the top face",
+                     density="acrylic")
 
 
 def dial_sticker() -> Part:
@@ -623,7 +633,10 @@ def mesh_rot(direction_deg, z, gap=False):
     return direction_deg + (180.0 / z if gap else 0.0)
 
 
-def gears(backlash=None) -> list[Part]:
+def gears(backlash=None, driven=None) -> list[Part]:
+    """Every gear. Laser-cut drivers get `backlash` (GEAR_BACKLASH); the driven hand and needle gears
+    get `driven` (GEAR_BACKLASH_LOOSE), so each laser-laser pair has one loose gear."""
+    driven = GEAR_BACKLASH_LOOSE if driven is None else driven
     parts = []
     tubes = [ROD_332, TUBE_18, TUBE_532]
     for tr, od in zip(TRAINS, tubes):
@@ -632,7 +645,7 @@ def gears(backlash=None) -> list[Part]:
         sx, sy = sensor_xy(tr)
         kx, ky = knob_xy(tr)
         parts.append(flat_part(f"gear_hand_{tr['name']}_{Z_HAND}T",
-                               gear_profile(Z_HAND, od + GEAR_FIT, GEAR_PATTERNS[tr["name"]], backlash), T040,
+                               gear_profile(Z_HAND, od + GEAR_FIT, GEAR_PATTERNS[tr["name"]], driven), T040,
                                placements=[loc(z=z, rz=mesh_rot(a, Z_HAND))]))
         parts.append(flat_part(f"gear_sensor_{tr['name']}_{Z_SENSOR}T",
                                gear_profile(Z_SENSOR, ROD_18 + GEAR_FIT, GEAR_PATTERNS["sensor"], backlash), T040,
@@ -641,21 +654,22 @@ def gears(backlash=None) -> list[Part]:
         parts.append(stock(f"knob_{tr['name']}_{Z_KNOB}T", knob,
                            [loc(kx, ky, LEVELS[0], mesh_rot(a + 180, Z_KNOB))], KNOB_GEAR_SPEC,
                            kind="bought"))
-    parts.append(flat_part(f"gear_needle_{Z_NEEDLE}T", gear_profile(Z_NEEDLE, TUBE_316 + GEAR_FIT, None, backlash), T040,
+    parts.append(flat_part(f"gear_needle_{Z_NEEDLE}T", gear_profile(Z_NEEDLE, TUBE_316 + GEAR_FIT, None, driven), T040,
                            placements=[loc(z=LEVELS[3], rz=0.0)]))
     parts.append(flat_part(f"gear_motor_{Z_MOTOR}T", gear_profile(Z_MOTOR, 1.0 + GEAR_FIT, GEAR_PATTERNS["motor"], backlash), T040,
                            placements=[loc(*X27_SHAFT, LEVELS[3], mesh_rot(180, Z_MOTOR, gap=True))]))
     return parts
 
 
-def mesh_tuning_gears() -> list[Part]:
-    """One spare of every laser-cut gear with thinner teeth (GEAR_BACKLASH_LOOSE). Ordered with the
-    rest; swapped in only for a pair that binds on the dry run (ASSEMBLY.md). Not in the assembly."""
+def alternate_gears() -> list[Part]:
+    """The driven hand and needle gears again with fuller teeth (GEAR_BACKLASH, marked by a Ø0.5 hole
+    in the rim). Ordered with the rest; swapped in if a pair is sloppier than you like and the order
+    wasn't cut fat (ASSEMBLY.md §11). Not in the assembly."""
     out = []
-    for p in gears(GEAR_BACKLASH_LOOSE):
-        if p.kind != "scs":
+    for p in gears(driven=GEAR_BACKLASH):
+        if p.name not in DRIVEN_GEARS:
             continue
-        p.name += "_L"
+        p.name += "_T"
         z = int(p.name.split("_")[-2].rstrip("T"))
         rf = pitch_radius(MODULE, z) - 1.25 * MODULE
         safe = p.profile.poly.buffer(-0.35)           # identification: a Ø0.5 hole in the solid rim
@@ -663,8 +677,8 @@ def mesh_tuning_gears() -> list[Part]:
                     if safe.contains(circle(*xy, 0.25)))
         p.profile.hole(*mark, 0.5)
         p.solid = profile_solid(p.profile, T040)
-        p.spec = (f"{p.spec}; mesh-tuning spare (Ø0.5 mark hole in the rim), teeth "
-                  f"{GEAR_BACKLASH_LOOSE - GEAR_BACKLASH:.2f} mm thinner: fit only if its pair binds on the dry run")
+        p.spec = (f"{p.spec}; tight alternate (Ø0.5 mark hole in the rim), teeth "
+                  f"{GEAR_BACKLASH_LOOSE - GEAR_BACKLASH:.2f} mm fuller: fit only to take play out of a pair that runs free")
         out.append(p)
     return out
 
@@ -852,7 +866,7 @@ def hardware() -> list[Part]:
     for name, h, z, spec in (("standoff_bay", CARRIER_STANDOFF, Z_CARRIER_TOP,
                               f"M2×{CARRIER_STANDOFF:g} F-F brass hex standoff"),
                              ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, "M2×8+3 M-F brass hex standoff"),
-                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×5+3 M-F brass hex standoff")):
+                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×8+3 M-F brass hex standoff")):
         posts = L.BAY_POSTS if name == "standoff_bay" else POSTS
         (x0, y0) = posts[0]
         sol = hexagon(4.0, h, x0, y0, z, 2.0)
@@ -863,17 +877,6 @@ def hardware() -> list[Part]:
                       hexagon(4.0, 4.0, nx, ny, Z_P1 - 4.0, 2.0), [loc()], BRASS_DARK, "hardware",
                       spec="M2×4 F-F brass hex standoff, 4 mm AF (top-right gear standoff under P1; "
                            "no bay post there because of the crown switch)"))
-    # crystal retaining screws: through the top face and both spiders, nuts under the seat spider
-    rpts = [polar(RETAIN_R, a) for a in RETAIN_ANGLES]
-    parts.append(Part("screw_crystal", "bought", "M1.6×5 DIN 963",
-                      countersunk_screw(RETAIN_SCREW_LEN, 1.6, HINGE_LID_SCREW_HEAD_D).moved(flipped(Z_TOP)),
-                      [loc(x, y) for x, y in rpts], BRASS_DARK, "hardware",
-                      spec="M1.6×5 brass slotted countersunk screw, DIN 963, 90°: holds the crystal and "
-                           "spiders in the upper shell"))
-    parts.append(Part("nut_crystal", "bought", "M1.6 hex nut",
-                      hexagon(RETAIN_NUT[0], RETAIN_NUT[1], 0, 0, Z_SEAT - RETAIN_NUT[1], 1.6),
-                      [loc(x, y) for x, y in rpts], BRASS_DARK, "hardware",
-                      spec="M1.6 brass hex nut, 3.2 mm AF, under the seat spider"))
     x0, y0 = L.BAY_POSTS[0]
     spacer = cylinder(4.5, CARRIER_SPACER, x0, y0, Z_FLOOR_TOP, hole=2.2)
     parts.append(Part("spacer_carrier", "bought", "M2 nylon spacer 2.5 mm", spacer,
@@ -1185,21 +1188,22 @@ def hinge() -> list[Part]:
                        "Included in the purchased hinge; have the supplier retain the pin after cutting",
                        group="case", kind="bought"))
 
-    # A backing strip inside the case wall spreads the body screws' load into the .040" sheet
-    # (and is the drilling pattern); the two lid screws use washers.
+    # A backing strip inside the case wall spreads the body screws' load into the .040" sheet and is
+    # their nut: it is tapped M2 on the bench (no service taps M2 on a part this small). The two lid
+    # screws are M1.6 and use nuts and washers.
     for name, height, z, seats, group, kind in (
         ("hinge_backing_body", 11.0, HINGE_BODY_MOUNT_Z, body_seats, "case", "scs"),
     ):
         profile = Profile(rect(0, z, total, height))
-        for y, z_, hole, _ in seats:
-            profile.hole(y, z_, hole)
+        for y, z_, _, _ in seats:
+            profile.hole(y, z_, HINGE_BACKING_TAP)
         backing_loc = cq.Location(cq.Vector(-T040 - T063, 0, Z_TOP)) * stand
         parts.append(flat_part(name, profile, T063, material="brass .063\"", group=group,
                                placements=[backing_loc], kind=kind,
-                               spec=f"brass .063\" hinge backing strip, {total:.1f} x {height:g} mm"
-                               + ("; hand-cut (below laser service minimum width)" if kind == "stock" else "")))
+                               spec=f"brass .063\" hinge backing strip, {total:.1f} x {height:g} mm; "
+                               f"tap the {len(seats)} Ø{HINGE_BACKING_TAP:g} holes M2×0.4 by hand (ASSEMBLY.md §3)"))
 
-    # Flush countersunk screws from outside; nuts on the backing strip (case) or washers (lid) inside
+    # Flush countersunk screws from outside: into the tapped backing strip (case), or nuts and washers (lid)
     for prefix, seats, length, d, head, nut_af, nut_h, group, inside in (
         ("hinge_body", body_seats, HINGE_BODY_SCREW_LEN, 2.0, CASE_SCREW_HEAD_D, 4.0, HINGE_NUT_H, "case",
          HINGE_X - T040 - T063),
@@ -1213,6 +1217,8 @@ def hinge() -> list[Part]:
             parts.append(stock(f"{prefix}_screw_{index + 1}", screw, [loc()],
                                f"{size}x{length:g} DIN 963 slotted countersunk brass screw, from outside",
                                group=group, kind="bought"))
+            if group == "case":
+                continue                                        # the tapped backing strip is the nut
             nut = hexagon(nut_af, nut_h, 0, 0, 0, d).rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
                 .translate(cq.Vector(inside, y, az + z))
             parts.append(stock(f"{prefix}_nut_{index + 1}", nut, [loc()],
@@ -1259,8 +1265,8 @@ def hinge_gauge() -> Part:
     for y in HINGE_LID_MOUNTS:
         prof.hole(y, HINGE_LID_MOUNT_Z, HINGE_LID_CLEAR)
     solid = profile_solid(prof, t).moved(_on_hinge(T040))
-    return Part("hinge_gauge", "scs", "brass .063\"", solid, [loc()], BRASS_DARK, "tools",
-                prof, [], "brass .063\": slot ends = five knuckles, top edge = lid-leaf trim line "
+    return Part("hinge_gauge", "scs", ALU063, solid, [loc()], ALUMINIUM, "tools",
+                prof, [], f"{ALU063}: slot ends = five knuckles, top edge = lid-leaf trim line "
                 f"{HINGE_LID_HEIGHT:.2f} mm from the pivot; drill the six leaf holes through it "
                 "(Ø2.4 case leaf, Ø1.8 lid leaf)")
 
@@ -1282,9 +1288,9 @@ def hand_setting_tool() -> Part:
         prof.hole(x, -1.0, d)
         for j in range(i + 1):
             prof.hole(x - 1.6 * i + 3.2 * j, 5.2, 1.0)
-    return Part("hand_setting_tool", "scs", "brass .063\"", profile_solid(prof, t),
-                [loc(0, -120, 0)], BRASS_DARK, "tools", prof, [],
-                "brass .063\": holes (1, 2, 3 dots) set the needle, hand III and hand II flush with their "
+    return Part("hand_setting_tool", "scs", ALU063, profile_solid(prof, t),
+                [loc(0, -120, 0)], ALUMINIUM, "tools", prof, [],
+                f"{ALU063}: holes (1, 2, 3 dots) set the needle, hand III and hand II flush with their "
                 "arbors; the plain end presses the cap flush with arbor I")
 
 
@@ -1312,8 +1318,6 @@ def tooling() -> list[Part]:
 # ---------------------------------------------------------------------------
 def all_parts() -> list[Part]:
     parts = [lower_tray(), upper_shell(), lid(), lid_overlay(), p1_plate(), p2_plate(),
-             spider("crystal_seat_spider", SEAT_R_IN, T040, Z_SEAT),
-             spider("crystal_frame_spider", CRYSTAL_R + CRYSTAL_CLEAR, T063, Z_FRAME),
              crystal(), dial_sticker()]
     parts += gears() + hands() + arbors() + hardware() + electronics() + hinge()
     return parts
@@ -1328,7 +1332,8 @@ ALLOWED = [
     ("wire_usb", "mcu_ProS3"),
     ("screw_usb", "usb_c_breakout"), ("screw_usb", "spacer_usb"), ("screw_usb", "nut_usb"),
     ("magnet_lid", "lid_overlay"), ("module_sockets", "motor_X27"),
-    ("screw_crystal", "nut_crystal"), ("wire_speaker", "conn_speaker"), ("wire_mic", "conn_mic"),   # X27 pins inside their sockets
+    ("hinge_body_screw", "hinge_backing_body"),                     # threads in the tapped strip
+    ("wire_speaker", "conn_speaker"), ("wire_mic", "conn_mic"),   # X27 pins inside their sockets
 ]
 
 def lid_open_location(angle: float = LID_REST_ANGLE) -> cq.Location:
@@ -1343,7 +1348,7 @@ def summary() -> dict:
         body_height=round(Z_TOP, 2), closed_height=round(Z_TOP + LID_H, 2),
         knob_protrusion=round(R_KNOB + knob_tip_r() - UPPER_OUTER.bounds[2], 2),
         levels=[round(z, 3) for z in LEVELS], hands=Z_HANDS, cap=round(Z_CAP, 3),
-        crystal_clearance=round(Z_FRAME - (Z_CAP + T040), 3),
+        crystal_clearance=round(Z_CRYSTAL - (Z_CAP + T040), 3),
         x27_body=(round(X27_BODY_TOP - X27_BODY_H, 2), round(X27_BODY_TOP, 2)),
         as5600_magnet_gap=round(Z_P1 - CUP_GAP - CUP_BASE - SENSOR_MAGNET_H - (Z_CARRIER_TOP + L.MODULE_LIFT + 3.1), 2),
         lid_open_angle=LID_OPEN_ANGLE,

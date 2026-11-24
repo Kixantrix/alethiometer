@@ -27,11 +27,30 @@ and pick:
 
 - **2 layers, FR-4, 1.6 mm**, 1 oz copper;
 - HASL (lead-free) or ENIG, any solder-mask colour;
-- no assembly service (it's all through-hole);
+- assembly: see [Factory assembly](#factory-assembly) (recommended), or none to build it yourself;
 - leave "remove order number" at the default, or pay for it.
 
 The board is about 108 mm across, a little over the 100 × 100 mm price break, so expect roughly $10–20 for five
 boards plus shipping.
+
+## Factory assembly
+
+Recommended: have the fab solder every through-hole part on the board, so the only soldering left
+to you is the modules' own header pins, J7's USB cable and the mic and speaker pigtails. That
+takes about 130 joints off your bench. Choose **through-hole (THT) assembly** on the order:
+
+- **PCBWay turnkey** sources from distributors such as DigiKey, so it can buy the Adafruit #3008
+  5 mm short sockets and everything else in the table below; confirm the socket on the quote.
+- **JLCPCB** assembles THT parts from its LCSC library (about $3.50 plus $0.017 per joint, plus
+  setup and fixture fees; [pricing](https://jlcpcb.com/help/article/pcb-assembly-price)). Pick an
+  LCSC 0.1" single-row female header with a **5 mm body**, or send the #3008 strips as consigned parts.
+- Order the parts marked **fab** in the table; the rest come from you. Budget about $15–30 for the
+  assembly of one or two boards.
+- What you get checked: the bare boards are **100 % electrically tested** against the netlist (opens
+  and shorts), and the assembled board gets **optical inspection** (AOI). Neither powers it up, so
+  still do the [bring-up checklist](#bring-up-checklist).
+- The sockets have to sit square for the modules to plug in at the right height: ask for them to be
+  fitted flat on the board, and check that each module plugs in level when the boards arrive.
 
 ## Bill of materials (carrier)
 
@@ -43,18 +62,18 @@ boards plus shipping.
 | U5 | **Adafruit DRV8833** dual H-bridge (#3297) | 1 | Header included (1×8 + 1×6) |
 | U6 | **Adafruit MAX98357A** I2S amp (#3006) | 1 | Header included. Leave the screw terminal off. |
 | M1 | **Juken/Switec X27.168** gauge stepper (keep its internal stop) | 1 | Adafruit #2424 or AliExpress |
-| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin) | 1 pack | Cut into every socket: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A), 2× 1×4 (X27). About 110 of the 180 positions. |
+| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin) | 1 pack | Cut into every socket: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A), 2× 1×4 (X27). About 110 of the 180 positions. **fab**|
 | — | Male header strip 0.1", 1×40 | 1 | MAX98357A speaker pins, J1 (and J2 if wanted) |
 | U7 | **Adafruit USB Type C breakout, downstream (#4090)** | 1 | Wall USB-C port. Header included; 5.1 kΩ CC resistors on board. Plugs into a 1×8 socket. |
 | — | M2 nylon round spacer, 5 mm × Ø4.5; M2 × 10 screw; M2 nut | 2 each | Clamp U7 down beside its receptacle (screw from the top, nut under the carrier) |
-| SW1 | **Omron B3F-3150** right-angle 6 × 6 mm tactile switch (or B3F-3100) | 1 | Crown switch, soldered at the top-right corner |
+| SW1 | **Omron B3F-3150** right-angle 6 × 6 mm tactile switch (or B3F-3100) | 1 | Crown switch, soldered at the top-right corner **fab**|
 | — | Short USB-C cable **with data** (USB 2.0), thin (≤ 3.5 mm) | 1 | Cut to ~6 cm from the plug: ProS3 USB-C → J7. Check D+/D− continuity first; charge-only cables won't work. |
-| R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers |
-| R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) |
-| SW2 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 1 | Power, on the back edge; reached through a slot in the back wall |
-| J8 | **JST S2B-PH-K-S** side-entry 2-pin socket, 2.0 mm | 1 | Battery plug. Polarity is marked on the silkscreen. |
-| C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** |
-| J4, J5 | **Molex PicoBlade** 1.25 mm vertical headers **53047-0510** (5-pin) and **53047-0210** (2-pin) | 1 each | Mic and speaker plug in here |
+| R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers **fab**|
+| R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) **fab**|
+| SW2 | **C&K OS102011MA1QN1** right-angle SPDT slide switch | 1 | Power, on the back edge; reached through a slot in the back wall **fab**|
+| J8 | **JST S2B-PH-K-S** side-entry 2-pin socket, 2.0 mm | 1 | Battery plug. Polarity is marked on the silkscreen. **fab**|
+| C1 | 100 µF 10–16 V aluminium electrolytic, radial Ø6.3 mm, 2.5 mm pitch, **≤ 11 mm tall** (a 6.3 × 7 can is ideal) | 1 | Bulk cap on VBAT for the motor and amp. **Polarised.** **fab**|
+| J4, J5 | **Molex PicoBlade** 1.25 mm vertical headers **53047-0510** (5-pin) and **53047-0210** (2-pin) | 1 each | Mic and speaker plug in here **fab**|
 | — | PicoBlade-compatible pre-crimped pigtails, 5-way and 2-way, ~10 cm | 1 each | Soldered at the INMP441 and the speaker |
 | — | M2 nylon round spacer, 2.5 mm × Ø4.5 | 3 | Between the case floor and the board |
 | — | M2 × 12 mm brass hex standoff, female-female | 3 | Board → P1 |
@@ -123,6 +142,9 @@ pigtails to the INMP441 and the speaker; they plug in before the movement frame 
 | J7 USB CABLE | VBUS D− D+ GND | Cut USB-C cable from the ProS3's own port (wire colours on the silkscreen) |
 
 ## Assembly order
+
+If the board came factory-assembled, only steps 4 (the modules' header pins, using the fitted
+sockets as the jig), 5 (the battery) and 7 (screwing down U7 and the J7 cable) are left.
 
 1. **Check the bare board** with a multimeter. The GND test pad must not be shorted to `VBAT`,
    `+5V`, `+3V3` or `3V3_SW`.

@@ -73,9 +73,10 @@ def _outline(part) -> Polygon:
     return Polygon(poly.exterior)
 
 
-def pairs(backlash=None) -> list[Pair]:
-    """Every meshing pair; backlash= builds the laser-cut gears with that tooth thinning instead."""
-    parts = {p.name: p for p in D.gears(backlash)}
+def pairs(backlash=None, driven=None) -> list[Pair]:
+    """Every meshing pair; backlash=/driven= build the laser-cut drivers/driven gears with that tooth
+    thinning instead (driven=D.GEAR_BACKLASH gives the tight alternates)."""
+    parts = {p.name: p for p in D.gears(backlash, driven)}
     rz = lambda p: p.placements[0].toTuple()[1][2]            # noqa: E731  (installed rotation, deg)
     knob_poly = Polygon(D.gear_polygon(L.MODULE, D.Z_KNOB).exterior)
     out = []
@@ -166,32 +167,37 @@ def margin(pair: Pair, fat=LASER_FAT) -> float:
 
 def report() -> list[dict]:
     rows = []
-    for p, pl in zip(pairs(), pairs(D.GEAR_BACKLASH_LOOSE)):
+    for p, pt in zip(pairs(), pairs(driven=D.GEAR_BACKLASH)):
+        alt = pt.b in set(D.DRIVEN_GEARS)
         rows.append(dict(
             pair=p.name, ratio=f"{p.za}:{p.zb}",
             centre_mm=round(p.nominal_distance, 3), theoretical_mm=round(p.theoretical_distance, 3),
             backlash_mm=round(backlash(p), 3),
             backlash_fat_mm=round(backlash(p, fat=LASER_FAT) or 0.0, 3),
-            backlash_loose_fat_mm=round(backlash(pl, fat=LASER_FAT) or 0.0, 3),
+            backlash_tight_mm=round(backlash(pt), 3) if alt else None,
             margin_mm=round(margin(p), 3),
         ))
     return rows
 
 
 def problems(rows: list[dict]) -> list[str]:
-    """Design rules: nominal parts run with readable backlash; the loose spares fix a worst-case cut."""
+    """Design rules: the gears as ordered run with readable backlash and survive a worst-case cut;
+    the tight alternates are readable too."""
     out = []
     lo, hi = BACKLASH_RANGE
     for r in rows:
         if not lo <= r["backlash_mm"] <= hi:
             out.append(f"{r['pair']}: backlash {r['backlash_mm']:.2f} mm outside {lo}-{hi} mm")
-        if r["backlash_loose_fat_mm"] < lo:
-            out.append(f"{r['pair']}: binds at worst-case cut even with the loose spare")
+        if r["backlash_fat_mm"] < lo:
+            out.append(f"{r['pair']}: binds at a worst-case cut")
+        if r["backlash_tight_mm"] is not None and not lo <= r["backlash_tight_mm"] <= hi:
+            out.append(f"{r['pair']}: tight alternate backlash {r['backlash_tight_mm']:.2f} mm outside {lo}-{hi} mm")
     return out
 
 
 if __name__ == "__main__":
-    print(f"{'pair':<22} {'ratio':>6} {'centre':>8} {'backlash':>9} {'fat':>6} {'fat+L':>6} {'margin':>7}  (mm)")
+    print(f"{'pair':<22} {'ratio':>6} {'centre':>8} {'backlash':>9} {'fat':>6} {'tight':>6} {'margin':>7}  (mm)")
     for r in report():
+        tight = f"{r['backlash_tight_mm']:>6.3f}" if r["backlash_tight_mm"] is not None else f"{'-':>6}"
         print(f"{r['pair']:<22} {r['ratio']:>6} {r['centre_mm']:>8.3f} {r['backlash_mm']:>9.3f} "
-              f"{r['backlash_fat_mm']:>6.3f} {r['backlash_loose_fat_mm']:>6.3f} {r['margin_mm']:>7.3f}")
+              f"{r['backlash_fat_mm']:>6.3f} {tight} {r['margin_mm']:>7.3f}")

@@ -10,7 +10,7 @@ followed as written, and the guide now shows an order that works.
 
 | ID | Impact | Status | Finding | Steps |
 |---|---|---|---|---|
-| [F1](#f1) | high | done | Bushing alignment procedure can't be followed as written | 1.4 Glue the bushings into P1 and P2; 1.5 Line up the bushing pairs with drill blanks |
+| [F1](#f1) | high | done | Bushing alignment procedure can't be followed as written | 1.5 Glue the bushings into P1 and P2; 1.6 Line up the bushing pairs with drill blanks |
 | [F2](#f2) | high | done | Nothing held the crystal and spiders while the shell was turned over and lowered | 8.1 Upper shell, upside down; 8.2 Turn the shell back over |
 | [F3](#f3) | high | done | The motor mesh was set by solder-joint play, using the carrier as a jig | 4.1 Populate the carrier; 6.6 X27 in through P1's slot |
 | [F9](#f9) | high | guide updated | The motor gear can't pass P1's slot, so the movement can't be finished on the bench | 6.6 X27 in through P1's slot |
@@ -19,7 +19,7 @@ followed as written, and the guide now shows an order that works.
 | [F5](#f5) | medium | done | Speaker and mic leads were soldered in with the movement dangling beside the tray | 4.1 Populate the carrier; 5.4 Speaker; 5.5 Microphone under P2; 6.4 Plug in the speaker and mic leads |
 | [F6](#f6) | medium | done | Six hinge holes were hand-drilled through the finished case | 3.7 Hinge: check it and drill the leaves |
 | [F7](#f7) | low | done | The hinge was cut from 72-inch stock by hand | 3.7 Hinge: check it and drill the leaves |
-| [F8](#f8) | low | done | The crown corner was held by a loose nut | 1.5 Line up the bushing pairs with drill blanks |
+| [F8](#f8) | low | done | The crown corner was held by a loose nut | 1.6 Line up the bushing pairs with drill blanks |
 
 ## F1
 
@@ -36,9 +36,9 @@ collar is wider than the bushing bore, so the shafts can only go in from P1's si
 
 **Resolution.** Each plate's bushings are glued flat on glass (chamfer down), the frame is screwed together on its
 standoffs, and three 1/8" and three 5/32" drill blanks (`align_pin_*`, in the tool list) line the
-pairs up while the 638 cures (§1.4). The shafts are fitted once.
+pairs up while the 638 cures (§1.5–1.6). The shafts are fitted once.
 
-Seen in: 1.4 Glue the bushings into P1 and P2; 1.5 Line up the bushing pairs with drill blanks
+Seen in: 1.5 Glue the bushings into P1 and P2; 1.6 Line up the bushing pairs with drill blanks
 
 ## F2
 
@@ -52,10 +52,11 @@ turned over and lowered over the thumbwheels.
 
 **Recommendation.** Retain the spider stack to the shell independently of the top screws.
 
-**Resolution.** Two M1.6×5 countersunk screws (`screw_crystal`) pass through the top face and both spiders at 2°
-and 182°, between the crystal and the grille ring, with nuts under the seat spider. The spiders have
-lobes for them; the grille ring now starts 1 mm further out (48.6 mm) to leave room for the heads.
-The crystal can be serviced without unscrewing the movement.
+**Resolution.** First fixed with two M1.6 screws through the top face and both spiders. The simplicity review
+([DESIGN_REVIEW.md](../DESIGN_REVIEW.md) S3) then removed the spiders altogether: the crystal is
+glued to a 2 mm land under the top face like a watch crystal, so the shell is one piece when it is
+turned over, the top face rests directly on the hand standoffs (now the same M2×8 part as the
+gear standoffs), and the two screws, two nuts, two spiders and their countersinks are gone.
 
 Seen in: 8.1 Upper shell, upside down; 8.2 Turn the shell back over
 
@@ -71,8 +72,9 @@ pins' play in their holes.
 
 **Recommendation.** Rely on the designed centre distance and solder the X27 sockets with the other sockets.
 
-**Resolution.** The X27 sockets are soldered in §4.1; the jig steps are gone. The motor pair has the same 0.28 mm
-backlash as the other laser-cut pairs and an `_L` spare each side if it binds (§6.6 test).
+**Resolution.** The X27 sockets are soldered in §4.1; the jig steps are gone. The motor pair has the same
+backlash as the other gear-to-gear pairs: its needle gear is cut loose enough to run at a
+worst-case cut, with a tight `_T` alternate if it is sloppy (§6.6 test).
 
 Seen in: 4.1 Populate the carrier; 6.6 X27 in through P1's slot
 
@@ -188,6 +190,6 @@ switch, in the corner that takes the crown presses.
 **Recommendation.** Replace the nut with a short M2×4 F-F standoff; check the corner on the prototype.
 
 **Resolution.** `standoff_corner` (M2×4 F-F, 0.6 mm above the crown switch) replaces the nut. A fourth floor post
-still has no room past the crown switch; §8.8 tests the corner's stiffness on the prototype.
+still has no room past the crown switch; §8.7 tests the corner's stiffness on the prototype.
 
-Seen in: 1.5 Line up the bushing pairs with drill blanks
+Seen in: 1.6 Line up the bushing pairs with drill blanks

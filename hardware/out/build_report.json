@@ -1,8 +1,8 @@
 {
  "summary": {
   "case_outer": "112.9 \u00d7 112.9 mm",
-  "body_height": 36.95,
-  "closed_height": 44.57,
+  "body_height": 37.33,
+  "closed_height": 44.95,
   "knob_protrusion": 3.73,
   "levels": [
    19.216,
@@ -16,7 +16,7 @@
    "I": 31.391200000000005
   },
   "cap": 31.772,
-  "crystal_clearance": 1.544,
+  "crystal_clearance": 1.928,
   "x27_body": [
    10.12,
    19.72
@@ -27,7 +27,7 @@
   "needle_ratio": 2.0,
   "knob_turns_per_rev": 1.2307692307692308
  },
- "weight_g": 819,
+ "weight_g": 792,
  "interference": [],
  "lid_check_angles": [
   0,
@@ -74,7 +74,7 @@
   204.35163803420676
  ],
  "manufacturability": [],
- "sendcutsend_files": 33,
+ "sendcutsend_files": 27,
  "gear_mesh": [
   {
    "pair": "knob I \u2192 sensor I",
@@ -83,7 +83,7 @@
    "theoretical_mm": 23.2,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
-   "backlash_loose_fat_mm": 0.158,
+   "backlash_tight_mm": null,
    "margin_mm": 0.107
   },
   {
@@ -91,10 +91,10 @@
    "ratio": "32:32",
    "centre_mm": 25.7,
    "theoretical_mm": 25.6,
-   "backlash_mm": 0.278,
-   "backlash_fat_mm": 0.0,
-   "backlash_loose_fat_mm": 0.16,
-   "margin_mm": -0.001
+   "backlash_mm": 0.358,
+   "backlash_fat_mm": 0.08,
+   "backlash_tight_mm": 0.278,
+   "margin_mm": 0.11
   },
   {
    "pair": "knob II \u2192 sensor II",
@@ -103,7 +103,7 @@
    "theoretical_mm": 23.2,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
-   "backlash_loose_fat_mm": 0.158,
+   "backlash_tight_mm": null,
    "margin_mm": 0.107
   },
   {
@@ -111,10 +111,10 @@
    "ratio": "32:32",
    "centre_mm": 25.7,
    "theoretical_mm": 25.6,
-   "backlash_mm": 0.278,
-   "backlash_fat_mm": 0.0,
-   "backlash_loose_fat_mm": 0.16,
-   "margin_mm": -0.001
+   "backlash_mm": 0.358,
+   "backlash_fat_mm": 0.08,
+   "backlash_tight_mm": 0.278,
+   "margin_mm": 0.11
   },
   {
    "pair": "knob III \u2192 sensor III",
@@ -123,7 +123,7 @@
    "theoretical_mm": 23.2,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
-   "backlash_loose_fat_mm": 0.158,
+   "backlash_tight_mm": null,
    "margin_mm": 0.107
   },
   {
@@ -131,20 +131,20 @@
    "ratio": "32:32",
    "centre_mm": 25.7,
    "theoretical_mm": 25.6,
-   "backlash_mm": 0.278,
-   "backlash_fat_mm": 0.0,
-   "backlash_loose_fat_mm": 0.16,
-   "margin_mm": -0.001
+   "backlash_mm": 0.358,
+   "backlash_fat_mm": 0.08,
+   "backlash_tight_mm": 0.278,
+   "margin_mm": 0.11
   },
   {
    "pair": "motor \u2192 needle",
    "ratio": "34:17",
    "centre_mm": 20.5,
    "theoretical_mm": 20.4,
-   "backlash_mm": 0.276,
-   "backlash_fat_mm": 0.001,
-   "backlash_loose_fat_mm": 0.161,
-   "margin_mm": 0.001
+   "backlash_mm": 0.356,
+   "backlash_fat_mm": 0.081,
+   "backlash_tight_mm": 0.276,
+   "margin_mm": 0.11
   }
  ],
  "turned_parts": 31

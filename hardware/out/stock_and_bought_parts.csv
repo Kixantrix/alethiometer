@@ -8,13 +8,11 @@ magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 standoff_bay,bought,3,M2×12 F-F brass hex standoff
 standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
-standoff_hand,bought,4,M2×5+3 M-F brass hex standoff
+standoff_hand,bought,4,M2×8+3 M-F brass hex standoff
 standoff_corner,bought,1,"M2×4 F-F brass hex standoff, 4 mm AF (top-right gear standoff under P1; no bay post there because of the crown switch)"
-screw_crystal,bought,2,"M1.6×5 brass slotted countersunk screw, DIN 963, 90°: holds the crystal and spiders in the upper shell"
-nut_crystal,bought,2,"M1.6 brass hex nut, 3.2 mm AF, under the seat spider"
 spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
 screw_floor,bought,3,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
-screw_top,bought,4,"M2×6 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
+screw_top,bought,4,"M2×4 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 module_sockets,bought,1,"Adafruit #3008 5 mm short female headers, cut to length (modules and X27)"
 mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
 battery,bought,1,LiPo 1S 402535 (~350 mAh)
@@ -48,14 +46,10 @@ magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
 hinge_leaf_body,bought,1,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_leaf_lid,bought,1,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_pin,bought,1,Included in the purchased hinge; have the supplier retain the pin after cutting
-hinge_body_screw_1,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-hinge_body_nut_1,bought,1,"M2 brass hex nut, 4 mm AF, inside the wall"
-hinge_body_screw_2,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-hinge_body_nut_2,bought,1,"M2 brass hex nut, 4 mm AF, inside the wall"
-hinge_body_screw_3,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-hinge_body_nut_3,bought,1,"M2 brass hex nut, 4 mm AF, inside the wall"
-hinge_body_screw_4,bought,1,"M2x6 DIN 963 slotted countersunk brass screw, from outside"
-hinge_body_nut_4,bought,1,"M2 brass hex nut, 4 mm AF, inside the wall"
+hinge_body_screw_1,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_2,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_3,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from outside"
+hinge_body_screw_4,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_screw_1,bought,1,"M1.6x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_nut_1,bought,1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
 hinge_lid_washer_1,bought,1,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"

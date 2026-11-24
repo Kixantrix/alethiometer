@@ -19,6 +19,7 @@ the interpretation aloud.
 | [`SETUP.md`](SETUP.md) | **Start here on a new computer**: tools, regenerating everything, what to check before ordering |
 | [`BOM.md`](BOM.md) | Everything to buy, with sources and rough costs |
 | [`ASSEMBLY.md`](ASSEMBLY.md) | Step-by-step build, generated from [`assembly/steps.yaml`](assembly/steps.yaml); animated in the viewer's **Assemble** tab |
+| [`DESIGN_REVIEW.md`](DESIGN_REVIEW.md) | Simplicity and manufacturing review: proposed part-count, soldering and cost reductions, and the sourcing status of every part |
 | [`assembly/`](assembly) | Assembly guide source, its generator and collision sweep, and the design review [`FINDINGS.md`](assembly/FINDINGS.md) |
 | [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
 | [`pcb/`](pcb/README.md) | **Carrier PCB**: all through-hole, every module socketed, test pads; Gerbers ready for JLCPCB/PCBWay |
@@ -34,8 +35,8 @@ the interpretation aloud.
 
 ## The instrument
 
-- **Size** 112.9 × 112.9 mm (an octagon with 16 mm chamfers). The body is 37.0 mm tall,
-  44.6 mm with the lid closed. Weight is about **810 g**, almost all of it brass.
+- **Size** 112.9 × 112.9 mm (an octagon with 16 mm chamfers). The body is 37.3 mm tall,
+  45.0 mm with the lid closed. Weight is about **800 g**, almost all of it brass.
 - **Electronics** sit on one through-hole [carrier PCB](pcb/README.md). Every module (ProS3,
   3 × AS5600, DRV8833, MAX98357A, X27) plugs into sockets, so any of them can be pulled to
   reflash or swap. The board has labelled test pads for every signal. The wall USB-C port and the
@@ -51,7 +52,8 @@ the interpretation aloud.
 - **Dial.** A printed sticker on a brass dial plate: a cream ring with 36 sepia symbols in the
   website's order, Hourglass at 12. It uses Myth Made's hand-drawn, film-style symbols, which you
   generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
-  window shows the gear train underneath. Acrylic crystal.
+  window shows the gear train underneath. Acrylic crystal, glued under the top face like a
+  watch crystal.
 - **Three framing hands, set by hand.** Each thumbwheel (one bought solid brass 26-tooth
   gear, module 0.8) drives a 32-tooth sensor gear, which drives a 32-tooth gear on that hand's
   arbor. The arbors
@@ -106,9 +108,10 @@ flowchart LR
 | 17.1 – 18.7 | **P1**, movement base plate (bearings) |
 | 19.2 – 27.2 | **gear space**, four 2 mm levels: hand I / II / III trains, then needle + motor gears; thumbwheels span L0–L2 |
 | 26.7 – 28.3 | **P2**, dial plate + sticker |
-| 28.8 – 32.8 | needle, hands III, II, I, cap (1.5 mm under the crystal) |
-| 33.3 – 37.0 | crystal spiders, crystal, top face |
-| 37.0 – 44.6 | lid |
+| 28.8 – 32.8 | needle, hands III, II, I, cap |
+| 34.7 – 36.3 | crystal, glued under the top face (cap 1.9 mm below it) |
+| 36.3 – 37.3 | top face, resting on the hand standoffs |
+| 37.3 – 45.0 | lid |
 
 The bay height is set by the AS5600 sensors: socket, sensor board, air gap and magnet stacked
 under P1. Sockets cost about 4 mm of case height compared with soldering the modules flat. That
@@ -133,7 +136,8 @@ Nominal motion checks do not establish commercial-part compatibility.
      The supplier blanks also omit hinge sidewall holes: transfer-drill those after the
      purchased hinge has been checked. Finished assembly STEPs show nominal mounting holes.
    - Everything else is a flat DXF in millimetres. Choose the material from the filename
-     (`brass-040in`, `brass-063in`, `copper-032in`, `spring-steel-015in`, `clear-acrylic-063in`)
+     (`brass-040in`, `brass-063in`, `aluminium-5052-063in`, `copper-032in`, `spring-steel-015in`,
+     `clear-acrylic-063in`)
      and the quantity.
 2. **Carrier PCB:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` to JLCPCB/PCBWay
    (2 layers, 1.6 mm; see [`pcb/README.md`](pcb/README.md)).
@@ -199,10 +203,10 @@ python hardware/assembly/check_paths.py
   a shop may prefer precision tube cut to length.
 - **8-flange trays** may need SendCutSend's manual review (see BOM.md).
 - **Laser-cut module-0.8 gears** in .040" brass are fine at hand-setting speeds and for a gauge
-  motor, with 0.22–0.28 mm of designed backlash. Every pair is spaced 0.1 mm wider than
-  theoretical and the teeth are thinned, so a cut 0.03 mm fat per side still turns freely; a
-  worst-case cut (0.065 mm) binds, and the order includes a looser `_L` spare of every laser-cut
-  gear for exactly that. `cad/mesh.py` turns every pair through a full revolution in the CAD and
+  motor, with 0.22–0.36 mm of designed backlash. Every pair is spaced 0.1 mm wider than
+  theoretical and the teeth are thinned; in each gear-to-gear pair the driven gear is thinned more,
+  so even a worst-case cut (0.065 mm fat per side) turns freely. Four tight `_T` alternates of
+  those gears take play out if the cut comes out thin. `cad/mesh.py` turns every pair through a full revolution in the CAD and
   reports backlash and margins (`out/build_report.json`), and the guide dry-runs the whole train
   before anything is glued (ASSEMBLY.md §3.1, §11). Shafts run in turned bushings, which locate
   them to about 0.05 mm. The firmware approaches every needle target from the same direction to
@@ -218,8 +222,8 @@ python hardware/assembly/check_paths.py
   flex antenna under the crystal can be dropped in if needed.
 - **Cloud voice** needs two extra Azure OpenAI deployments. The endpoints exist in `api/` but
   haven't been exercised against real Azure yet.
-- **Weight.** About 810 g, because brass is dense. P1 can be cut from aluminium to save about
-  45 g; it's fully hidden.
+- **Weight.** About 800 g, because brass is dense. P1 could be aluminium to save about 45 g, but
+  it shows through P2's skeleton window, so it stays brass.
 
 ## Credits
 

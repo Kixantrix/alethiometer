@@ -5,8 +5,9 @@
 This is an unbuilt prototype. The hinge is one purchased brass hinge held by flush screws.
 The thumbwheels are bought solid gears, and every arbor, shaft, bushing and the crown come
 finished from a CNC-turning kit, so nothing in the movement is cut, measured or soldered: each
-part is pushed on until it stops, with a drop of Loctite. The only soldering is electrical (the
-carrier PCB and the speaker and mic leads, which plug into the carrier). Read the fabrication hold
+part is pushed on until it stops, with a drop of Loctite. The only soldering is electrical: the
+modules' header pins, the speaker and mic leads (which plug into the carrier) and the USB cable
+into J7. The carrier itself is best ordered factory-assembled (§4.1). Read the fabrication hold
 and joint status below before buying parts.
 
 **Animated version.** Every step below is also an animation in the design viewer
@@ -60,7 +61,8 @@ leaves closing on each other (§9), so the real curl also sets that angle.
    `dial/local/dial_print_letter.pdf` at 100 % on plain paper and check the 50 mm bar.
    It confirms the printer scale before you buy sticker stock.
 2. Upload the files in `out/sendcutsend/` and check the instant quote (see *Ordering* in
-   [README.md](README.md)). The `_L` gears are the mesh-tuning spares: order them with the rest.
+   [README.md](README.md)). The four `_T` gears are tight alternates for the hand and needle
+   gears: order them with the rest (§11).
 
 ## 1. Prepare the laser-cut parts
 
@@ -87,8 +89,9 @@ with calipers, across opposite teeth (or over two teeth and a gap on the 17T). N
 fat teeth everywhere in the order, and that is what makes a mesh bind. Look over every tooth
 for a burr or a stuck dross bead at the root.
 
-Keep the spares with an extra **Ø0.5 mm hole in the rim** (`_L` in the order) separate: they
-have 0.16 mm thinner teeth.
+The hand and needle gears are cut with a little extra play so that even a fat cut runs. Keep
+their alternates, marked by an extra **Ø0.5 mm hole in the rim** (`_T` in the order), separate:
+they have 0.16 mm fuller teeth, for taking play out later (§11).
 
 *Apply:*
 
@@ -107,21 +110,21 @@ have 0.16 mm thinner teeth.
 
 *If it fails:*
 
-- Over +0.06 mm: expect tight meshes; plan to fit the `_L` spares for the gear-to-gear pairs (hand/sensor and needle) and confirm on the dry run (§3.1)
+- Over +0.06 mm: a fat cut; the gears as ordered are designed to run with it, but leave the `_T` alternates aside
+- Under -0.10 mm: a thin cut; expect play, and plan to try the `_T` alternates on the dry run (§3.1)
 - Burr or bead: remove with a fine needle file along the tooth, not across it
 
 ### 1.3 Countersink the case screw seats
 
 **Flush case screw seats, after forming.** The supplier DXFs and `__formed.step` files
 retain plain through-holes. On the outside of the lower tray, countersink its three floor
-holes (Ø2.7 mm); on the outside of the upper shell, its four top holes (Ø2.7 mm) and the two
-small crystal-screw holes (Ø1.8 mm, either side of the window, just inside the grille ring).
+holes (Ø2.7 mm); on the outside of the upper shell, its four top holes (Ø2.7 mm).
 Use **90° DIN 963 slotted countersunk brass screws**, not raised/oval countersunk or
 larger-headed ISO alternatives. Work by hand with the thin sheet firmly supported, and test
 the actual screw frequently until its head is flush, not below the surrounding face.
 Countersink each M2 hole until its rim measures **Ø3.8–3.9 mm** (about 0.55 mm deep,
-leaving about **0.47 mm** of straight hole in the 1.016 mm sheet), and each M1.6 hole to
-**Ø3.0–3.1 mm**, then drop a screw in and check it sits flush. Light pressure, a few turns
+leaving about **0.47 mm** of straight hole in the 1.016 mm sheet), then drop a screw in and
+check it sits flush. Light pressure, a few turns
 at a time: the cutter centres itself in the existing hole. Stop as soon as the head is flush.
 The hinge holes in the walls come laser-cut and are not countersunk (the leaves are).
 Clean off chips and deburr before fitting any electronics.
@@ -130,16 +133,35 @@ Clean off chips and deburr before fitting any electronics.
 
 - Countersink 90°: 3 floor holes, outside
 - Countersink 90°: 4 top holes, outside
-- Countersink 90°: 2 crystal-screw holes, M1.6
 
 *Tools:*
 
 - 90° zero-flute countersink + T-handle
 - digital calipers
 
-*Check:* Rims Ø3.8–3.9 mm (M2) and Ø3.0–3.1 mm (M1.6); a screw dropped in sits flush
+*Check:* Rims Ø3.8–3.9 mm; a screw dropped in sits flush
 
-### 1.4 Glue the bushings into P1 and P2
+### 1.4 Tap the hinge backing strip
+
+The brass backing strip inside the shell's hinge wall is the nut for the four case-side hinge
+screws, so nothing loose has to be held inside the wall. Its four **Ø1.6 mm** holes are the
+M2 tap drill. Clamp the strip flat in the vise between soft jaws and tap each hole straight
+through with an **M2×0.4** tap and a drop of cutting oil: half a turn in, a quarter back,
+keeping the tap square. Blow out the chips and run an M2 screw through each hole.
+
+*Apply:* Tap M2×0.4: 4 holes, M2×0.4, straight through
+
+*Tools:*
+
+- M2×0.4 hand tap + small tap wrench
+- cutting oil
+- small bench vise with soft jaws
+
+*Check:* An M2 screw runs through every hole by hand
+
+*If it fails:* A thread strips or a tap breaks: cut a new strip from the same DXF (it costs a dollar or two)
+
+### 1.5 Glue the bushings into P1 and P2
 
 No shaft runs in a laser-cut hole. Each plate hole takes a turned bushing exactly as thick
 as the plate (§2), and its shaft slides inside it with about 0.08 mm of play, so every shaft
@@ -161,11 +183,11 @@ minutes to grab).
 
 *Design review:* [F1: Bushing alignment procedure can't be followed as written](assembly/FINDINGS.md#f1)
 
-### 1.5 Line up the bushing pairs with drill blanks
+### 1.6 Line up the bushing pairs with drill blanks
 
 Screw P1 onto its three **M2×12 F-F** bay standoffs and the short **M2×4 F-F** corner standoff
 with the four **M2×8 M-F** gear standoffs from above. Lower P2 (with its wet bushings) onto the
-gear standoffs and screw the four **M2×5 M-F** hand standoffs through it.
+gear standoffs and screw the four hand standoffs (also **M2×8 M-F**) through it.
 
 Slide a **1/8" drill blank** through each sensor bushing pair and a **5/32" blank** through each
 knob pair, from the top through both plates: each blank lines its two bushings up as the 638
@@ -185,7 +207,7 @@ cures. Spin each blank once, then leave the frame standing on its standoffs for 
 - [F1: Bushing alignment procedure can't be followed as written](assembly/FINDINGS.md#f1)
 - [F8: The crown corner was held by a loose nut](assembly/FINDINGS.md#f8)
 
-### 1.6 Take P2 off again
+### 1.7 Take P2 off again
 
 Once the 638 has cured, pull the drill blanks out, unscrew the hand standoffs and lift P2 off.
 P1 stays on its standoffs: it is the movement frame from here on.
@@ -210,7 +232,7 @@ length with calipers against that table, so you know which is which:
 
 Check the chamfers are there: the knob shafts are the longest shafts so that P2 picks them up
 first (§6). The **hinge body backing** (.063" brass, 63.5 × 11 mm) comes laser-cut with the
-SendCutSend order.
+SendCutSend order and is tapped in §1.4.
 
 ## 3. Dry run and sub-assemblies
 
@@ -222,9 +244,9 @@ solder with permanent adhesive. Current construction of every joint:
 | Joint | Current construction |
 |---|---|
 | Hinge knuckles and pin | One purchased formed hinge, supplied cut to length and trimmed. Supplier fit is still on hold above. |
-| Hinge to body/lid | Flush countersunk screws from outside; nuts on a backing strip (body) or washers (lid) inside; removable. |
+| Hinge to body/lid | Flush countersunk screws from outside: into a tapped backing strip (body), or washers and nuts (lid); removable. |
 | Opening stop | None added: the hinge leaves close on each other just past flat. |
-| Crystal and spiders | Two M1.6 countersunk screws through the top face, nuts under the seat spider; removable. |
+| Crystal | Glued to the underside of the top face on a 2 mm land, like a watch crystal (UV glue or crystal cement); replaced by softening the glue. |
 | Thumbwheels | One bought solid gear each, on the knob-shaft collar, Loctite 638. |
 | Sensor, hand and needle gears | On a turned collar or flush with a tube end, Loctite 638 (no solder). |
 | Cannon | Flanged; pushed into P2's 0.1 mm-clearance hole, Loctite 638. |
@@ -267,9 +289,9 @@ that doesn't matter, it's the teeth you're testing.
 
 *If it fails:*
 
-- Tight spot or binding in one pair: swap the laser-cut gear of that pair for its `_L` spare (sensor gear for knob → sensor, hand gear first for sensor → hand) and try again; swap both if it still binds
-- Every pair tight: the order was cut fat (§1.2); fit the `_L` sensor and hand gears throughout
-- A train drags without a tight spot: a shaft is rubbing in a bushing; turn it alone, and if it is the bushing pair, release the 638 with heat and redo §1.5 for that pair
+- Tight spot or binding: the gears as ordered run even with a worst-case cut, so look for a burr or dross bead on a tooth (loupe, needle file) or a gear not sitting on its collar
+- A hand rocks more than about 2° with its sensor gear held: try that hand gear's `_T` alternate; keep it only if the pair still turns two full turns with an even feel
+- A train drags without a tight spot: a shaft is rubbing in a bushing; turn it alone, and if it is the bushing pair, release the 638 with heat and redo §1.6 for that pair
 - A knob moves another hand: gears on neighbouring levels are touching; check each sits on its collar or flush with its tube end
 
 ### 3.2 Thumbwheels (×3)
@@ -374,13 +396,21 @@ file the lid leaf to the gauge's top edge.
 
 ### 4.1 Populate the carrier
 
-Populate the carrier per [`pcb/README.md`](pcb/README.md#assembly-order): resistors, C1, pin
-headers, the two PicoBlade headers J4 (mic, 5 pins) and J5 (speaker, 2 pins), then the module
-sockets, using each module as its own soldering jig. Solder the X27's two 1×4 sockets with the
-rest: the motor mesh is set by the board's hole positions, like every other mesh. The crown
-switch, power switch and battery socket J8 are soldered to the board too.
+**Order the carrier assembled** (recommended): JLCPCB or PCBWay solder every through-hole part
+on it (resistors, C1, the PicoBlade headers J4 and J5, the module and X27 sockets, the crown
+and power switches and battery socket J8) for about $15–30 on top of the boards; see
+[`pcb/README.md`](pcb/README.md#factory-assembly). The bare boards are electrically tested
+against the netlist, and the assembled ones are optically inspected; neither is powered up,
+so the bench test below still matters. Check every socket sits square and flat.
 
-*Apply:* Solder (electrical): every through-hole joint from below, X27 sockets included
+To build it yourself instead, populate it per [`pcb/README.md`](pcb/README.md#assembly-order):
+resistors, C1, pin headers, J4 and J5, then the sockets, using each module as its own
+soldering jig. Solder the X27's two 1×4 sockets with the rest: the motor mesh is set by the
+board's hole positions, like every other mesh.
+
+Either way, solder the header pins onto the modules (they come loose) before §4.2.
+
+*Apply:* Solder (electrical): factory-assembled, or every through-hole joint from below yourself
 
 *Tools:*
 
@@ -575,8 +605,8 @@ directions. Gently rock the needle arbor with tweezers: you should feel a little
 
 *If it fails:*
 
-- Buzzing, stalling or a tight spot: lift the X27 out, turn the needle arbor alone (it must spin freely); if it does, the pair is tight: release the needle gear with heat and fit `gear_needle_17T_L`, or press the `gear_motor_34T_L` onto the shaft
-- No play at all: as above; too much (needle wanders by more than half a symbol): the order was cut thin, keep the standard gears and rely on calibration
+- Buzzing, stalling or a tight spot: lift the X27 out and turn the needle arbor alone (it must spin freely); then look for a burr on either gear
+- Too much play (the needle rocks more than about 3°): release the needle gear with heat and fit `gear_needle_17T_T`, if `sweep` stays smooth with it
 - Needle moves the wrong way on `sweep`: set `MOTOR_PHASE_DIR = -1` in firmware/src/config.h
 
 *Design review:*
@@ -589,7 +619,7 @@ directions. Gently rock the needle arbor with tweezers: you should feel a little
 Lower P2 over the cannon and onto the shaft tips. The three knob shafts stand 0.6 mm taller
 than the rest and every tip is chamfered, so P2 drops onto the knob shafts first; they hold it
 level while you coax the sensor shafts and the arbors into their holes with tweezers. Screw the
-four **M2×5 M-F** standoffs through P2 into the gear standoffs.
+four **M2×8 M-F** hand standoffs through P2 into the gear standoffs.
 
 *Tools:*
 
@@ -622,7 +652,7 @@ small drop of clock oil to each top bearing and the cannon.
 
 - Tighter than on the dry run: P2's bushings pinch a shaft; loosen the hand standoffs a quarter turn and retighten them evenly; if it persists, check that shaft's tip has its chamfer and no burr
 - A reading jumps or reverses: the magnet cup has slipped or a magnet isn't diametric; check §5.3
-- Otherwise as the dry run (§3.1): swap the binding pair's laser-cut gear for its `_L` spare
+- Otherwise as the dry run (§3.1)
 
 ## 7. Dial and hands
 
@@ -673,29 +703,34 @@ touch the dial anywhere.
 
 ### 8.1 Upper shell, upside down
 
-Push the two **M1.6×5 countersunk** crystal screws in from outside, then lay the shell upside
-down on their heads (they're flush, so it sits flat). Glue a ring of speaker cloth under the
-grille slots and epoxy the body closure magnet (top-left, between grille and wall) to the
-underside of the top face. Drop the frame spider over the two screws, the crystal into its
-pocket and the seat spider on top, then run an **M1.6 nut** down each screw. The crystal stack
-is now part of the shell.
+Lay the shell upside down on a clean cloth. Glue a ring of speaker cloth under the grille
+slots and epoxy the body closure magnet (top-left, between grille and wall) to the underside
+of the top face.
+
+Then glue in the **crystal** like a watch crystal: peel its film from the inside face only, run
+a thin bead of UV-curing glue (or crystal cement) round the 2 mm land on the underside of the
+window, drop the crystal in, centred on the window edge, and press it down evenly. Cure it
+(UV torch through the crystal, or as the cement says), then peel the outer film. Nothing in
+the shell is loose now, so it can be turned over and handled as one piece.
 
 *Apply:*
 
 - Contact glue: speaker cloth ring under the grille slots
 - 5-minute epoxy: body closure magnet
+- UV glue / crystal cement: thin bead on the 2 mm land round the window
 
 *Tools:*
 
-- slotted screwdriver 1.5 mm
-- 3.2 mm nut driver or tweezers
+- UV torch (for UV glue)
+- cotton buds and isopropanol for squeeze-out
+
+*Caution:* Keep glue off the visible window: a thin bead on the land, not a puddle. Wipe squeeze-out at once.
 
 *Design review:* [F2: Nothing held the crystal and spiders while the shell was turned over and lowered](assembly/FINDINGS.md#f2)
 
 ### 8.2 Turn the shell back over
 
-Turn the shell the right way up. The two crystal screws hold the crystal and both spiders in
-place.
+Turn the shell the right way up. The crystal is glued in, so nothing falls out.
 
 *Design review:* [F2: Nothing held the crystal and spiders while the shell was turned over and lowered](assembly/FINDINGS.md#f2)
 
@@ -725,22 +760,21 @@ fully open the leaves close face to face.
 
 ### 8.5 Screw the hinge to the shell
 
-Close the lid onto the shell and screw the fixed leaf on: four **M2×6 DIN 963** screws from
-outside through the leaf and the laser-cut wall holes, the laser-cut backing strip and four M2
-nuts inside. Bring the strip up against the wall from below: it can't come in sideways past the
-crystal spiders.
+Close the lid onto the shell and screw the fixed leaf on: four **M2×4 DIN 963** screws (the same
+as the top-face screws) from outside through the leaf and the laser-cut wall holes into the
+tapped backing strip (§1.4).
+Bring the strip up against the inside of the wall from below and hold it there with a finger
+until the first screw catches; then the others line up.
 
-*Tools:*
-
-- slotted screwdriver 2.5 mm
-- 4 mm nut driver
+*Tools:* slotted screwdriver 2.5 mm
 
 ### 8.6 Lower the shell over the movement
 
 Lower the shell over the movement. The thumbwheels must pass through the three notches.
-Open the lid and fix the shell with four **M2×6 countersunk** screws through the top face.
-Countersunk lengths include the head. These give about **2.37 mm** of thread engagement in
-the hand standoffs; the bottom M2×8 screws engage about **2.88 mm** in the bay standoffs.
+Open the lid and fix the shell with four **M2×4 countersunk** screws through the top face,
+which rests directly on the hand standoffs. Countersunk lengths include the head. These give
+about **2.98 mm** of thread engagement in the hand standoffs; the bottom M2×8 screws engage
+about **2.88 mm** in the bay standoffs.
 Check the actual standoffs' usable thread depths before tightening: each screw must clamp
 the stack without bottoming out, and all external heads must finish flush.
 
@@ -765,7 +799,7 @@ press gently on the crown corner while turning knob I.
 *Check:*
 
 - Thumbwheels turn freely in their notches (1.2 mm clearance each side), with the same feel as before
-- No hand touches the crystal anywhere round (0.6 mm gap)
+- No hand touches the crystal anywhere round (the cap clears it by about 1.9 mm)
 - The crown clicks; the USB-C plug goes in straight
 - Pressing the crown corner doesn't stiffen knob I
 
@@ -794,7 +828,7 @@ three bottom screws, lift the frame a little and unplug J4 and J5. No pulling ag
 fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
 
 The short hex posts and clamped plates are intended to resist sideways motion, but the
-CAD checks establish fit, not structural stiffness. The §8.8 test checks the unsupported crown
+CAD checks establish fit, not structural stiffness. The §8.7 test checks the unsupported crown
 corner on the prototype. Do not rely on the clearance skirt as rigid bracing.
 
 ## 9. Lid
@@ -860,29 +894,31 @@ stops.
 - A hand reads the neighbouring symbol at one place only: the AS5600 isn't level or the magnet is off-centre; check §5.3, then recalibrate
 - A hand reads off by the same amount everywhere: recalibrate (five clicks)
 - The needle is off by the same amount everywhere: recalibrate the needle offset
-- The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit the standard needle gear if an `_L` one is in
+- The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.6)
 
 ## 11. Tests and adjustments at a glance
 
 | Where | Test | Passes when | If not |
 |---|---|---|---|
-| §1.2 | Measure the gears | Tip Ø within +0.06 / −0.10 mm of 27.2 (32T), 15.2 (17T), 28.8 (34T) | Plan on the `_L` spares |
-| §1.5 | Bushing pairs | Each drill blank slides through its pair | Release the 638 with heat, redo the pair |
-| §3.1 | Dry run | Two full turns each way, even feel, ~1° rock, no cross-talk | Swap the binding pair's laser gear for its `_L` spare |
+| §1.2 | Measure the gears | Tip Ø within +0.06 / −0.10 mm of 27.2 (32T), 15.2 (17T), 28.8 (34T) | Thin cut: try the `_T` alternates on the dry run |
+| §1.6 | Bushing pairs | Each drill blank slides through its pair | Release the 638 with heat, redo the pair |
+| §3.1 | Dry run | Two full turns each way, even feel, ~1° rock, no cross-talk | Binding: find the burr; sloppy: that hand's `_T` gear |
 | §4.3 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
-| §6.6 | Motor mesh | `sweep` smooth both ways, a little rock | `_L` needle or motor gear |
-| §6.8 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; `_L` spare |
+| §6.6 | Motor mesh | `sweep` smooth both ways, a little rock | Sloppy: `gear_needle_17T_T` |
+| §6.8 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; as the dry run |
 | §7.3 | Hand clearances | Paper passes between hands; nothing on the dial | Re-press with the setting tool |
-| §8.8 | In the case | Wheels clear the notches, hands clear the crystal, crown corner stiff | Re-centre the shell; re-press a hand |
+| §8.7 | In the case | Wheels clear the notches, hands clear the crystal, crown corner stiff | Re-centre the shell; re-press a hand |
 | §9.1 | Lid | Full travel, flush heads, magnets close it | Countersink more; flip the magnet |
 | §10.3 | Accuracy | `hands` right everywhere; needle within 2.5° | Recalibrate; check the sensor |
 
-**The mesh-tuning spares.** Every laser-cut gear has an `_L` twin in the order with teeth 0.16 mm
-thinner, marked by a Ø0.5 mm hole in its rim. The design gives each pair 0.22–0.28 mm of backlash at
-the pitch circle; a cut whose teeth come out 0.03 mm fat per side still runs, and with the `_L`
-gears a worst-case cut (0.065 mm fat per side) does too (`cad/mesh.py`, reported in
-`out/build_report.json`). Swap one gear at a time, starting with the laser-cut one in the binding
-pair, and only after the dry run says so: the standard gears read more precisely.
+**Gear fit and the tight alternates.** In each gear-to-gear pair the driven gear (the three hand
+gears and the needle gear) is cut with 0.16 mm thinner teeth, so every pair as ordered runs even
+when SendCutSend cuts at the fat end of its tolerance (0.065 mm per side). Backlash at the pitch
+circle is 0.22 mm for the thumbwheel pairs and 0.36 mm for the others: about 1.6° at a hand and
+3° at the needle, against 10° between symbols (`cad/mesh.py`, reported in
+`out/build_report.json`). The four `_T` alternates have standard teeth and bring a pair down
+to 0.28 mm. Fit one only if that pair feels sloppy and the gears measured at or below nominal
+(§1.2), and keep it only if the pair still turns with an even feel.
 
 **Releasing a Loctite 638 joint.** Hold a soldering iron (about 300 °C) on the part for 20–30 s and
 twist it off while hot. Clean both surfaces back to bare metal (a fibreglass pen, then

@@ -102,8 +102,9 @@ BATTERY_JST_BODY = (5.9, 7.6, 4.85)             # across the pins, depth, height
 
 # Power: a C&K OS102011MA1QN1 right-angle slide switch on the carrier's back (+x) edge, below
 # the USB-C port and clear of the X27. Like everything on the carrier it stays inside the wall
-# (the board drops straight in), so its slider sits ~1.2 mm inside a slot in the back wall:
-# flick it with a fingernail or pen tip. Pins 1-2-3 run along +y; toward pin 3 (the USB port) = on.
+# (the board drops straight in), so its slider sits ~1.2 mm inside a slot in the back wall. The
+# 7 × 3.2 mm slot leaves 1.5 mm at each end of the slider's travel, so a fingernail gets in behind
+# it. Pins 1-2-3 run along +y; toward pin 3 (the USB port) = on.
 SLIDE_SW_BODY = (8.6, 4.4, 4.7)                 # along x, depth, height (pin 1 at x0 + 2.3)
 SLIDE_SW_ACT = (2.0, 4.0, 1.6, 3.6)             # slider width, reach beyond body, z0, z1 above carrier
 SLIDE_SW_TRAVEL = 2.0

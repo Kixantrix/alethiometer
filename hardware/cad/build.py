@@ -26,7 +26,7 @@ DIAL_PNG = HERE.parent / "dial" / "dial_1200dpi.png"
 
 # SendCutSend minimum part size (instant quote) and a conservative min web for laser
 SCS_MIN = (0.25 * 25.4, 0.375 * 25.4)
-MIN_WEB = {"spring steel .015\"": 0.4, "brass .040\"": 0.55, "brass .063\"": 0.8, "copper .032\"": 0.5, "clear acrylic .063\"": 1.0}
+MIN_WEB = {"spring steel .015\"": 0.4, "brass .040\"": 0.55, "brass .063\"": 0.8, "aluminium 5052 .063\"": 0.8, "copper .032\"": 0.5, "clear acrylic .063\"": 1.0}
 
 
 def log(msg: str) -> None:
@@ -197,7 +197,8 @@ upload the `.step` files and this table, which is the drawing.
   to lose.
 
 Segments are listed from the bottom of the part up (as fitted), as OD × length; a bore runs through
-that segment only. "—" = solid.
+that segment only. "—" = solid. **★** = running fit, held to {tol_run}; quote the kit both ways
+(★ only, and everything at the tight tolerance) if the shop prices them differently.
 
 | Part | Qty | Length | Segments (bottom up) | How it is fitted |
 |---|---|---|---|---|
@@ -217,12 +218,13 @@ def export_turned(parts) -> list:
         segs = p.drawing["segments"]
         cq.exporters.export(cq.Workplane().add(D.turned_solid(segs)),
                             str(out / f"{p.name}__qty{p.qty + p.qty_extra}.step"))
-        cells = "; ".join(f"Ø{od:.3f}" + (f" (bore Ø{bore:.3f})" if bore else " —") + f" × {h:.3f}"
-                          for od, bore, h in segs)
+        marks = D.running_marks(p.name, segs)
+        cells = "; ".join(f"Ø{od:.3f}{'★' * mo}" + (f" (bore Ø{bore:.3f}{'★' * mb})" if bore else " —")
+                          + f" × {h:.3f}" for (od, bore, h), (mo, mb) in zip(segs, marks))
         rows.append(f"| `{p.name}` | {p.qty} | {p.drawing['length']:.3f} | {cells} | {p.drawing['use']} |")
         csv_rows.append(dict(part=p.name, qty=p.qty, length_mm=round(p.drawing["length"], 3),
                              segments=cells, use=p.drawing["use"]))
-    (out / "README.md").write_text(TURNED_README.format(tol=D.TURNED_TOL, cap=D.CROWN_CAP_D,
+    (out / "README.md").write_text(TURNED_README.format(tol=D.TURNED_TOL, tol_run=D.TURNED_TOL_RUNNING, cap=D.CROWN_CAP_D,
                                                         rows="\n".join(rows)), encoding="utf-8")
     with open(out / "turned_parts.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(csv_rows[0].keys()))
@@ -371,8 +373,7 @@ def renders(parts) -> None:
     render(parts, rd / "dial_top.png", view="dial", lid_open=True, hide=("lid",))
     render(parts, rd / "exploded.png", view="exploded", explode=True)
     render(parts, rd / "section.png", view="section", lid_open=True, hide=("lid",), clip_x=0.0)
-    render(parts, rd / "movement.png", view="iso", hide=("case", "lid", "crystal_seat_spider",
-                                                         "crystal_frame_spider", "crystal"))
+    render(parts, rd / "movement.png", view="iso", hide=("case", "lid", "crystal"))
     render(parts, rd / "back.png", view="back")
 
 
@@ -389,7 +390,7 @@ def main() -> int:
     log(json.dumps(D.summary(), indent=1))
 
     tools = D.tooling()
-    spares = D.mesh_tuning_gears()
+    spares = D.alternate_gears()
     notes = manufacturability(parts + tools + spares)
     log("manufacturability: " + ("OK" if not notes else ""))
     for n in notes:
@@ -408,7 +409,8 @@ def main() -> int:
     log(f"gear mesh ({time.time() - t1:.0f}s), mm at the driven pitch circle:")
     for r in gear_mesh:
         log(f"  {r['pair']:<22} backlash {r['backlash_mm']:.2f}, worst-case cut {r['backlash_fat_mm']:.2f}"
-            f" (with the loose spare {r['backlash_loose_fat_mm']:.2f}), centre margin {r['margin_mm']:+.2f}")
+            + (f", tight alternate {r['backlash_tight_mm']:.2f}" if r["backlash_tight_mm"] is not None else "")
+            + f", centre margin {r['margin_mm']:+.2f}")
     mesh_problems = mesh.problems(gear_mesh)
     for pr in mesh_problems:
         log("  X " + pr)

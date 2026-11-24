@@ -83,9 +83,7 @@ def explode_dz(p, zmin: float) -> float:
         return 270.0
     if n.startswith(("case_upper", "crown_", "hinge_", "magnet_body", "reed_switch", "usb_c")):
         return 225.0
-    if n == "crystal_seat_spider":
-        return 178.0
-    if n in ("crystal_frame_spider", "crystal") or n.startswith("screw_top"):
+    if n == "crystal" or n.startswith("screw_top"):
         return 195.0
     if g == "hands":
         order = ["hand_needle", "hand_III", "hand_II", "hand_I", "hand_cap_rosette"]
