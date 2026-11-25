@@ -115,6 +115,7 @@ X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
 X27_HOLE_CLEAR, X27_RING_W = 0.5, 2.8   # P1's X27 opening: radial clearance, ring width round it
+X27_BRIDGE_MIN = 4.0                     # gaps narrower than this round the ring are filled solid
 X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 5 mm sockets
 X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
 SENSOR_MAGNET_H = 2.5                      # Ø6×2.5 diametric (the usual AS5600 magnet)
@@ -527,6 +528,14 @@ def p1_plate() -> Part:
     for x, y in POSTS:
         ribs += [((x, y), (x * 0.55, y * 0.55)), ((x * 0.55, y * 0.55), (0, 0))]
     p.cut(skeleton(outline, keep, ribs))
+    # Where ribs and the plate edge graze the X27 ring, the skeleton leaves slivers and hairline slots.
+    # Fill every gap narrower than X27_BRIDGE_MIN round the ring so each joint is one solid bridge.
+    zone = circle(*X27_CENTER, X27_BODY_D / 2 + X27_HOLE_CLEAR + X27_RING_W + 6.0)
+    c = X27_BRIDGE_MIN / 2
+    p.add(p.poly.buffer(c, join_style="round").buffer(-c, join_style="round").intersection(zone)
+          .intersection(outline))
+    p.add(unary_union([Polygon(r) for r in p.poly.interiors                      # and leftover pockets
+                       if Polygon(r).area < 40 and Polygon(r).intersects(zone)] or [Polygon()]))
     p.hole(0, 0, TUBE_18 + BUSH_FIT)                  # 1/8" tube bushing for the 3/32" arbor I
     for tr in TRAINS:
         p.hole(*sensor_xy(tr), TUBE_532 + BUSH_FIT)    # 5/32" tube bushings for the 1/8" shafts
