@@ -70,7 +70,7 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | AS5600 ×3 | chips under the sensor shafts: (0, 25.2), (−25.2, 0), (0, −25.2) | 1×6 socket + rest post. Chip about 1.1 mm below its magnet. |
 | DRV8833 | centre (28, −31) | 1×8 + 1×6 sockets |
 | MAX98357A | centre (−32, 24.5) | 1×7 socket + two speaker-pin sockets |
-| X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier, soldered with the others: the board sets the motor mesh. Fitted down through P1's slot after the movement frame (ASSEMBLY.md §6) |
+| X27.168 | body centre (29.95, 0), shaft (19.95, 0) | Two 1×4 sockets on the carrier, soldered with the others: the board sets the motor mesh. Fitted down through P1's opening after the movement frame (ASSEMBLY.md §6) |
 | LiPo 402535 | x −37…−13, y −48…−13 | Foam tape on the carrier's `BATTERY` area, lead end toward the top; plugs into **J8** just to its left |
 | Power switch | carrier back (+x) edge, pin 1 at y −16, below the X27 | Soldered to the carrier. Its slider stays ~1.2 mm inside a slot in the back wall (the board drops straight in); flick it with a fingernail. Toward the USB port = on. |
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. P1's seat is a ring (Ø22 opening) so the speaker's back vents into the bay. Two leads from its back tabs drop through that opening onto **J5**, directly below. |

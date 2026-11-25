@@ -495,7 +495,7 @@ inside the case you'll need it.
 
 The movement is built on P1 standing on its bay standoffs, and goes into the case in §6 as a frame
 with its arbors and shafts. The X27, P2, dial and hands are fitted in the case: the X27's motor
-body goes down through P1's slot but its gear can't, so it has to go in after the frame, from
+body goes down through P1's opening but its gear can't, so it has to go in after the frame, from
 above (see [F9](assembly/FINDINGS.md#f9)).
 
 ### 5.1 Nest the arbors
@@ -611,9 +611,9 @@ spacer slides off its hole, a dot of Blu-Tack under it on the Kapton holds it in
 
 *Tools:* slotted screwdriver 2.5 mm
 
-### 6.6 Test: X27 in through P1's slot
+### 6.6 Test: X27 in through P1's opening
 
-Lower the X27 (motor gear on) through P1's slot into its sockets. The motor gear slides into
+Lower the X27 (motor gear on) through P1's opening into its sockets. The motor gear slides into
 mesh with the needle gear (rock the needle arbor a hair if the teeth butt). Then, with USB
 connected, run `home` and `sweep` and watch the needle gear: it should follow smoothly in both
 directions. Gently rock the needle arbor with tweezers: you should feel a little play.
@@ -635,7 +635,7 @@ directions. Gently rock the needle arbor with tweezers: you should feel a little
 *Design review:*
 
 - [F3: The motor mesh was set by solder-joint play, using the carrier as a jig](assembly/FINDINGS.md#f3)
-- [F9: The motor gear can't pass P1's slot, so the movement can't be finished on the bench](assembly/FINDINGS.md#f9)
+- [F9: The motor gear can't pass P1's opening, so the movement can't be finished on the bench](assembly/FINDINGS.md#f9)
 
 ### 6.7 Lower P2 onto the shaft tips
 
@@ -847,7 +847,7 @@ the plates to the other three floor mounts; it has no direct post to the floor.
 
 For servicing, remove the four top screws and lift off the upper shell and its hinged lid (the
 crystal stays in it); leave the three bottom screws fitted unless removing the movement. To lift
-the movement out: pull the X27 up and out through P1's slot first (it comes out upward, gear first), take out the
+the movement out: pull the X27 up and out through P1's opening first (it comes out upward, gear first), take out the
 three bottom screws, lift the frame a little and unplug J4 and J5. No pulling against a friction
 fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
 
