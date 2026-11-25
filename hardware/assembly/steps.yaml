@@ -590,7 +590,7 @@ sections:
     intro: |
       The movement is built on P1 standing on its bay standoffs, and goes into the case in §6 as a frame
       with its arbors and shafts. The X27, P2, dial and hands are fitted in the case: the X27's motor
-      body goes down through P1's opening but its gear can't, so it has to go in after the frame, from
+      body goes down through P1's slot but its gear can't, so it has to go in after the frame, from
       above (see [F9](assembly/FINDINGS.md#f9)).
     steps:
       - id: nest-arbors
@@ -755,10 +755,10 @@ sections:
           - {parts: screw_floor, from: {up: -14}, spin: 4, stagger: 0.3, driver: {d: 2.5, len: 40}}
 
       - id: x27-in
-        title: X27 in through P1's opening
+        title: X27 in through P1's slot
         test: true
         text: |
-          Lower the X27 (motor gear on) through P1's opening into its sockets. The motor gear slides into
+          Lower the X27 (motor gear on) through P1's slot into its sockets. The motor gear slides into
           mesh with the needle gear (rock the needle arbor a hair if the teeth butt). Then, with USB
           connected, run `home` and `sweep` and watch the needle gear: it should follow smoothly in both
           directions. Gently rock the needle arbor with tweezers: you should feel a little play.
@@ -1053,7 +1053,7 @@ sections:
 
           For servicing, remove the four top screws and lift off the upper shell and its hinged lid (the
           crystal stays in it); leave the three bottom screws fitted unless removing the movement. To lift
-          the movement out: pull the X27 up and out through P1's opening first (it comes out upward, gear first), take out the
+          the movement out: pull the X27 up and out through P1's slot first (it comes out upward, gear first), take out the
           three bottom screws, lift the frame a little and unplug J4 and J5. No pulling against a friction
           fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
 
@@ -1310,16 +1310,16 @@ findings:
       still has no room past the crown switch; §8.7 tests the corner's stiffness on the prototype.
 
   - id: F9
-    title: The motor gear can't pass P1's opening, so the movement can't be finished on the bench
+    title: The motor gear can't pass P1's slot, so the movement can't be finished on the bench
     impact: high
     area: Movement and case (§5, §6)
     status: guide updated
     observation: |
       The old guide lowered the finished movement onto the carrier "with the X27 and its gear rising up
-      through P1's opening". The 34T motor gear (Ø28.8 mm, offset from the motor body) is wider than the
+      through P1's slot". The 34T motor gear (Ø28.8 mm, offset from the motor body) is wider than the
       slot, and the hand gears have to pass the motor gear's level.
     recommendation: |
-      Fit the frame into the case first, then the X27 through its opening, then P2, dial and hands.
+      Fit the frame into the case first, then the X27 through the slot, then P2, dial and hands.
     resolution: |
       That is the order in §6 and §7. With F3 there is no jig to pull the X27 out of; the X27 is only
       lifted out for servicing.
