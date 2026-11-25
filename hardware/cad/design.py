@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 
 import cadquery as cq
 from shapely import affinity
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import MultiPoint, LineString, Polygon
 from shapely.ops import unary_union
 
 import layout as L
@@ -115,6 +115,7 @@ X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
 X27_HOLE_CLEAR, X27_RING_W = 0.5, 2.8   # P1's X27 opening: radial clearance, ring width round it
+X27_WEB_W = 8.0                          # gusset joining each right-hand diagonal rib to the ring
 X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 5 mm sockets
 X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
 SENSOR_MAGNET_H = 2.5                      # Ø6×2.5 diametric (the usual AS5600 magnet)
@@ -526,6 +527,17 @@ def p1_plate() -> Part:
     ribs += [((0, 0), X27_CENTER)]
     for x, y in POSTS:
         ribs += [((x, y), (x * 0.55, y * 0.55)), ((x * 0.55, y * 0.55), (0, 0))]
+        if x > 0:          # the diagonal passes close to the X27 ring: join them with a solid web
+            ux, uy = x / math.hypot(x, y), y / math.hypot(x, y)
+            t = X27_CENTER[0] * ux                                    # foot of the ring centre on the rib
+            fx, fy = t * ux, t * uy
+            d = math.hypot(fx - X27_CENTER[0], fy)
+            r = X27_BODY_D / 2 + X27_HOLE_CLEAR + X27_RING_W
+            ga = math.atan2(fy, fx - X27_CENTER[0])                   # direction of the rib from the ring
+            rib = [(fx + k * ux, fy + k * uy) for k in (-X27_WEB_W / 2, X27_WEB_W / 2)]
+            arc = [polar(r - 0.5, math.degrees(ga) + k) for k in (-X27_WEB_W * 2.2, X27_WEB_W * 2.2)]
+            arc = [(X27_CENTER[0] + x_, y_) for x_, y_ in arc]
+            keep.append(MultiPoint(rib + arc).convex_hull.buffer(1.0))  # a tapered gusset, rib to ring
     p.cut(skeleton(outline, keep, ribs))
     p.hole(0, 0, TUBE_18 + BUSH_FIT)                  # 1/8" tube bushing for the 3/32" arbor I
     for tr in TRAINS:
