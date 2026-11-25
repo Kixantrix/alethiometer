@@ -1,29 +1,29 @@
 part,qty,grams,material
-case_lower_tray,1,166.0,"brass .040"""
+case_lower_tray,1,166.2,"brass .040"""
 case_lid,1,126.1,"brass .040"""
-case_upper_shell,1,106.1,"brass .040"""
+case_upper_shell,1,106.9,"brass .040"""
 dial_plate_P2,1,79.4,"brass .063"""
 lid_overlay,1,48.9,"brass .040"""
-movement_base_plate_P1,1,44.8,"brass .063"""
+movement_base_plate_P1,1,45.0,"brass .063"""
 pcb_carrier,1,31.8,"FR4 1.6 mm, 2 layers"
-knob_I_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-knob_II_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-knob_III_26T,1,13.6,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
+knob_I_25T,1,12.2,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
+knob_II_25T,1,12.2,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
+knob_III_25T,1,12.2,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
 crystal,1,11.6,"clear acrylic .063"""
 hinge_leaf_body,1,9.7,"Guden BR05050404-72 brass hinge, fixed half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
 hinge_backing_body,1,9.4,"brass .063"""
-motor_X27_168,1,9,Juken/Switec X27.168 gauge stepper
-battery,1,7,LiPo 1S 402535 (~350 mAh)
-mcu_ProS3,1,6,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
-speaker,1,6,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
+motor_X27_168,1,9,"Juken/Switec X27.168 gauge stepper, with internal stop and 4 rear pins"
+battery,1,7,LiPo 1S 402535 (about 300 mAh) with a JST-PH 2.0 lead and protection circuit
+mcu_ProS3,1,6,Unexpected Maker ProS3[D] (ESP32-S3; Adafruit #6398) + short USB-C cable
+speaker,1,6,"Same Sky CMS-28468N: 28 mm, 8 Ω, 0.5 W (1 W max), 4.6 mm thick, solder pads"
+shaft_knob,3,4.8,brass C360 (CNC turned)
 hinge_leaf_lid,1,4.2,"Guden BR05050404-72 brass hinge, moving half of ONE cut-to-length assembly; countersink the screw holes 90° in the leaf; Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
-shaft_knob,3,3.8,brass C360 (CNC turned)
 standoff_bay,3,3.3,M2×12 F-F brass hex standoff
 gear_sensor_I_32T,1,3.1,"brass .040"""
 gear_sensor_II_32T,1,3.1,"brass .040"""
 gear_sensor_III_32T,1,3.1,"brass .040"""
-standoff_gear,4,2.9,M2×8+3 M-F brass hex standoff
-standoff_hand,4,2.9,M2×8+3 M-F brass hex standoff
+standoff_gear,4,2.9,"Würth 971080244: M2 M-F brass (nickel-plated) hex standoff, 4 mm AF, 8 mm body, 5 mm stud, 5 mm female thread"
+standoff_hand,4,2.9,"Würth 971080244: M2 M-F brass (nickel-plated) hex standoff, 4 mm AF, 8 mm body, 5 mm stud, 5 mm female thread"
 gear_hand_II_32T,1,2.4,"brass .040"""
 hinge_pin,1,2.3,Included in the purchased hinge; have the supplier retain the pin after cutting
 gear_motor_34T,1,2.2,"brass .040"""
@@ -40,7 +40,7 @@ gear_needle_17T,1,1.0,"brass .040"""
 shaft_sensor_III,1,1.0,brass C360 (CNC turned)
 magnet_cup,3,1.0,brass C360 (CNC turned)
 module_sockets,1,1,5 mm female header sockets
-mic_INMP441,1,1,INMP441 I2S MEMS mic module
+mic_INMP441,1,1,"INMP441 I2S MEMS mic module, the round Ø14 mm board (as modelled; not the square one)"
 speaker_foam_ring,1,1,foam ring
 mic_foam_tape,1,1,foam tape
 conn_mic,1,1,Molex PicoBlade
@@ -55,17 +55,17 @@ switch_power,1,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = batte
 spacer_usb,1,1,M2 nylon spacer 5 mm
 screw_usb,2,1,M2×10 DIN 84 cheese head
 nut_usb,2,1,M2 hex nut
-crown_switch,1,1,Omron B3F-3150 right-angle tactile switch on the carrier
+crown_switch,1,1,Omron (Aratas) B3F-3152 right-angle tactile switch on the carrier (B3F-3150 footprint and plunger)
 crown_eclip,1,1,"DIN 6799 retaining washer (E-clip) size 1.5, stainless"
 shaft_sensor_II,1,0.9,brass C360 (CNC turned)
 shaft_sensor_I,1,0.8,brass C360 (CNC turned)
-spacer_carrier,3,0.8,M2 nylon spacer 2.5 mm
 hand_needle,1,0.7,"copper .032"""
 screw_floor,3,0.7,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 arbor_I,1,0.6,brass C360 (CNC turned)
 magnet_I,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_II,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,1,0.6,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
+spacer_carrier,3,0.6,M2 nylon spacer 2.5 mm
 magnet_body,1,0.6,Ø5×4 mm N52 magnet
 magnet_lid_closure,1,0.6,Ø5×4 mm N52 magnet
 dial_sticker,1,0.5,printed vinyl
@@ -91,5 +91,5 @@ hinge_lid_nut_1,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
 hinge_lid_screw_2,1,0.1,"M1.6x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_nut_2,1,0.1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
 bushing_1_8,1,0.0,brass C360 (CNC turned)
-hinge_lid_washer_1,1,0.0,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"
-hinge_lid_washer_2,1,0.0,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"
+hinge_lid_washer_1,1,0.0,"M1.6 DIN 125 washer, Ø4 × 0.3 mm, A2 stainless (hidden inside the lid wall)"
+hinge_lid_washer_2,1,0.0,"M1.6 DIN 125 washer, Ø4 × 0.3 mm, A2 stainless (hidden inside the lid wall)"

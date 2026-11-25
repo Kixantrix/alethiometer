@@ -35,7 +35,7 @@ Not worth changing (checked): [§N](#n-checked-and-kept).
 
 **Gears: cut the driven gear of each laser-laser pair loose by default and drop the spare set.**
 
-Today every laser-cut gear has an `_L` twin with 0.16 mm thinner teeth (8 extra parts), fitted only
+Before this review every laser-cut gear had an `_L` twin with 0.16 mm thinner teeth (8 extra parts), fitted only
 if a pair binds on the dry run. Re-running `cad/mesh.py` with only **one** loose gear per pair:
 
 | Pair | Backlash, nominal | Worst-case cut (0.065 mm fat per side) |
@@ -72,7 +72,7 @@ the lid leaf is too narrow for an M2 head, so its two nuts and washers stay.
 
 **Glue the crystal into the top face like a watch crystal, and drop both spiders.**
 
-The crystal stack is a .040" seat spider, a .063" frame spider (the crystal pocket) and, since F2, two
+The crystal stack was a .040" seat spider, a .063" frame spider (the crystal pocket) and, since F2, two
 M1.6 screws and nuts to hold it all while the shell is turned over. The crystal (Ø88) already overlaps
 the window (Ø84) by 2 mm all round, so it can be glued directly under the top face with clear
 crystal cement or UV glue. Then:
@@ -190,14 +190,14 @@ have recovered, or we design for the AS5600L).
 |---|---|---|---|
 | Case tray, shell, lid (8 bends each) | SendCutSend laser + bend, brass .040" | **Quote needed**: 8-flange parts may go to manual review | Order flat and bend yourself on a box-and-pan brake (last resort). OSH Cut cuts brass but doesn't list brass bending; JLCCNC sheet metal has no brass |
 | Case countersinks (9) and hinge-leaf countersinks (6) | By hand, 90° zero-flute | Known | Can't be bought: SendCutSend countersinks only ≥ .125" aluminium and plastics ([countersinking](https://sendcutsend.com/services/countersinking/)) |
-| P1, P2, overlay, spiders, backing strip, gears, cap | SendCutSend laser, brass | Known (instant quote) | Tools in aluminium ([D2](#d2)) |
+| P1, P2, overlay, backing strip, gears, cap | SendCutSend laser, brass | Known (instant quote) | Tools in aluminium ([D2](#d2)) |
 | Hands (blued spring steel .015"), needle (copper .032"), crystal (cast acrylic .063") | SendCutSend laser | Known | — |
 | Turned kit (31 parts, 15 designs) | CNC turning service, C360 | **Quote needed** | Relaxed tolerances ([D3](#d3)); plain tubes as cut-and-faced K&S tube |
 | Thumbwheels (3) | Misumi configurable brass spur gear, m0.8 26T, shape A, 5 mm face, Ø4 H7 | **Quote needed** (individual credit-card accounts are allowed; [account types](https://us.misumi-ec.com/service/new-account/)) | Fallback: stack of laser-cut .040" gears, but visibly laminated |
 | Hinge | Guden BR05050404-72, supplied cut and trimmed | **On hold**: curl not dimensioned; needs a sample | None found: solid-brass box hinges (Brusso) are 0.085" thick for mortising, not for .040" walls |
 | DIN 963 brass M1.6 and M2 countersunk screws, M2/M1.6 nuts | [Aspen Fasteners](https://www.aspenfasteners.com/m1-6-0-35-x-4mm-din-963-iso-2009-metric-machine-screws-flat-slot-drive-full-thread-brass/), [Accu](https://accu-components.com/us/countersunk-flat-head-screws/641864-SFK-M2-6-BR) | Known | — |
-| M2 brass hex standoffs (F-F 12, M-F 8+3, M-F 5+3, F-F 4) | Accu (plain or nickel-plated brass), AliExpress assortments | Known; check the M-F thread length is 3 mm | S3 makes them two sizes plus the corner |
-| PicoBlade mic and speaker leads | Molex 15134 double-ended assemblies, cut in half: 5-way 100 mm ≈ $4.94, 2-way 150 mm ≈ $2.62 ([DigiKey](https://www.digikey.com/en/products/detail/molex/0151340500/6198150)) | Known | — |
+| M2 brass hex standoffs (F-F 12, M-F 8 with 5 mm stud, F-F 4) | Accu, Würth 971080244 (M-F, DigiKey) | Known | — |
+| PicoBlade mic and speaker leads | Molex 15134 double-ended cables, 300 mm, cut in half: 0151340503 (5-way), 0151340203 (2-way), DigiKey | Known | — |
 | Electronics modules, X27, battery, switches | Adafruit, Unexpected Maker, DigiKey | Known | S6 |
 | Carrier PCB | JLCPCB / PCBWay | Known | S5 assembly |
 | Magnets, E-clip, foam, dial sticker | Commodity | Known | — |
@@ -237,6 +237,26 @@ fine at ISO 2768-f (±0.05 mm), which keeps hands and gears visibly flush. Ask f
 tight tolerance applies only to those.
 
 ---
+
+## Usability review (24 Nov 2026)
+
+A separate pass read only the documents as a first-time builder, checked every part on the vendors'
+sites and walked the assembly guide. What it found and what changed:
+
+| Problem | Fix |
+|---|---|
+| Factory carrier assembly couldn't be ordered: no assembly BOM or placement file, no 5 mm socket at LCSC | `pcb/assembly_files.py` writes `fab/assembly_bom.csv` and `fab/assembly_cpl.csv`; PCBWay turnkey with Adafruit #3008 sockets (DigiKey 1528-3008-ND) |
+| Crown switch B3F-3150 out of stock until 2027 | B3F-3152: same footprint and plunger, slightly firmer |
+| MAX98357A now ships with a terminal block soldered on | Removal step in ASSEMBLY.md §4.1 and pcb/README |
+| X27 #2424 and speaker #1890 out of stock; #1890 only 0.25 W | X27 from multi-packs (tested at §4.3); Same Sky CMS-28468N speaker (0.5 W, 4.6 mm) |
+| Turned kit below most shops' minimum wall | Drawing splits "lathe" and "tube" rows; PCBWay or a Swiss shop |
+| Misumi has no brass 26T thumbwheel with a 4 mm bore | 25T GEAHB0.8-25-5-A-5 (5 mm bore); knob shaft gets a 5 mm seat; wheels protrude 2.9 mm instead of 3.7 |
+| "Upload everything" ordered the case twice; held files weren't separated | One file per part in `out/sendcutsend/`; reference flats in `out/flat_patterns/`; hinge-dependent files in `out/sendcutsend_on_hold/` |
+| 38 grille slots inside SendCutSend's bend-distortion zone | Grille ring moved inward (46.2–48.9 mm), now clear; the build checks the rule; flange openings fixed by their mating parts are listed in the order notes |
+| Fasteners not sold as specified | Würth 971080244 M-F standoffs, Ettinger 005.81.0xx spacers, named sources for brass DIN 963 screws; M1.6 options |
+| PicoBlade cable part numbers gave 25 mm leads | 300 mm cables cut in half |
+| ProS3 discontinued; the [D] is 2 mm longer | ProS3[D] modelled; no interference |
+| Missing tools, consumables, stale text and branch | Added to BOM §E/§G and the guide; SETUP points at `kixantrix-hardware-setup` |
 
 ## N: checked and kept
 

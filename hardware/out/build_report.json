@@ -3,7 +3,7 @@
   "case_outer": "112.9 \u00d7 112.9 mm",
   "body_height": 37.33,
   "closed_height": 44.95,
-  "knob_protrusion": 3.73,
+  "knob_protrusion": 2.93,
   "levels": [
    19.216,
    21.216,
@@ -25,9 +25,9 @@
   "lid_open_angle": 204.35163803420676,
   "hinge_fabrication_hold": "Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering.",
   "needle_ratio": 2.0,
-  "knob_turns_per_rev": 1.2307692307692308
+  "knob_turns_per_rev": 1.28
  },
- "weight_g": 792,
+ "weight_g": 790,
  "interference": [],
  "lid_check_angles": [
   0,
@@ -74,17 +74,26 @@
   204.35163803420676
  ],
  "manufacturability": [],
+ "bend_zone": [
+  "case_lower_tray: cut-out at (60.9, -14.0) 5.2 mm from a bend line (may distort; clean it up after forming)",
+  "case_upper_shell: cut-out at (62.6, 25.4) 5.9 mm from a bend line (may distort; clean it up after forming)",
+  "case_upper_shell: cut-out at (62.6, 9.5) 5.9 mm from a bend line (may distort; clean it up after forming)",
+  "case_upper_shell: cut-out at (62.6, -9.5) 5.9 mm from a bend line (may distort; clean it up after forming)",
+  "case_upper_shell: cut-out at (62.6, -25.4) 5.9 mm from a bend line (may distort; clean it up after forming)",
+  "case_lid: cut-out at (58.6, 12.7) 2.2 mm from a bend line (may distort; clean it up after forming)",
+  "case_lid: cut-out at (58.6, -12.7) 2.2 mm from a bend line (may distort; clean it up after forming)"
+ ],
  "sendcutsend_files": 27,
  "gear_mesh": [
   {
    "pair": "knob I \u2192 sensor I",
-   "ratio": "26:32",
-   "centre_mm": 23.3,
-   "theoretical_mm": 23.2,
+   "ratio": "25:32",
+   "centre_mm": 22.9,
+   "theoretical_mm": 22.8,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
    "backlash_tight_mm": null,
-   "margin_mm": 0.107
+   "margin_mm": 0.108
   },
   {
    "pair": "sensor I \u2192 hand I",
@@ -98,13 +107,13 @@
   },
   {
    "pair": "knob II \u2192 sensor II",
-   "ratio": "26:32",
-   "centre_mm": 23.3,
-   "theoretical_mm": 23.2,
+   "ratio": "25:32",
+   "centre_mm": 22.9,
+   "theoretical_mm": 22.8,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
    "backlash_tight_mm": null,
-   "margin_mm": 0.107
+   "margin_mm": 0.108
   },
   {
    "pair": "sensor II \u2192 hand II",
@@ -118,13 +127,13 @@
   },
   {
    "pair": "knob III \u2192 sensor III",
-   "ratio": "26:32",
-   "centre_mm": 23.3,
-   "theoretical_mm": 23.2,
+   "ratio": "25:32",
+   "centre_mm": 22.9,
+   "theoretical_mm": 22.8,
    "backlash_mm": 0.216,
    "backlash_fat_mm": 0.078,
    "backlash_tight_mm": null,
-   "margin_mm": 0.107
+   "margin_mm": 0.108
   },
   {
    "pair": "sensor III \u2192 hand III",

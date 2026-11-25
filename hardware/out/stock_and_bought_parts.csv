@@ -1,29 +1,29 @@
 part,kind,qty,spec
-dial_sticker,bought,1,hardware/dial/dial_print_letter.pdf
-knob_I_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-knob_II_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
-knob_III_26T,bought,1,"Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32"" shaft"
+dial_sticker,bought,1,hardware/dial/local/dial_print_letter.pdf (generate it with Myth Made's symbols: dial/README.md; the committed hardware/dial/ copy is an emoji placeholder)
+knob_I_25T,bought,1,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
+knob_II_25T,bought,1,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
+knob_III_25T,bought,1,"Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A (no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat"
 magnet_I,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_II,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 magnet_III,bought,1,Ø6×2.5 mm diametric NdFeB (AS5600 magnet)
 standoff_bay,bought,3,M2×12 F-F brass hex standoff
-standoff_gear,bought,4,M2×8+3 M-F brass hex standoff
-standoff_hand,bought,4,M2×8+3 M-F brass hex standoff
+standoff_gear,bought,4,"Würth 971080244: M2 M-F brass (nickel-plated) hex standoff, 4 mm AF, 8 mm body, 5 mm stud, 5 mm female thread"
+standoff_hand,bought,4,"Würth 971080244: M2 M-F brass (nickel-plated) hex standoff, 4 mm AF, 8 mm body, 5 mm stud, 5 mm female thread"
 standoff_corner,bought,1,"M2×4 F-F brass hex standoff, 4 mm AF (top-right gear standoff under P1; no bay post there because of the crown switch)"
-spacer_carrier,bought,3,"M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"
+spacer_carrier,bought,3,"Ettinger 005.81.025: M2 nylon round spacer, 2.5 mm long, Ø4.0 OD, Ø2.2 bore (insulates the PCB from the case)"
 screw_floor,bought,3,"M2×8 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 screw_top,bought,4,"M2×4 brass slotted countersunk screw, DIN 963, 90° (length includes head)"
 module_sockets,bought,1,"Adafruit #3008 5 mm short female headers, cut to length (modules and X27)"
-mcu_ProS3,bought,1,Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable
-battery,bought,1,LiPo 1S 402535 (~350 mAh)
+mcu_ProS3,bought,1,Unexpected Maker ProS3[D] (ESP32-S3; Adafruit #6398) + short USB-C cable
+battery,bought,1,LiPo 1S 402535 (about 300 mAh) with a JST-PH 2.0 lead and protection circuit
 driver_DRV8833,bought,1,Adafruit DRV8833 #3297
 amp_MAX98357A,bought,1,Adafruit MAX98357A #3006
 sensor_AS5600_I,bought,1,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_II,bought,1,"Adafruit AS5600 #6357, plugged into the carrier"
 sensor_AS5600_III,bought,1,"Adafruit AS5600 #6357, plugged into the carrier"
-motor_X27_168,bought,1,Juken/Switec X27.168 gauge stepper
-speaker,bought,1,28 mm 8 Ω 1 W micro speaker (≤5 mm thick)
-mic_INMP441,bought,1,INMP441 I2S MEMS mic module
+motor_X27_168,bought,1,"Juken/Switec X27.168 gauge stepper, with internal stop and 4 rear pins"
+speaker,bought,1,"Same Sky CMS-28468N: 28 mm, 8 Ω, 0.5 W (1 W max), 4.6 mm thick, solder pads"
+mic_INMP441,bought,1,"INMP441 I2S MEMS mic module, the round Ø14 mm board (as modelled; not the square one)"
 speaker_foam_ring,bought,1,"0.2 mm adhesive foam ring, Ø28 × Ø22: seats and seals the speaker on P1"
 mic_foam_tape,bought,1,"0.5 mm double-sided foam tape, Ø14 with a Ø2.5 hole over the mic port: sticks the INMP441 to the underside of P2 and seals the port"
 conn_mic,bought,1,"J4: Molex PicoBlade 1.25 mm vertical header 53047-0510 on the carrier, with a 5-way 51021 crimp housing on the lead (pre-crimped pigtails)"
@@ -36,10 +36,10 @@ wire_battery,bought,1,"LiPo lead: red/black 26 AWG with its JST-PH plug, from th
 wire_usb,bought,1,"short USB-C cable, cut ~6 cm from the plug: red/white/green/black into J7"
 switch_power,bought,1,C&K OS102011MA1QN1 right-angle slide switch (power: off = battery disconnected)
 usb_c_breakout,bought,1,"Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers"
-spacer_usb,bought,1,"M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"
+spacer_usb,bought,1,"Ettinger 005.81.050: M2 nylon round spacer, 5 mm long, Ø4.0 OD ×2 (USB breakout)"
 screw_usb,bought,2,"M2 × 10 brass DIN 84 slotted cheese-head screw (USB breakout, from the top)"
 nut_usb,bought,2,"M2 brass hex nut (USB breakout screws, under the carrier)"
-crown_switch,bought,1,Omron B3F-3150 right-angle tactile switch on the carrier
+crown_switch,bought,1,Omron (Aratas) B3F-3152 right-angle tactile switch on the carrier (B3F-3150 footprint and plunger)
 crown_eclip,bought,1,"DIN 6799 retaining washer (E-clip) size 1.5, stainless"
 magnet_body,bought,1,Ø5×4 mm N52 magnet
 magnet_lid_closure,bought,1,Ø5×4 mm N52 magnet
@@ -52,7 +52,7 @@ hinge_body_screw_3,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from 
 hinge_body_screw_4,bought,1,"M2x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_screw_1,bought,1,"M1.6x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_nut_1,bought,1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
-hinge_lid_washer_1,bought,1,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"
+hinge_lid_washer_1,bought,1,"M1.6 DIN 125 washer, Ø4 × 0.3 mm, A2 stainless (hidden inside the lid wall)"
 hinge_lid_screw_2,bought,1,"M1.6x4 DIN 963 slotted countersunk brass screw, from outside"
 hinge_lid_nut_2,bought,1,"M1.6 brass hex nut, 3.2 mm AF, inside the wall"
-hinge_lid_washer_2,bought,1,"M1.6 DIN 125 brass washer, Ø4 × 0.3 mm"
+hinge_lid_washer_2,bought,1,"M1.6 DIN 125 washer, Ø4 × 0.3 mm, A2 stainless (hidden inside the lid wall)"

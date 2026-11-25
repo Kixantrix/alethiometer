@@ -1,0 +1,11 @@
+Comment,Designator,Footprint,Quantity,Manufacturer,Manufacturer Part #,Notes
+"100 µF 16 V aluminium electrolytic, radial Ø6.3 × 7 mm, 2.5 mm pitch",C1,CP_Radial_D6.3mm_P2.50mm,1,Panasonic,ECE-A1CKA101,Polarised: long leg to the square + pad. ≤ 11 mm tall
+"Male header 1×8, 2.54 mm, vertical (debug)",J1,PinHeader_1x08_P2.54mm_Vertical,1,Sullins,PRPC008SAAN-RC,
+"PicoBlade 1.25 mm vertical header, 5 pins (mic)",J4,Molex_PicoBlade_53047-0510_1x05_P1.25mm_Vertical,1,Molex,53047-0510,
+"PicoBlade 1.25 mm vertical header, 2 pins (speaker)",J5,Molex_PicoBlade_53047-0210_1x02_P1.25mm_Vertical,1,Molex,53047-0210,
+"JST PH 2.0 mm side-entry socket, 2 pins (battery)",J8,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,1,JST,S2B-PH-K-S,
+"Short female header 0.1"", 1×36, 5 mm body (Adafruit #3008; DigiKey 1528-3008-ND). Cut to length; one position is lost at each cut. Exactly 5 mm: no substitutes","M1,U1,U2,U3,U4,U5,U6,U7",socket strips,about 3 strips (110 positions),Adafruit,3008,Fit square and flat on the board. M1: 2 × 1×4; U1: 2 × 1×17; U2: 1×6 + 1×2 rest post; U3: 1×6 + 1×2 rest post; U4: 1×6 + 1×2 rest post; U5: 1×8 + 1×6; U6: 1×7 + 2 × 1×1 (speaker pins); U7: 1×8
+"Resistor 10 kΩ 1 % ¼ W metal film, axial, 10.16 mm pitch","R1,R3,R5",R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,3,Yageo,MFR-25FBF52-10K,
+"Resistor 47 kΩ 1 % ¼ W metal film, axial, 10.16 mm pitch","R2,R4,R6",R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,3,Yageo,MFR-25FBF52-47K,
+Right-angle 6 × 6 mm tactile switch (crown),SW1,SW_SPST_Omron_B3F-315x_Angled,1,Omron (Aratas),B3F-3152,B3F-3150 footprint; the B3F-3150 itself also fits. Not the B3F-3100 (shorter plunger)
+Right-angle SPDT slide switch (power),SW2,SW_Slide_SPDT_Angled_CK_OS102011MA1Q,1,C&K,OS102011MA1QN1,Fit flat against the board

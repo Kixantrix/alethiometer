@@ -45,6 +45,9 @@ CASE_W = L.CASE_W
 CASE_CHAMFER = L.CASE_CHAMFER
 # ---- Tolerance budget --------------------------------------------------------
 # SendCutSend holds about ±0.13 mm on laser-cut features and ±0.25-0.5 mm on bends.
+# Holes and slots closer than half the brake die width to a bend line distort
+# (sendcutsend.com/guidelines/bend-deformation): .472" die for .040" brass -> 6.0 mm.
+BEND_KEEPOUT = {"brass .040\"": 6.0}
 # Every fit below is sized so worst-case parts still go together without filing.
 SEAM_GAP = 0.45                       # radial gap where upper shell telescopes over lower tray
 PLATE_CLEAR = 1.0                     # internal plates to case wall
@@ -70,7 +73,8 @@ UPPER_INNER = offset(UPPER_OUTER, -T040)
 # The bay height is set by the AS5600 chain: socket (L.MODULE_LIFT) + module + chip
 # + air gap + sensor magnet + magnet drop below P1.
 CARRIER_SPACER, CARRIER_T, CARRIER_STANDOFF = 2.5, 1.6, 12.0
-GEAR_STANDOFF = HAND_STANDOFF = 8.0       # M2×8+3 M-F hex standoffs, one part for both levels
+STANDOFF_MF = "Würth 971080244: M2 M-F brass (nickel-plated) hex standoff, 4 mm AF, 8 mm body, 5 mm stud, 5 mm female thread"
+GEAR_STANDOFF = HAND_STANDOFF = 8.0       # Würth 971080244 M-F standoffs (8 mm, 5 mm stud), one part for both levels
 Z_FLOOR_TOP = T040
 Z_CARRIER = Z_FLOOR_TOP + CARRIER_SPACER   # carrier PCB (bottom face)
 Z_CARRIER_TOP = Z_CARRIER + CARRIER_T
@@ -98,12 +102,15 @@ MODULE = L.MODULE
 Z_HAND, Z_SENSOR, Z_KNOB = L.Z_HAND, L.Z_SENSOR, L.Z_KNOB
 Z_NEEDLE, Z_MOTOR = L.Z_NEEDLE, L.Z_MOTOR
 R_SENSOR = L.R_SENSOR                      # 25.2
-R_KNOB = L.R_KNOB                          # 48.65
+R_KNOB = L.R_KNOB
 # Thumbwheel: one stock gear, thick enough to grip and to span the three sensor-gear levels.
-# Misumi configurable spur gear, module 0.8, brass, shape A (no hub), 26 teeth, 5 mm face, 4 mm bore.
-KNOB_FACE, KNOB_BORE = 5.0, 4.0
-KNOB_GEAR_SPEC = ("Misumi spur gear, module 0.8, 20° PA, brass, shape A (no hub), 26 teeth, "
-                  "face width 5 mm, round bore 4 mm H7; Loctite 638 on the 5/32\" shaft")
+# Misumi GEAHB0.8-25-5-A-5: free-cutting brass, module 0.8, shape A (no hub), 25 teeth, 5 mm face,
+# 5 mm bore. (Misumi's brass family has no 26T and offers a 4 mm bore only up to 23T.)
+KNOB_FACE, KNOB_BORE = 5.0, 5.0
+KNOB_SEAT_D = KNOB_BORE - 0.02           # knob-shaft seat the thumbwheel slides onto (bore 5 H7)
+KNOB_COLLAR_D = 5.556                     # 7/32": wider than the 5 mm seat, so the thumbwheel stops on it
+KNOB_GEAR_SPEC = ("Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, free-cutting brass, shape A "
+                  "(no hub), 25 teeth, face width 5 mm, round bore 5 mm H7; Loctite 638 on the knob shaft's seat")
 X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
@@ -185,7 +192,9 @@ DIAL_R_IN, DIAL_R_OUT = 29.0, 41.4         # sticker (see hardware/dial)
 SKELETON_R = 28.4
 CRYSTAL_R = 44.0
 WINDOW_R = 42.0
-SLOT_R0, SLOT_R1, SLOT_N, SLOT_W = 48.6, 52.0, 90, 1.1   # inner end well clear of the crystal's glue land
+# Grille ring: inner end clear of the crystal's glue land (Ø88), outer end at least BEND_KEEPOUT
+# from the top face's bend lines so SendCutSend's brake doesn't distort the visible slots.
+SLOT_R0, SLOT_R1, SLOT_N, SLOT_W = 46.2, 48.9, 90, 1.1
 # The crystal (Ø88) is glued to the underside of the top face over the Ø84 window: a 2 mm land all
 # round, so the shell turns over and lowers as one piece with nothing loose.
 CRYSTAL_LAND = CRYSTAL_R - WINDOW_R
@@ -235,6 +244,11 @@ HINGE_LID_WASHER_D, HINGE_LID_WASHER_T = 4.0, 0.3          # DIN 125 M1.6 washer
 HINGE_MOUNT_CLEAR = 2.4
 HINGE_BACKING_TAP = 1.6                        # M2×0.4 tap drill: the backing strip is tapped by hand
 HINGE_LID_CLEAR = 1.8
+# While the purchased hinge is unverified, every file whose geometry depends on it is exported to
+# out/sendcutsend_on_hold/ instead of out/sendcutsend/: the shell and lid (hinge holes), the lid
+# overlay (sits in the lid), the backing strip and the hinge gauge.
+HINGE_HOLD = True
+HINGE_DEPENDENT = ("case_upper_shell", "case_lid", "lid_overlay", "hinge_backing_body", "hinge_gauge")
 HINGE_REFERENCE_NOTE = (
     "Purchased hinge reference only: confirm curl/leaf offset, knuckle slots and travel "
     "on the actual Guden hinge and update the CAD pivot, mounts and stop before drilling or ordering."
@@ -428,7 +442,7 @@ def upper_shell() -> Part:
     return Part("case_upper_shell", "scs-bent", "brass .040\"", countersunk_tray(tray), [flipped(Z_TOP)],
                 BRASS, "case", prof, bends,
                 "brass .040\", 8 bends 90°; after forming hand-countersink the 4 top holes (M2 DIN 963, "
-                "Ø3.8 heads) and the 2 crystal-screw holes (M1.6, Ø3.0 heads), 90°; hinge holes come cut",
+                "Ø3.8 heads), 90°; hinge holes come cut",
                 tray=tray)
 
 
@@ -575,7 +589,7 @@ def crystal() -> Part:
 def dial_sticker() -> Part:
     p = Profile(annulus(DIAL_R_IN, DIAL_R_OUT))
     return Part("dial_sticker", "bought", "printed vinyl", profile_solid(p, STICKER_T),
-                [loc(z=Z_P2_TOP)], IVORY, "dial", None, [], "hardware/dial/dial_print_letter.pdf",
+                [loc(z=Z_P2_TOP)], IVORY, "dial", None, [], "hardware/dial/local/dial_print_letter.pdf (generate it with Myth Made's symbols: dial/README.md; the committed hardware/dial/ copy is an emoji placeholder)",
                 density="acrylic")
 
 
@@ -839,9 +853,10 @@ def arbors() -> list[Part]:
              "tip until it stops (Loctite 638)."))
     parts.append(turned("shaft_knob", [
         (ROD_532, 0.0, T063),
-        (TUBE_316, 0.0, l0 - Z_P1_TOP),               # collar: thumbwheel sits on it
-        (ROD_532, 0.0, Z_P2_TOP + KNOB_TIP_PROUD - l0),
-    ], knobs, "Drop into P1 from above; thumbwheel on the collar, sleeve on the thumbwheel. "
+        (KNOB_COLLAR_D, 0.0, l0 - Z_P1_TOP),          # collar: thumbwheel sits on it
+        (KNOB_SEAT_D, 0.0, KNOB_FACE),                # thumbwheel seat (its bore is 5 mm)
+        (ROD_532, 0.0, Z_P2_TOP + KNOB_TIP_PROUD - l0 - KNOB_FACE),
+    ], knobs, "Drop into P1 from above; thumbwheel on the seat (down to the collar), sleeve on the thumbwheel. "
               f"Top end {KNOB_TIP_PROUD:g} mm proud of P2 with a {TIP_CHAMFER:g} mm × 45° lead-in chamfer."))
     parts.append(turned("sleeve_knob", [(TUBE_316, tube_bore(TUBE_316), Z_P2 - KNOB_ENDSHAKE - k1)],
                         sleeves, "Slides on the knob shaft down onto the thumbwheel (keeps it in mesh)."))
@@ -865,8 +880,8 @@ def hardware() -> list[Part]:
     hx = lambda h, z, hole=0.0: [hexagon(4.0, h, x, y, z, hole) for x, y in POSTS]
     for name, h, z, spec in (("standoff_bay", CARRIER_STANDOFF, Z_CARRIER_TOP,
                               f"M2×{CARRIER_STANDOFF:g} F-F brass hex standoff"),
-                             ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, "M2×8+3 M-F brass hex standoff"),
-                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, "M2×8+3 M-F brass hex standoff")):
+                             ("standoff_gear", GEAR_STANDOFF, Z_P1_TOP, f"{STANDOFF_MF}"),
+                             ("standoff_hand", HAND_STANDOFF, Z_P2_TOP, f"{STANDOFF_MF}")):
         posts = L.BAY_POSTS if name == "standoff_bay" else POSTS
         (x0, y0) = posts[0]
         sol = hexagon(4.0, h, x0, y0, z, 2.0)
@@ -878,10 +893,10 @@ def hardware() -> list[Part]:
                       spec="M2×4 F-F brass hex standoff, 4 mm AF (top-right gear standoff under P1; "
                            "no bay post there because of the crown switch)"))
     x0, y0 = L.BAY_POSTS[0]
-    spacer = cylinder(4.5, CARRIER_SPACER, x0, y0, Z_FLOOR_TOP, hole=2.2)
+    spacer = cylinder(4.0, CARRIER_SPACER, x0, y0, Z_FLOOR_TOP, hole=2.2)
     parts.append(Part("spacer_carrier", "bought", "M2 nylon spacer 2.5 mm", spacer,
                       [loc(x - x0, y - y0) for x, y in L.BAY_POSTS], IVORY, "hardware",
-                      spec="M2 nylon round spacer, 2.5 mm long, Ø4.5 OD (insulates the PCB from the case)"))
+                      spec="Ettinger 005.81.025: M2 nylon round spacer, 2.5 mm long, Ø4.0 OD, Ø2.2 bore (insulates the PCB from the case)"))
     for name, length, posts, solid in (
         ("screw_floor", FLOOR_SCREW_LEN, L.BAY_POSTS, countersunk_screw(FLOOR_SCREW_LEN)),
         ("screw_top", TOP_SCREW_LEN, POSTS, countersunk_screw(TOP_SCREW_LEN).moved(flipped(Z_TOP))),
@@ -954,13 +969,14 @@ def electronics() -> list[Part]:
                   BLACK, "electronics", spec="Adafruit #3008 5 mm short female headers, cut to length "
                   "(modules and X27)", density="acrylic"))
 
-    # ProS3 (frame: USB-C toward +y; placed with USB toward +x), on its headers
-    pros3 = box(-8.9, -27.76, 0, 8.9, 24.13, 1.0).fuse(box(-6.5, -14, 1.0, 6.5, 14, 2.6)) \
+    # ProS3[D] (frame: USB-C toward +y), on its headers: 55 mm long, 2 mm longer than the original
+    # ProS3 at the antenna end (-y); same pins, which keep their places
+    pros3 = box(-8.9, -29.76, 0, 8.9, 24.13, 1.0).fuse(box(-6.5, -14, 1.0, 6.5, 14, 2.6)) \
         .fuse(box(-4.47, 17.3, 1.0, 4.47, 25.1, 4.3)).fuse(box(-3, -27.0, 1.0, 3, -22.0, 5.4))
     pros3 = pros3.fuse(box(-4.2, 25.1, 0.2, 4.2, 37.0, 5.4))  # USB-C cable plug overmould (to J7)
-    add("mcu_ProS3", placed(pros3, L.PROS3_PLACE, zm), "Unexpected Maker ProS3 (ESP32-S3) + short USB-C cable")
+    add("mcu_ProS3", placed(pros3, L.PROS3_PLACE, zm), "Unexpected Maker ProS3[D] (ESP32-S3; Adafruit #6398) + short USB-C cable")
     bx0, by0, bx1, by1 = L.BATTERY_BOX
-    add("battery", box(bx0, by0, zt + 0.3, bx1, by1, zt + 4.8), "LiPo 1S 402535 (~350 mAh)", (0.5, 0.5, 0.55))
+    add("battery", box(bx0, by0, zt + 0.3, bx1, by1, zt + 4.8), "LiPo 1S 402535 (about 300 mAh) with a JST-PH 2.0 lead and protection circuit", (0.5, 0.5, 0.55))
     drv = box(-8.89, -12.7, 0, 8.89, 12.7, 1.6).fuse(box(-3, -4, 1.6, 3, 4, 2.8))
     add("driver_DRV8833", placed(drv, L.DRV8833_PLACE, zm), "Adafruit DRV8833 #3297")
     amp = box(-8.89, -9.525, 0, 8.89, 9.525, 1.6).fuse(box(-2.5, -4, 1.6, 2.5, 2, 2.6))
@@ -979,13 +995,13 @@ def electronics() -> list[Part]:
     body = body.fuse(cylinder(2.0, 2.4, *X27_SHAFT, X27_BODY_BOTTOM - 2.4))
     for px, py in L.X27_PINS.values():
         body = body.fuse(cylinder(0.5, 4.4, px, py, X27_BODY_BOTTOM - 4.4))
-    add("motor_X27_168", body, "Juken/Switec X27.168 gauge stepper", (0.92, 0.92, 0.88))
+    add("motor_X27_168", body, "Juken/Switec X27.168 gauge stepper, with internal stop and 4 rear pins", (0.92, 0.92, 0.88))
     sx, sy = SPEAKER["c"]
     add("speaker", cylinder(SPEAKER["d"], SPEAKER["h"], sx, sy, Z_P1_TOP + 0.2),
-        "28 mm 8 Ω 1 W micro speaker (≤5 mm thick)", BLACK)
+        "Same Sky CMS-28468N: 28 mm, 8 Ω, 0.5 W (1 W max), 4.6 mm thick, solder pads", BLACK)
     mx, my = MIC["c"]
     add("mic_INMP441", cylinder(MIC["d"], MIC["h"], mx, my, Z_P2 - 0.5 - MIC["h"]),
-        "INMP441 I2S MEMS mic module", PCB)
+        "INMP441 I2S MEMS mic module, the round Ø14 mm board (as modelled; not the square one)", PCB)
     # What holds them: a foam ring under the speaker, a foam tape pad between the mic and P2
     sx_, sy_ = SPEAKER["c"]
     E.append(Part("speaker_foam_ring", "bought", "foam ring", cylinder(SPEAKER["d"], 0.2, sx_, sy_, Z_P1_TOP,
@@ -1062,11 +1078,11 @@ def electronics() -> list[Part]:
         "Adafruit USB Type C breakout #4090 (wall port), screwed down on two spacers")
     sp = None
     for hx_, hy_ in u["holes"]:
-        c_ = cylinder(4.5, L.MODULE_LIFT, hx_, hy_, 0, hole=2.2)
+        c_ = cylinder(4.0, L.MODULE_LIFT, hx_, hy_, 0, hole=2.2)
         sp = c_ if sp is None else sp.fuse(c_)
     E.append(Part("spacer_usb", "bought", "M2 nylon spacer 5 mm", placed(sp, L.USBC_PLACE, Z_CARRIER_TOP),
                   [loc()], IVORY, "electronics",
-                  spec="M2 nylon round spacer, 5 mm long, Ø4.5 OD ×2 (USB breakout)"))
+                  spec="Ettinger 005.81.050: M2 nylon round spacer, 5 mm long, Ø4.0 OD ×2 (USB breakout)"))
     # M2×10 cheese-head screws from the top through board, spacer and carrier; nuts underneath
     top = USB_BOARD_Z + 1.6
     hx0, hy0 = _place_pt(u["holes"][0], L.USBC_PLACE)
@@ -1091,7 +1107,7 @@ def electronics() -> list[Part]:
     front = tip - L.CROWN_SW_ACT_LEN
     sw = box(front - bd, -bw / 2, -L.CROWN_SW_ACT_H, front, bw / 2, bh - L.CROWN_SW_ACT_H).fuse(
         box(front, -1.45, -1.45, tip, 1.45, 1.45))
-    add("crown_switch", along(sw), "Omron B3F-3150 right-angle tactile switch on the carrier")
+    add("crown_switch", along(sw), "Omron (Aratas) B3F-3152 right-angle tactile switch on the carrier (B3F-3150 footprint and plunger)")
     # one turned piece: stem from the switch out through the wall, knurled cap outside
     clip_in = -T040 - CROWN_PLAY - ECLIP["t"]        # E-clip inner face (axis x, outer face at 0)
     g0 = clip_in - (ECLIP["groove_w"] - ECLIP["t"]) / 2
@@ -1201,7 +1217,7 @@ def hinge() -> list[Part]:
         parts.append(flat_part(name, profile, T063, material="brass .063\"", group=group,
                                placements=[backing_loc], kind=kind,
                                spec=f"brass .063\" hinge backing strip, {total:.1f} x {height:g} mm; "
-                               f"tap the {len(seats)} Ø{HINGE_BACKING_TAP:g} holes M2×0.4 by hand (ASSEMBLY.md §3)"))
+                               f"tap the {len(seats)} Ø{HINGE_BACKING_TAP:g} holes M2×0.4 by hand (ASSEMBLY.md §1.4)"))
 
     # Flush countersunk screws from outside: into the tapped backing strip (case), or nuts and washers (lid)
     for prefix, seats, length, d, head, nut_af, nut_h, group, inside in (
@@ -1229,7 +1245,7 @@ def hinge() -> list[Part]:
                     .rotate(cq.Vector(), cq.Vector(0, 1, 0), -90) \
                     .translate(cq.Vector(HINGE_X - T040, y, az + z))
                 parts.append(stock(f"{prefix}_washer_{index + 1}", washer, [loc()],
-                                   "M1.6 DIN 125 brass washer, Ø4 × 0.3 mm", group=group, kind="bought"))
+                                   "M1.6 DIN 125 washer, Ø4 × 0.3 mm, A2 stainless (hidden inside the lid wall)", group=group, kind="bought"))
     return parts
 
 

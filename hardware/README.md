@@ -24,7 +24,9 @@ the interpretation aloud.
 | [`WIRING.md`](WIRING.md) | Signal diagram, pin table, and the few off-board wires |
 | [`pcb/`](pcb/README.md) | **Carrier PCB**: all through-hole, every module socketed, test pads; Gerbers ready for JLCPCB/PCBWay |
 | [`viewer/`](viewer/README.md) | Local 3D viewer: toggle layers and parts, explode, open the lid, section cut |
-| [`out/sendcutsend/`](out/sendcutsend) | DXFs and formed STEP blanks; **hinge-related fabrication is on hold** pending the commercial hinge fit check below |
+| [`out/sendcutsend/`](out/sendcutsend) | Everything to order from SendCutSend now: one file per part (flat DXFs, formed STEPs for the bent case) |
+| `out/sendcutsend_on_hold/` | The hinge-dependent parts, **on hold** until the purchased hinge is checked (see Ordering) |
+| `out/flat_patterns/` | Reference flat patterns of the bent parts; not for upload |
 | `out/alethiometer_open.glb` | Colour 3D assembly (lid open) for any glTF viewer (Windows 3D Viewer, Blender, Fusion) |
 | `out/step/`, `out/alethiometer_*.step` | Full STEP for every part and the assemblies. They're too big for git (hundreds of MB), so `python cad/build.py` generates them locally. |
 | [`out/renders/`](out/renders), [`out/flats/`](out/flats) | Renders and flat-pattern previews |
@@ -54,7 +56,7 @@ the interpretation aloud.
   generate locally from your own download (see [`dial/`](dial/README.md)). The plate's skeleton
   window shows the gear train underneath. Acrylic crystal, glued under the top face like a
   watch crystal.
-- **Three framing hands, set by hand.** Each thumbwheel (one bought solid brass 26-tooth
+- **Three framing hands, set by hand.** Each thumbwheel (one bought solid brass 25-tooth
   gear, module 0.8) drives a 32-tooth sensor gear, which drives a 32-tooth gear on that hand's
   arbor. The arbors
   are nested brass tubes, like the hour and minute pipes of a clock, CNC-turned to exact length
@@ -62,7 +64,7 @@ the interpretation aloud.
   **1:1** with its hand and carries a magnet over an **AS5600** angle sensor. The firmware
   therefore always knows exactly where every hand points: no homing, no lost counts, and it
   works even if the knobs were turned while the instrument slept. The wheels protrude about
-  4 mm through the top, left, and bottom walls, as on the BBC prop.
+  3 mm through the top, left, and bottom walls, as on the BBC prop.
 - **The answering needle** (copper) is driven by an **X27.168** automotive gauge stepper through
   a 34:17 brass gear pair. The motor's internal stop is kept and used to home the needle on
   every wake. The 2:1 ratio turns its 315° of travel into about 630° of needle sweep, so every
@@ -81,11 +83,11 @@ the interpretation aloud.
 - **Lid.** A magnet pair holds it shut. It opens flat and stops just beyond (about 200°) when the hinge's
   own leaves close on each other; on a table it rests on the tabletop. There is no separate
   stop hardware. A USB-C charging port is tucked in the hinge-side wall. Battery is
-  a ~350 mAh LiPo, good for roughly 40–55 readings per charge (estimated, not measured).
+  a ~300 mAh LiPo, good for roughly 35–45 readings per charge (estimated, not measured).
 
 ```mermaid
 flowchart LR
-  knob[Thumbwheel 26T] --> sensor[Sensor gear 32T<br/>+ magnet over AS5600]
+  knob[Thumbwheel 25T] --> sensor[Sensor gear 32T<br/>+ magnet over AS5600]
   sensor --> handgear[Hand gear 32T<br/>on nested arbor]
   handgear --> hand[Framing hand]
   crown[Crown: hold & speak] --> esp[ProS3 ESP32-S3]
@@ -119,30 +121,42 @@ buys a build where nothing needs desoldering to reflash, probe or replace a part
 
 ## Ordering
 
+Get the free quotes before buying anything: SendCutSend's instant quote (it shows at once whether
+the 8-flange case parts go to manual review: SendCutSend says it can't form boxes that close in on
+themselves and publishes no rule for 8-sided trays), the turned kit, the Misumi thumbwheels and
+the carrier assembly ([DESIGN_REVIEW.md D1](DESIGN_REVIEW.md#d1)).
+
 **Hinge fit must be resolved first.** The Guden hinge in CAD is a reference using published
 sheet, pin and pitch dimensions, with assumed curl and slot clearances. Obtain the actual
-cross-section/sample and update the pivot and mounting stack before ordering related
-parts or drilling the shells ([ASSEMBLY.md §0](ASSEMBLY.md#0-before-you-order)).
-Nominal motion checks do not establish commercial-part compatibility.
+cross-section/sample and update the pivot and mounting stack before ordering the
+hinge-dependent parts ([ASSEMBLY.md §0](ASSEMBLY.md#0-before-you-order)). Until then the build
+writes those files, and only those, to **`out/sendcutsend_on_hold/`**: the upper shell and lid
+(their hinge holes), the lid overlay, the hinge backing strip and the hinge gauge. Everything in
+`out/sendcutsend/` can be ordered now. Getting the hinge sample: Guden sells to registered
+accounts only and prices on request (guden.com, "Call"); ask for a sample of BR05050404-72 and a
+quote to cut it to 63.5 mm with five knuckles and the pin staked (their stock pins are not staked;
+cutting is a quoted modification with a minimum charge).
 
-1. **SendCutSend.** Upload everything in `out/sendcutsend/` (see [BOM.md §A](BOM.md)).
-   - For the three bent parts (`case_*`), upload the `__formed.step` file. SendCutSend
-     reads the bends from it. Check in the 3D preview that all eight flanges bend 90° to
-     the same side. The model uses SendCutSend's .040" brass spec
-     (inside radius .040", K-factor 0.38). These supplier STEPs are bent blanks with plain
+1. **SendCutSend.** Upload every file in `out/sendcutsend/`: exactly one file per part, with the
+   material and quantity in its name (see [BOM.md §A](BOM.md) and `out/sendcutsend_order.csv`).
+   - The bent case parts are `.step` files of the formed blank. SendCutSend reads the bends from
+     them. Check in the 3D preview that all eight flanges bend 90° to the same side. The model uses
+     SendCutSend's .040" brass spec (inside radius .040", K-factor 0.38). The blanks have plain
      screw holes; hand-countersink the top and bottom case holes afterwards
-     ([ASSEMBLY.md §1](ASSEMBLY.md#1-prepare-the-laser-cut-parts)). Individual-part and assembly
-     STEPs show the finished countersinks.
-     The supplier blanks also omit hinge sidewall holes: transfer-drill those after the
-     purchased hinge has been checked. Finished assembly STEPs show nominal mounting holes.
+     ([ASSEMBLY.md §1](ASSEMBLY.md#1-prepare-the-laser-cut-parts)). The hinge holes in the walls
+     are laser-cut. Their flat patterns (DXF with a BEND layer) are in `out/flat_patterns/` for
+     reference only: don't upload them as well, or you'll be quoted twice.
+   - A few wall openings sit closer to a bend than SendCutSend's 6 mm distortion zone because the
+     part they mate with fixes them (power-switch slot, hinge holes); the order CSV notes each one.
+     They may come out slightly oval: clean them with a needle file or the matching drill.
    - Everything else is a flat DXF in millimetres. Choose the material from the filename
      (`brass-040in`, `brass-063in`, `aluminium-5052-063in`, `copper-032in`, `spring-steel-015in`,
-     `clear-acrylic-063in`)
-     and the quantity.
-2. **Carrier PCB:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` to JLCPCB/PCBWay
-   (2 layers, 1.6 mm; see [`pcb/README.md`](pcb/README.md)).
+     `clear-acrylic-063in`) and the quantity.
+2. **Carrier PCB, assembled:** upload `pcb/fab/alethiometer_carrier_gerbers.zip` with
+   `pcb/fab/assembly_bom.csv` and `pcb/fab/assembly_cpl.csv` to PCBWay (turnkey through-hole
+   assembly); see [`pcb/README.md`](pcb/README.md#factory-assembly).
 3. **Turned-parts kit:** upload `out/turned/` (STEP files plus its README, which is the drawing)
-   to a CNC-turning service ([BOM.md](BOM.md) §B).
+   to PCBWay CNC or a Swiss-lathe shop ([BOM.md](BOM.md) §B explains why).
 4. **Fasteners, electronics:** [BOM.md](BOM.md) §C–D.
 5. **Dial sticker:** [`dial/README.md`](dial/README.md).
 

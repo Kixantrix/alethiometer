@@ -75,7 +75,7 @@ generator read. Coordinates are x, y in mm from the dial centre; +x = hinge, +y 
 | Power switch | carrier back (+x) edge, pin 1 at y −16, below the X27 | Soldered to the carrier. Its slider stays ~1.2 mm inside a slot in the back wall (the board drops straight in); flick it with a fingernail. Toward the USB port = on. |
 | Speaker | (−28.5, 28.5) on top of P1 | Foam ring. It fires up through P2's lattice to the grille ring. P1's seat is a ring (Ø22 opening) so the speaker's back vents into the bay. Two leads from its back tabs drop through that opening onto **J5**, directly below. |
 | INMP441 | (−32, −32) under P2, port up | Foam tape with a hole over the port, under P2's 7-hole mic port. Five leads drop through P1's open lattice at about (−42, −25) onto **J4** at (−46, −19.6 … −24.6). |
-| Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3150 soldered to the carrier |
+| Crown switch | carrier, top-right corner, on the crown axis | Omron B3F-3152 (or B3F-3150) soldered to the carrier |
 | Wall USB-C | right wall, receptacle centre y = 23.5 | Adafruit #4090 on a socket, screwed to the carrier on two spacers |
 
 Make the off-board leads about 10 cm long (pre-crimped PicoBlade pigtails), enough to lift the

@@ -37,7 +37,7 @@ def polar(r: float, deg: float) -> tuple[float, float]:
 # ---- gear train --------------------------------------------------------------
 # Module 0.8 is a stock size: the thumbwheels are bought gears; the thin gears are laser-cut.
 MODULE = 0.8
-Z_HAND, Z_SENSOR, Z_KNOB = 32, 32, 26
+Z_HAND, Z_SENSOR, Z_KNOB = 32, 32, 25           # 25T: Misumi's nearest brass hubless thumbwheel
 Z_NEEDLE, Z_MOTOR = 17, 34
 
 
@@ -50,7 +50,7 @@ def center_distance(z1: int, z2: int) -> float:
 
 
 R_SENSOR = center_distance(Z_HAND, Z_SENSOR)                 # 25.7
-R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 49.0
+R_KNOB = R_SENSOR + center_distance(Z_SENSOR, Z_KNOB)        # 48.6
 TRAIN_ANGLES = {"I": 90.0, "II": 180.0, "III": 270.0}        # knob directions (12, 9, 6 o'clock)
 SENSORS = {k: polar(R_SENSOR, a) for k, a in TRAIN_ANGLES.items()}
 

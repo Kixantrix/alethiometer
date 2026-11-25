@@ -18,9 +18,10 @@ gets applied where, and the tools. This file is generated from
 
 **Tests as you go.** Steps marked *Test* are checkpoints: do them before going on, because each one
 is the last moment the parts it checks are easy to reach. Each says what passes and what to adjust
-if it doesn't; §11 collects them. The gear meshes are designed with 0.22–0.28 mm of backlash, and
-every laser-cut gear has a looser spare in the order (marked with a small hole in its rim) for a
-pair that binds (`cad/mesh.py` checks every pair, including a worst-case laser cut).
+if it doesn't; §11 collects them. The gear meshes are designed with 0.22–0.36 mm of backlash and run
+even with a worst-case laser cut (`cad/mesh.py` checks every pair). The order also has a *tighter*
+alternate of each hand and needle gear (`_T`, marked with a small hole in its rim), for taking play
+out of a pair if the cut comes out thin (§11).
 
 **Conventions.** "Up" is toward the dial. Positions along a shaft are measured from the
 **bottom face of P1** (the movement base plate). Every dimension comes from
@@ -116,7 +117,7 @@ they have 0.16 mm fuller teeth, for taking play out later (§11).
 
 ### 1.3 Countersink the case screw seats
 
-**Flush case screw seats, after forming.** The supplier DXFs and `__formed.step` files
+**Flush case screw seats, after forming.** The supplier `.step` files for the case
 retain plain through-holes. On the outside of the lower tray, countersink its three floor
 holes (Ø2.7 mm); on the outside of the upper shell, its four top holes (Ø2.7 mm).
 Use **90° DIN 963 slotted countersunk brass screws**, not raised/oval countersunk or
@@ -200,7 +201,10 @@ cures. Spin each blank once, then leave the frame standing on its standoffs for 
 - 3 × 1/8" and 3 × 5/32" drill blanks (gauge pins)
 - 4 mm nut driver
 
-*Check:* Each blank slides through its pair without forcing
+*Check:*
+
+- Each blank slides through its pair without forcing
+- Every standoff screws fully home: no gap under its hex (if a stud bottoms out, shorten it with a file)
 
 *Design review:*
 
@@ -264,9 +268,11 @@ gear or bushing that has to come off. Clean both parts back to bare metal before
 
 ### 3.1 Test: Dry-run the gear train
 
-Before anything is glued, put the whole hand train together dry and turn it. Gear bores are
-drawn only 0.08 mm over the turned diameter, so each gear runs centred; if one won't slide
-on, turn the matching drill through it by hand.
+Before any gear is glued, put the whole hand train together dry and turn it (only the
+bushings are glued so far). Gear bores are drawn only 0.08 mm over the turned diameter, so each
+gear runs centred; if one won't slide on, turn the matching number drill through it by hand
+in a T-handle chuck: **#41** (2.44 mm, hand gear I), **#30** (3.26 mm, hand gear II and the
+sensor gears), **#20** (4.09 mm, hand gear III), **#11** (4.85 mm, needle gear).
 
 Slide each gear onto its shaft or arbor without glue: thumbwheels onto the knob shafts, sensor
 gears onto the sensor shafts, hand gears onto the arbors. Nest the arbors in P1's centre
@@ -280,6 +286,8 @@ that doesn't matter, it's the teeth you're testing.
 
 - Check: two full turns each way
 - Check: rock against the held hand gear
+
+*Tools:* number drills #41, #30, #20, #11 in a T-handle chuck (only if a bore is tight)
 
 *Check:*
 
@@ -296,8 +304,8 @@ that doesn't matter, it's the teeth you're testing.
 
 ### 3.2 Thumbwheels (×3)
 
-Each is one bought brass gear (module 0.8, 26 teeth, 5 mm wide, 4 mm bore; see BOM.md §C).
-Slide it down a `shaft_knob` until it sits on the collar. No layers to align.
+Each is one bought brass gear (Misumi GEAHB0.8-25-5-A-5: module 0.8, 25 teeth, 5 mm wide, 5 mm bore; see BOM.md §C).
+Slide it down a `shaft_knob` over its 5 mm seat until it sits on the collar. No layers to align.
 
 *Apply:* Loctite 638: on the shaft above the collar
 
@@ -334,12 +342,18 @@ little Loctite 638 on the outside only. The needle arbor runs inside it.
 
 The 34T gear sits on the X27's **Ø1 output shaft**, with its bottom face 5.5 mm above the
 motor's front face (level L3). Press it on with a drop of Loctite 638 and trim the shaft
-0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
+0.3 mm above the gear: nip it with flush cutters rated for hard wire (the shaft is Ø1 steel),
+or take it down with a diamond file. Don't push hard on the shaft; support it from behind.
 
 *Apply:*
 
 - Loctite 638: one drop on the Ø1 shaft
 - Check: trim the shaft 0.3 mm above the gear
+
+*Tools:*
+
+- flush cutters for hard wire (or a diamond file)
+- Loctite 638
 
 *Caution:* Support the motor body from behind; pushing on the shaft alone can damage its internal stop
 
@@ -408,7 +422,12 @@ resistors, C1, pin headers, J4 and J5, then the sockets, using each module as it
 soldering jig. Solder the X27's two 1×4 sockets with the rest: the motor mesh is set by the
 board's hole positions, like every other mesh.
 
-Either way, solder the header pins onto the modules (they come loose) before §4.2.
+Either way, solder the header pins onto the modules (they come loose) before §4.2, using the
+fitted sockets as the jig ([pcb/README.md](pcb/README.md#assembly-order) step 4). **The
+MAX98357A first:** since mid-2024 Adafruit ships it with a green screw-terminal block soldered
+into its speaker holes, and it's too tall for the bay. Snip the block's plastic body off with
+flush cutters, then heat each of its two pins and pull it out with tweezers, and clear the
+holes with solder wick so the speaker pins can go in.
 
 *Apply:* Solder (electrical): factory-assembled, or every through-hole joint from below yourself
 
@@ -446,8 +465,9 @@ two **M2×10** cheese-head screws from the top and M2 nuts under the carrier.
 Work through the [bring-up checklist](pcb/README.md#bring-up-checklist) one module at a
 time. Flash the firmware (see [`../firmware/README.md`](../firmware/README.md)) once the
 ProS3 is in, then check `hands`, `home`, `sweep`, `tone` and `rec` from the serial console,
-probing the test pads if anything misbehaves. Turning a magnet over each AS5600 should walk
-through all 36 symbols. Plug the X27 into its sockets for `home` and `sweep`, then take it out
+probing the test pads if anything misbehaves. Holding one of the three Ø6 sensor magnets over
+each AS5600 and turning it should walk through all 36 symbols (the magnets aren't glued until
+§5.3). Plug the X27 into its sockets for `home` and `sweep`, then take it out
 again: it goes in through P1 in §6.
 
 Run `wifi` and **write down the setup-portal password** it prints. Once the board is
@@ -475,7 +495,8 @@ inside the case you'll need it.
 
 The movement is built on P1 standing on its bay standoffs, and goes into the case in §6 as a frame
 with its arbors and shafts. The X27, P2, dial and hands are fitted in the case: the X27's motor
-gear cannot pass through P1's slot (see [F9](assembly/FINDINGS.md#f9)).
+body goes down through P1's slot but its gear can't, so it has to go in after the frame, from
+above (see [F9](assembly/FINDINGS.md#f9)).
 
 ### 5.1 Nest the arbors
 
@@ -584,7 +605,9 @@ the movement out again and unplug them.
 Lower P1's frame straight down onto the carrier, threading the mic lead through P1's lattice.
 The magnet cups come to rest just above the AS5600 chips. Fix it with three **M2×8
 countersunk** screws from under the floor, through the spacers and board into the bay
-standoffs.
+standoffs: stand the tray on a ring (a roll of tape) so the floor holes are free, hold the
+frame down with one hand, and start each screw by hand before tightening any of them. If a
+spacer slides off its hole, a dot of Blu-Tack under it on the Kapton holds it in place.
 
 *Tools:* slotted screwdriver 2.5 mm
 
@@ -616,7 +639,7 @@ directions. Gently rock the needle arbor with tweezers: you should feel a little
 
 ### 6.7 Lower P2 onto the shaft tips
 
-Lower P2 over the cannon and onto the shaft tips. The three knob shafts stand 0.6 mm taller
+Lower P2 (its cannon already glued in) over arbor I's top and onto the shaft tips. The three knob shafts stand 0.6 mm taller
 than the rest and every tip is chamfered, so P2 drops onto the knob shafts first; they hold it
 level while you coax the sensor shafts and the arbors into their holes with tweezers. Screw the
 four **M2×8 M-F** hand standoffs through P2 into the gear standoffs.
@@ -704,7 +727,8 @@ touch the dial anywhere.
 ### 8.1 Upper shell, upside down
 
 Lay the shell upside down on a clean cloth. Glue a ring of speaker cloth under the grille
-slots and epoxy the body closure magnet (top-left, between grille and wall) to the underside
+slots and epoxy the body closure magnet (on the side away from the hinge, just round from the
+knob-II notch toward the knob-I notch, between grille and wall) to the underside
 of the top face.
 
 Then glue in the **crystal** like a watch crystal: peel its film from the inside face only, run
@@ -823,7 +847,7 @@ the plates to the other three floor mounts; it has no direct post to the floor.
 
 For servicing, remove the four top screws and lift off the upper shell and its hinged lid (the
 crystal stays in it); leave the three bottom screws fitted unless removing the movement. To lift
-the movement out: pull the X27 up through P1 first (its gear can't pass P1's slot), take out the
+the movement out: pull the X27 up and out through P1's slot first (it comes out upward, gear first), take out the
 three bottom screws, lift the frame a little and unplug J4 and J5. No pulling against a friction
 fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
 

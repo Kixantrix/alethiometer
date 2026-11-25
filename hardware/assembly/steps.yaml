@@ -21,7 +21,7 @@ groups:
   arbors: &arbors [arbor_I, arbor_II, arbor_III, arbor_needle, gear_hand_I_32T, gear_hand_II_32T,
                    gear_hand_III_32T, gear_needle_17T]
   sensors: &sensors ["shaft_sensor_*", "gear_sensor_*"]
-  knobs: &knobs [shaft_knob, "knob_*_26T"]
+  knobs: &knobs [shaft_knob, "knob_*_25T"]
   magnets: &magnets [magnet_cup, magnet_I, magnet_II, magnet_III]
   hands: &hands [hand_needle, hand_III, hand_II, hand_I, hand_cap_rosette]
   p2_group: &p2_group [dial_plate_P2, *p2_bushings, cannon, mic_INMP441, mic_foam_tape, wire_mic]
@@ -74,9 +74,10 @@ preface: |
 
   **Tests as you go.** Steps marked *Test* are checkpoints: do them before going on, because each one
   is the last moment the parts it checks are easy to reach. Each says what passes and what to adjust
-  if it doesn't; §11 collects them. The gear meshes are designed with 0.22–0.28 mm of backlash, and
-  every laser-cut gear has a looser spare in the order (marked with a small hole in its rim) for a
-  pair that binds (`cad/mesh.py` checks every pair, including a worst-case laser cut).
+  if it doesn't; §11 collects them. The gear meshes are designed with 0.22–0.36 mm of backlash and run
+  even with a worst-case laser cut (`cad/mesh.py` checks every pair). The order also has a *tighter*
+  alternate of each hand and needle gear (`_T`, marked with a small hole in its rim), for taking play
+  out of a pair if the cut comes out thin (§11).
 
   **Conventions.** "Up" is toward the dial. Positions along a shaft are measured from the
   **bottom face of P1** (the movement base plate). Every dimension comes from
@@ -191,7 +192,7 @@ sections:
       - id: countersink-case
         title: Countersink the case screw seats
         text: |
-          **Flush case screw seats, after forming.** The supplier DXFs and `__formed.step` files
+          **Flush case screw seats, after forming.** The supplier `.step` files for the case
           retain plain through-holes. On the outside of the lower tray, countersink its three floor
           holes (Ø2.7 mm); on the outside of the upper shell, its four top holes (Ø2.7 mm).
           Use **90° DIN 963 slotted countersunk brass screws**, not raised/oval countersunk or
@@ -266,7 +267,8 @@ sections:
           knob pair, from the top through both plates: each blank lines its two bushings up as the 638
           cures. Spin each blank once, then leave the frame standing on its standoffs for an hour.
         tools: [3 × 1/8" and 3 × 5/32" drill blanks (gauge pins), 4 mm nut driver]
-        checks: ["Each blank slides through its pair without forcing"]
+        checks: ["Each blank slides through its pair without forcing",
+                 "Every standoff screws fully home: no gap under its hex (if a stud bottoms out, shorten it with a file)"]
         findings: [F1, F8]
         view: iso
         motions:
@@ -346,9 +348,11 @@ sections:
         title: Dry-run the gear train
         test: true
         text: |
-          Before anything is glued, put the whole hand train together dry and turn it. Gear bores are
-          drawn only 0.08 mm over the turned diameter, so each gear runs centred; if one won't slide
-          on, turn the matching drill through it by hand.
+          Before any gear is glued, put the whole hand train together dry and turn it (only the
+          bushings are glued so far). Gear bores are drawn only 0.08 mm over the turned diameter, so each
+          gear runs centred; if one won't slide on, turn the matching number drill through it by hand
+          in a T-handle chuck: **#41** (2.44 mm, hand gear I), **#30** (3.26 mm, hand gear II and the
+          sensor gears), **#20** (4.09 mm, hand gear III), **#11** (4.85 mm, needle gear).
 
           Slide each gear onto its shaft or arbor without glue: thumbwheels onto the knob shafts, sensor
           gears onto the sensor shafts, hand gears onto the arbors. Nest the arbors in P1's centre
@@ -357,6 +361,7 @@ sections:
           (its hand goes round 1.6 times), slowly, feeling for a tight spot; and hold each hand gear
           still and rock its sensor gear to feel the play. Loose gears may slip on their shafts here:
           that doesn't matter, it's the teeth you're testing.
+        tools: ["number drills #41, #30, #20, #11 in a T-handle chuck (only if a bore is tight)"]
         checks:
           - "Every thumbwheel turns its train through two full turns with an even, light feel"
           - "A just-visible rock (about 1°) between each pair, everywhere round"
@@ -371,26 +376,26 @@ sections:
           - {parts: *train, from: {up: 125}, to: {up: 90}, fade: in, dur: 1.0, nocheck: true}
           - {parts: [dial_plate_P2, *p2_bushings], from: {up: 120}, to: {up: 90}, dur: 1.4}
           - {parts: standoff_hand, from: {up: 104}, to: {up: 90}, spin: 3, stagger: 0.2, driver: {d: 6, len: 40}}
-          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
-          - {parts: [gear_sensor_I_32T, shaft_sensor_I], spin: -1.625, dur: 4.0, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I], spin: 1.625, dur: 4.0, with: prev}
+          - {parts: [knob_I_25T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I], spin: -1.5625, dur: 4.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I], spin: 1.5625, dur: 4.0, with: prev}
           - {parts: standoff_hand, by: {up: 14}, spin: -3, remove: true, dur: 0.8}
           - {parts: [dial_plate_P2, *p2_bushings], by: {up: 30}, remove: true, dur: 1.0}
           - {parts: *train, by: {up: 35}, remove: true, dur: 1.2}
         apply:
-          - {what: check, at: knob_I_26T, anchor: center, time: 5.4, note: two full turns each way, feeling for tight spots}
+          - {what: check, at: knob_I_25T, anchor: center, time: 5.4, note: two full turns each way, feeling for tight spots}
           - {what: check, at: gear_sensor_I_32T, anchor: top, time: 5.4, note: rock against the held hand gear}
 
       - id: thumbwheels
         title: Thumbwheels (×3)
         text: |
-          Each is one bought brass gear (module 0.8, 26 teeth, 5 mm wide, 4 mm bore; see BOM.md §C).
-          Slide it down a `shaft_knob` until it sits on the collar. No layers to align.
+          Each is one bought brass gear (Misumi GEAHB0.8-25-5-A-5: module 0.8, 25 teeth, 5 mm wide, 5 mm bore; see BOM.md §C).
+          Slide it down a `shaft_knob` over its 5 mm seat until it sits on the collar. No layers to align.
         only: *knobs
         view: iso
         motions:
           - {parts: shaft_knob, to: {up: 125}, fade: in, dur: 0.5, nocheck: true}
-          - {parts: "knob_*_26T", from: {up: 150}, to: {up: 125}, stagger: 0.3}
+          - {parts: "knob_*_25T", from: {up: 150}, to: {up: 125}, stagger: 0.3}
         apply:
           - {what: loctite638, at: shaft_knob, anchor: center, note: on the shaft above the collar}
 
@@ -444,7 +449,9 @@ sections:
         text: |
           The 34T gear sits on the X27's **Ø1 output shaft**, with its bottom face 5.5 mm above the
           motor's front face (level L3). Press it on with a drop of Loctite 638 and trim the shaft
-          0.3 mm above the gear. Don't push hard on the shaft; support it from behind.
+          0.3 mm above the gear: nip it with flush cutters rated for hard wire (the shaft is Ø1 steel),
+          or take it down with a diamond file. Don't push hard on the shaft; support it from behind.
+        tools: [flush cutters for hard wire (or a diamond file), Loctite 638]
         only: *x27
         cautions: ["Support the motor body from behind; pushing on the shaft alone can damage its internal stop"]
         view: iso
@@ -511,7 +518,12 @@ sections:
           soldering jig. Solder the X27's two 1×4 sockets with the rest: the motor mesh is set by the
           board's hole positions, like every other mesh.
 
-          Either way, solder the header pins onto the modules (they come loose) before §4.2.
+          Either way, solder the header pins onto the modules (they come loose) before §4.2, using the
+          fitted sockets as the jig ([pcb/README.md](pcb/README.md#assembly-order) step 4). **The
+          MAX98357A first:** since mid-2024 Adafruit ships it with a green screw-terminal block soldered
+          into its speaker holes, and it's too tall for the bay. Snip the block's plastic body off with
+          flush cutters, then heat each of its two pins and pull it out with tweezers, and clear the
+          holes with solder wick so the speaker pins can go in.
         only: [pcb_carrier, module_sockets, crown_switch, switch_power, battery_socket, conn_mic, conn_speaker]
         tools: [temperature-controlled soldering iron, flush cutters, multimeter]
         findings: [F3, F5]
@@ -554,8 +566,9 @@ sections:
           Work through the [bring-up checklist](pcb/README.md#bring-up-checklist) one module at a
           time. Flash the firmware (see [`../firmware/README.md`](../firmware/README.md)) once the
           ProS3 is in, then check `hands`, `home`, `sweep`, `tone` and `rec` from the serial console,
-          probing the test pads if anything misbehaves. Turning a magnet over each AS5600 should walk
-          through all 36 symbols. Plug the X27 into its sockets for `home` and `sweep`, then take it out
+          probing the test pads if anything misbehaves. Holding one of the three Ø6 sensor magnets over
+          each AS5600 and turning it should walk through all 36 symbols (the magnets aren't glued until
+          §5.3). Plug the X27 into its sockets for `home` and `sweep`, then take it out
           again: it goes in through P1 in §6.
 
           Run `wifi` and **write down the setup-portal password** it prints. Once the board is
@@ -577,7 +590,8 @@ sections:
     intro: |
       The movement is built on P1 standing on its bay standoffs, and goes into the case in §6 as a frame
       with its arbors and shafts. The X27, P2, dial and hands are fitted in the case: the X27's motor
-      gear cannot pass through P1's slot (see [F9](assembly/FINDINGS.md#f9)).
+      body goes down through P1's slot but its gear can't, so it has to go in after the frame, from
+      above (see [F9](assembly/FINDINGS.md#f9)).
     steps:
       - id: nest-arbors
         title: Nest the arbors
@@ -729,7 +743,9 @@ sections:
           Lower P1's frame straight down onto the carrier, threading the mic lead through P1's lattice.
           The magnet cups come to rest just above the AS5600 chips. Fix it with three **M2×8
           countersunk** screws from under the floor, through the spacers and board into the bay
-          standoffs.
+          standoffs: stand the tray on a ring (a roll of tape) so the floor holes are free, hold the
+          frame down with one hand, and start each screw by hand before tightening any of them. If a
+          spacer slides off its hole, a dot of Blu-Tack under it on the Kapton holds it in place.
         hide: [*x27, *p2_group]
         tools: [slotted screwdriver 2.5 mm]
         view: iso
@@ -764,7 +780,7 @@ sections:
       - id: lower-p2
         title: Lower P2 onto the shaft tips
         text: |
-          Lower P2 over the cannon and onto the shaft tips. The three knob shafts stand 0.6 mm taller
+          Lower P2 (its cannon already glued in) over arbor I's top and onto the shaft tips. The three knob shafts stand 0.6 mm taller
           than the rest and every tip is chamfered, so P2 drops onto the knob shafts first; they hold it
           level while you coax the sensor shafts and the arbors into their holes with tweezers. Screw the
           four **M2×8 M-F** hand standoffs through P2 into the gear standoffs.
@@ -795,11 +811,11 @@ sections:
           - "Otherwise as the dry run (§3.1)"
         view: iso
         motions:
-          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 2.4}
-          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.8125, dur: 2.4, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I], spin: 0.8125, dur: 2.4, with: prev}
+          - {parts: [knob_I_25T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 2.4}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.78125, dur: 2.4, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I], spin: 0.78125, dur: 2.4, with: prev}
         apply:
-          - {what: check, at: knob_I_26T, anchor: center, note: "two full turns each way; `hands` alongside"}
+          - {what: check, at: knob_I_25T, anchor: center, note: "two full turns each way; `hands` alongside"}
           - {what: oil, at: *p2_bushings, anchor: top, time: 2.6, note: one small drop per top bearing}
           - {what: oil, at: cannon, anchor: top, time: 2.6}
 
@@ -873,9 +889,9 @@ sections:
         view: [0.4, -0.8, 0.5]
         frame: [hand_needle, hand_I, hand_II, hand_III]
         motions:
-          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 3.0}
-          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.8125, dur: 3.0, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 0.8125, dur: 3.0, with: prev}
+          - {parts: [knob_I_25T, "shaft_knob#0", "sleeve_knob#0"], spin: 1, dur: 3.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -0.78125, dur: 3.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 0.78125, dur: 3.0, with: prev}
           - {parts: [arbor_needle, gear_needle_17T, hand_needle], pivot: arbor_needle, spin: 0.6, dur: 3.0}
         apply:
           - {what: check, at: hand_I, anchor: top, note: paper between the hands where they cross}
@@ -887,7 +903,8 @@ sections:
         title: Upper shell, upside down
         text: |
           Lay the shell upside down on a clean cloth. Glue a ring of speaker cloth under the grille
-          slots and epoxy the body closure magnet (top-left, between grille and wall) to the underside
+          slots and epoxy the body closure magnet (on the side away from the hinge, just round from the
+          knob-II notch toward the knob-I notch, between grille and wall) to the underside
           of the top face.
 
           Then glue in the **crystal** like a watch crystal: peel its film from the inside face only, run
@@ -1015,11 +1032,11 @@ sections:
           - "The crown corner flexes into the train: tighten the corner standoff and gear standoff there; if it still flexes, report it in the design review (F8)"
         view: iso
         motions:
-          - {parts: [knob_I_26T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
-          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -1.625, dur: 4.0, with: prev}
-          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 1.625, dur: 4.0, with: prev}
+          - {parts: [knob_I_25T, "shaft_knob#0", "sleeve_knob#0"], spin: 2, dur: 4.0}
+          - {parts: [gear_sensor_I_32T, shaft_sensor_I, magnet_I, "magnet_cup#0"], spin: -1.5625, dur: 4.0, with: prev}
+          - {parts: [gear_hand_I_32T, arbor_I, hand_I, hand_cap_rosette], pivot: arbor_I, spin: 1.5625, dur: 4.0, with: prev}
         apply:
-          - {what: check, at: knob_I_26T, anchor: +y, note: each thumbwheel through its notch}
+          - {what: check, at: knob_I_25T, anchor: +y, note: each thumbwheel through its notch}
           - {what: check, at: crown_turned, anchor: +x, time: 2.0, note: crown click}
     subsections:
       - title: What holds the two shells together
@@ -1036,7 +1053,7 @@ sections:
 
           For servicing, remove the four top screws and lift off the upper shell and its hinged lid (the
           crystal stays in it); leave the three bottom screws fitted unless removing the movement. To lift
-          the movement out: pull the X27 up through P1 first (its gear can't pass P1's slot), take out the
+          the movement out: pull the X27 up and out through P1's slot first (it comes out upward, gear first), take out the
           three bottom screws, lift the frame a little and unplug J4 and J5. No pulling against a friction
           fit is intended. Tighten the stack joints snugly without stripping the small brass threads.
 

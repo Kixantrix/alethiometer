@@ -5,7 +5,7 @@ point-to-point wiring. **Every module plugs into sockets**, so you can pull any 
 reflash, probe or replace it without desoldering anything. The crown switch and the wall USB-C
 port are mounted on the board too, so their push and plug forces go into the screwed-down
 carrier rather than a glue joint. So are the power slide switch and the battery's
-JST-PH socket. The two off-board parts (mic, speaker) connect to labelled pads. Every signal also has a labelled test pad.
+JST-PH socket. The two off-board parts (mic, speaker) plug into PicoBlade headers J4 and J5. Every signal also has a labelled test pad.
 
 ![top](fab/render_top.png)
 
@@ -37,36 +37,46 @@ boards plus shipping.
 
 Recommended: have the fab solder every through-hole part on the board, so the only soldering left
 to you is the modules' own header pins, J7's USB cable and the mic and speaker pigtails. That
-takes about 130 joints off your bench. Choose **through-hole (THT) assembly** on the order:
+takes about 130 joints off your bench.
 
-- **PCBWay turnkey** sources from distributors such as DigiKey, so it can buy the Adafruit #3008
-  5 mm short sockets and everything else in the table below; confirm the socket on the quote.
-- **JLCPCB** assembles THT parts from its LCSC library (about $3.50 plus $0.017 per joint, plus
-  setup and fixture fees; [pricing](https://jlcpcb.com/help/article/pcb-assembly-price)). Pick an
-  LCSC 0.1" single-row female header with a **5 mm body**, or send the #3008 strips as consigned parts.
-- Order the parts marked **fab** in the table; the rest come from you. Budget about $15–30 for the
-  assembly of one or two boards.
+**Order it from PCBWay as turnkey through-hole (THT) assembly.** Upload, together:
+
+- `fab/alethiometer_carrier_gerbers.zip` (the board);
+- `fab/assembly_bom.csv`: every part the fab fits, with manufacturer part numbers (the parts
+  marked **fab** in the table below);
+- `fab/assembly_cpl.csv`: where each one goes (designator, X, Y, side, rotation).
+
+Both CSVs are generated from the board by [`assembly_files.py`](assembly_files.py) (also run by
+`make_pcb.py`). Notes for the quote:
+
+- **The sockets must be Adafruit #3008 (5 mm body, DigiKey 1528-3008-ND)**, cut to the lengths in the
+  BOM's notes, and fitted square and flat. Don't accept a substitute: the height stack under P1 is
+  built on exactly 5 mm, and the common single-row sockets (LCSC's included) are 8.5 mm, which would
+  push the AS5600s into their magnets. If PCBWay can't source #3008, send them one pack as
+  consigned parts, or have them fit everything else and solder the sockets yourself (step 4 below).
+- JLCPCB is not recommended here: it only fits parts from its LCSC library (no 5 mm socket), and
+  consigned parts need a JLC part number or engineering approval.
+- Budget about $15–30 for the assembly of one or two boards.
 - What you get checked: the bare boards are **100 % electrically tested** against the netlist (opens
   and shorts), and the assembled board gets **optical inspection** (AOI). Neither powers it up, so
-  still do the [bring-up checklist](#bring-up-checklist).
-- The sockets have to sit square for the modules to plug in at the right height: ask for them to be
-  fitted flat on the board, and check that each module plugs in level when the boards arrive.
+  still do the [bring-up checklist](#bring-up-checklist), and check that each module plugs in
+  level when the boards arrive.
 
 ## Bill of materials (carrier)
 
 | Ref | Part | Qty | Notes |
 |---|---|---|---|
 | — | Carrier PCB (above) | 1 | |
-| U1 | **Unexpected Maker ProS3** (ESP32-S3) | 1 | Solder its two 1×17 male headers on, pins down |
+| U1 | **Unexpected Maker ProS3[D]** (ESP32-S3, Adafruit #6398; the original ProS3 also fits) | 1 | Solder its two 1×17 male headers on, pins down |
 | U2–U4 | **Adafruit AS5600** magnetic angle sensor, STEMMA QT (#6357) | 3 | Header included. Use the 1×6 row only. **Magnets not included**; see the main BOM. |
 | U5 | **Adafruit DRV8833** dual H-bridge (#3297) | 1 | Header included (1×8 + 1×6) |
-| U6 | **Adafruit MAX98357A** I2S amp (#3006) | 1 | Header included. Leave the screw terminal off. |
+| U6 | **Adafruit MAX98357A** I2S amp (#3006) | 1 | Header included. Boards since mid-2024 come with a screw terminal soldered in the speaker holes: remove it (snip the plastic, pull each pin out while heating it, clear the holes with wick) |
 | M1 | **Juken/Switec X27.168** gauge stepper (keep its internal stop) | 1 | Adafruit #2424 or AliExpress |
-| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin) | 1 pack | Cut into every socket: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A), 2× 1×4 (X27). About 110 of the 180 positions. **fab**|
+| — | **Short female header, 0.1", 5 mm body** (Adafruit #3008, 5 × 36-pin; DigiKey 1528-3008-ND) | 1 pack | Cut into every socket: 2× 1×17 (ProS3), 3× 1×6 + 3× 1×2 (AS5600 + rest posts), 1×8 + 1×6 (DRV8833), 1×7 + 2× 1×1 (MAX98357A), 2× 1×4 (X27). About 110 of the 180 positions. **fab**|
 | — | Male header strip 0.1", 1×40 | 1 | MAX98357A speaker pins, J1 (and J2 if wanted) |
 | U7 | **Adafruit USB Type C breakout, downstream (#4090)** | 1 | Wall USB-C port. Header included; 5.1 kΩ CC resistors on board. Plugs into a 1×8 socket. |
 | — | M2 nylon round spacer, 5 mm × Ø4.5; M2 × 10 screw; M2 nut | 2 each | Clamp U7 down beside its receptacle (screw from the top, nut under the carrier) |
-| SW1 | **Omron B3F-3150** right-angle 6 × 6 mm tactile switch (or B3F-3100) | 1 | Crown switch, soldered at the top-right corner **fab**|
+| SW1 | **Omron (Aratas) B3F-3152** right-angle 6 × 6 mm tactile switch (or the B3F-3150 when in stock; not the B3F-3100, whose plunger is 3 mm shorter) | 1 | Crown switch, soldered at the top-right corner **fab**|
 | — | Short USB-C cable **with data** (USB 2.0), thin (≤ 3.5 mm) | 1 | Cut to ~6 cm from the plug: ProS3 USB-C → J7. Check D+/D− continuity first; charge-only cables won't work. |
 | R1, R3, R5 | 10 kΩ, ¼ W metal film, 0.4" (10.16 mm) lead pitch | 3 | Series resistors of the hand-sensor dividers **fab**|
 | R2, R4, R6 | 47 kΩ, ¼ W metal film | 3 | Divider shunts (`HAND_DIVIDER_RATIO` = 57/47 in firmware) **fab**|
@@ -84,7 +94,7 @@ takes about 130 joints off your bench. Choose **through-hole (THT) assembly** on
 
 The board stands on three nylon spacers above a Kapton-lined floor. Brass M2 × 12 standoffs carry
 plate P1 above it. The top-right corner has no bay post, which leaves room for the crown switch;
-P1's corner there is held by an M2 nut instead. Around the post holes the board has a 3.4 mm
+P1's corner there sits on a short M2 × 4 F-F standoff instead (it doesn't reach the board). Around the post holes the board has a 3.4 mm
 copper keep-out, so the brass case never touches a net. Every module rests **directly on its 5 mm sockets**: its male header is
 soldered with the black plastic spacer on top, which is then pulled off (step 4 below). The bay
 height is set by the AS5600 chain (socket 5 + board and chip 3.1 + 1.1 mm air gap + Ø6×2.5 magnet
@@ -112,7 +122,7 @@ modules flat.
   receptacle) and 5 mm nylon spacers, with nuts under the carrier, so plugging in pushes on
   screws, not on the socket. Its mouth sits about 1.5 mm inside the outer face, behind a
   10 × 4.4 mm opening that hugs the port (plugs with short shells may not latch fully).
-- **Crown switch (SW1).** An Omron B3F-3150 right-angle tactile switch soldered at the top-right
+- **Crown switch (SW1).** An Omron B3F-3152 (or B3F-3150) right-angle tactile switch soldered at the top-right
   corner, its button on the crown axis. The turned brass crown's stem presses it through the lower
   case's chamfer.
 - **AS5600 ×3 (U2–U4).** Each chip sits exactly under its sensor shaft. The 1×6 row faces the
@@ -144,7 +154,7 @@ pigtails to the INMP441 and the speaker; they plug in before the movement frame 
 ## Assembly order
 
 If the board came factory-assembled, only steps 4 (the modules' header pins, using the fitted
-sockets as the jig), 5 (the battery) and 7 (screwing down U7 and the J7 cable) are left.
+sockets as the jig) and 7 (screwing down U7 and the J7 cable) are left.
 
 1. **Check the bare board** with a multimeter. The GND test pad must not be shorted to `VBAT`,
    `+5V`, `+3V3` or `3V3_SW`.
@@ -160,10 +170,10 @@ sockets as the jig), 5 (the battery) and 7 (screwing down U7 and the J7 cable) a
    pins on top of the module. Then slide the plastic spacer up and off with pliers, and clip the
    stubs flush. The MAX98357A's two speaker pins are single header pins fitted the same way.
    Every module now unplugs and drops back in at exactly the right height.
-5. **Power switch, J8 and battery.** Solder SW2 and J8 flat on the board. Check with a meter that
-   your battery's red wire meets J8's **+** pin; if not, swap the two crimps in its plug (lift the
-   tabs with a pin). Stick the cell to the `BATTERY` area with foam tape, lead end toward the top,
-   and plug it into J8.
+5. **Power switch and J8.** Solder SW2 and J8 flat on the board. The battery itself goes in later,
+   once the board is in the case ([ASSEMBLY.md §6.3](../ASSEMBLY.md#63-battery)); before plugging it
+   in, check with a meter that its red wire meets J8's **+** pin, and if not, swap the two crimps in
+   its plug (lift the tabs with a pin).
 6. **X27 sockets, J4 and J5.** Solder the X27's two 1×4 sockets (plug the motor in as a jig so they
    stand square, then take it out again: it goes in through P1 in ASSEMBLY.md §6) and the two
    PicoBlade headers.

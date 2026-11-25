@@ -44,6 +44,15 @@ class FlushFastenerTests(unittest.TestCase):
                 self.assertLess(engagement, post_h)
 
 
+class BendZoneTests(unittest.TestCase):
+    def test_visible_cut_outs_clear_the_bend_distortion_zone(self):
+        """Grille slots and other face cut-outs stay outside SendCutSend's bend keep-out."""
+        import build
+        for part in (D.lower_tray(), D.upper_shell(), D.lid()):
+            with self.subTest(part=part.name):
+                self.assertEqual([z for z in build.bend_zone(part) if z[3]], [])
+
+
 class PowerSwitchSlotTests(unittest.TestCase):
     def test_a_fingernail_reaches_behind_the_slider_at_both_ends(self):
         """A 1 mm × 2 mm nail tip passes the wall to the slider's back face, on or off."""

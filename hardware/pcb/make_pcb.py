@@ -643,6 +643,8 @@ def export_fab():
          "--output", FAB / "plot_top.pdf", BOARD_FILE])
     run([KICAD_CLI, "pcb", "export", "pdf", "--layers", "B.Cu,B.Silkscreen,Edge.Cuts", "--mirror",
          "--mode-single", "--output", FAB / "plot_bottom.pdf", BOARD_FILE])
+    import assembly_files                       # factory THT assembly: BOM + placement file
+    assembly_files.write(FAB)
     for side in ("top", "bottom"):
         run([KICAD_CLI, "pcb", "render", "--side", side, "--width", "1600", "--height", "1600",
              "--quality", "basic", "--output", FAB / f"render_{side}.png", BOARD_FILE], timeout=900)

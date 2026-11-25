@@ -89,6 +89,32 @@ def interference(parts, lid_angles=(0.0,)) -> list[str]:
     return problems
 
 
+def bend_zone(p) -> list[tuple[str, float, float, bool]]:
+    """Cut-outs within SendCutSend's bend-distortion zone: (what, distance, keep-out, on_face).
+    Features in the visible face (floor/top) must stay clear; openings in a flange are placed by
+    the part they mate with, so they are reported for the order notes instead."""
+    keep = D.BEND_KEEPOUT.get(p.material)
+    if p.tray is None or not p.bends or keep is None:
+        return []
+    from shapely.geometry import LineString, Point, Polygon
+    lines = [LineString(b) for b in p.bends]
+    face = Polygon(p.tray.floor_profile().poly.exterior)
+    feats = [(Polygon(r), "cut-out") for r in p.profile.poly.interiors]
+    feats += [(Point(x, y).buffer(r), f"Ø{2 * r:.1f} hole") for x, y, r in p.profile.holes]
+    out = []
+    for f, kind in feats:
+        d = min(f.distance(ln) for ln in lines)
+        if d < keep:
+            c = f.centroid
+            out.append((f"{kind} at ({c.x:.1f}, {c.y:.1f})", d, keep, face.contains(f)))
+    return out
+
+
+def bend_zone_warnings(parts) -> list[str]:
+    return [f"{p.name}: {desc} {d:.1f} mm from a bend line (may distort; clean it up after forming)"
+            for p in parts if p.profile is not None for desc, d, _, face in bend_zone(p) if not face]
+
+
 def manufacturability(parts) -> list[str]:
     notes = []
     for p in parts:
@@ -104,6 +130,9 @@ def manufacturability(parts) -> list[str]:
                 notes.append(f"{p.name}: {thin:.1f} mm² of webs narrower than {web} mm")
         if p.tray is not None and p.tray.flange_flat + p.tray.setback < D.MIN_FLANGE:
             notes.append(f"{p.name}: flange {p.tray.height:.2f} mm < SCS minimum {D.MIN_FLANGE:.2f} mm")
+        for desc, d, keep, face in bend_zone(p):
+            if face:
+                notes.append(f"{p.name}: {desc} {d:.1f} mm from a bend line (keep {keep:g} mm or it distorts)")
         from shapely.geometry import Point
         for x, y, r in p.profile.holes:
             if not p.profile.poly.buffer(-0.3).contains(Point(x, y).buffer(r)):
@@ -127,9 +156,14 @@ def weight_report(parts) -> tuple[list[dict], float]:
 
 # ---------------------------------------------------------------------------
 def export_fabrication(parts) -> list[dict]:
+    """out/sendcutsend/ holds exactly one file per part to order (flat parts as DXF, bent parts as
+    their formed STEP), so the whole folder can be uploaded. The bent parts' flat patterns (DXF with a
+    BEND layer) go to out/flat_patterns/ for reference only."""
     scs_dir = OUT / "sendcutsend"
+    hold_dir = OUT / "sendcutsend_on_hold"
+    flat_dir = OUT / "flat_patterns"
     step_dir = OUT / "step"
-    for d in (scs_dir, step_dir):
+    for d in (scs_dir, hold_dir, flat_dir, step_dir):
         d.mkdir(parents=True, exist_ok=True)
         for f in d.glob("*"):
             f.unlink()
@@ -138,16 +172,25 @@ def export_fabrication(parts) -> list[dict]:
         if p.kind in ("scs", "scs-bent") and p.profile is not None:
             mat = p.material.replace('"', "in").replace(" ", "-").replace(".", "")
             qty = p.qty + p.qty_extra
-            fname = f"{p.name}__{mat}__qty{qty}.dxf"
-            write_dxf(scs_dir / fname, p.profile, p.bends)
+            stem = f"{p.name}__{mat}__qty{qty}"
+            held = D.HINGE_HOLD and p.name in D.HINGE_DEPENDENT
+            dest = hold_dir if held else scs_dir
             if p.kind == "scs-bent":
                 # Order the bent blank; the case countersinks are a post-process.
+                fname = f"{stem}.step"
                 blank = p.tray.formed() if p.tray is not None else p.solid
-                cq.exporters.export(cq.Workplane().add(blank), str(scs_dir / f"{p.name}__formed.step"))
+                cq.exporters.export(cq.Workplane().add(blank), str(dest / fname))
+                write_dxf(flat_dir / f"{stem}__flat_reference.dxf", p.profile, p.bends)
+            else:
+                fname = f"{stem}.dxf"
+                write_dxf(dest / fname, p.profile, p.bends)
             w, h = p.profile.bbox
-            rows.append(dict(file=fname, part=p.name, material=p.material, qty=qty,
+            rows.append(dict(file=fname, on_hold="yes" if held else "", part=p.name, material=p.material, qty=qty,
                              size_mm=f"{w:.1f} x {h:.1f}", bends=len(p.bends),
-                             notes=p.spec))
+                             notes=p.spec + "".join(
+                                 f"; {desc} sits {d:.1f} mm from a bend (inside SendCutSend's {k:g} mm "
+                                 "distortion zone; it is placed by the part it mates with, so clean it up "
+                                 "after forming if it comes out oval)" for desc, d, k, face in bend_zone(p))))
         cq.exporters.export(cq.Workplane().add(p.solid), str(step_dir / f"{p.name}.step"))
     with open(OUT / "sendcutsend_order.csv", "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
@@ -182,16 +225,23 @@ TURNED_README = """# Turned-parts kit
 
 Generated by `hardware/cad/build.py`: do not edit by hand.
 
-Every arbor, shaft, bushing, sleeve, magnet cup and the crown of the movement, CNC-turned to exact
-length so nothing is cut or measured during assembly. Order the whole table as one job from a
-CNC-turning service (PCBWay, JLCPCB CNC, Xometry, Protolabs Network, or any Swiss-lathe shop):
-upload the `.step` files and this table, which is the drawing.
+Every arbor, shaft, bushing, sleeve, magnet cup and the crown of the movement, made to exact length
+so nothing is cut or measured during assembly. Upload the `.step` files and this table, which is
+the drawing.
+
+**Where to order.** The plain tubes (the **tube** rows below) have 0.36 mm walls. That is under the
+published minimum wall of most instant-quote services (Protolabs 0.51 mm, Hubs 0.5 mm, JLCCNC
+0.8 mm, and JLCCNC turns H59, not C360), so order the kit from **PCBWay CNC** (C360, quotes to a
+marked drawing at ±0.01 mm) or a Swiss-lathe / watch-parts shop. Either can make the **tube** rows
+from precision brass tube cut to length and faced rather than turning them; say so on the quote.
+If a shop will only turn the **lathe** rows, buy the tube rows separately as precision tube cut to
+length (K&S telescoping sizes are the fallback: their ±0.05 mm tolerance can make a pair tight, so
+check each tube slides on the next before cutting).
 
 - **Material:** brass C360 (free-machining), natural finish.
 - **Tolerances:** {tol}.
-- **Thin walls:** the plain tubes have 0.36 mm walls (K&S telescoping sizes, so they slide inside
-  each other). A shop may quote precision brass tube cut to length and faced instead of turning
-  them; that is equally good if the ODs, bores and lengths meet the table.
+- **Thin walls:** the tube rows are K&S telescoping sizes, so they slide inside each other; precision
+  tube cut to length and faced is equally good if the ODs, bores and lengths meet the table.
 - **Crown:** knurl the Ø{cap:g} mm cap (straight or diamond, about 0.5 mm pitch).
 - Order **one or two spares** of the small plain parts (bushings, sleeves): they are cheap and easy
   to lose.
@@ -200,8 +250,8 @@ Segments are listed from the bottom of the part up (as fitted), as OD × length;
 that segment only. "—" = solid. **★** = running fit, held to {tol_run}; quote the kit both ways
 (★ only, and everything at the tight tolerance) if the shop prices them differently.
 
-| Part | Qty | Length | Segments (bottom up) | How it is fitted |
-|---|---|---|---|---|
+| Part | Make as | Qty | Length | Segments (bottom up) | How it is fitted |
+|---|---|---|---|---|---|
 {rows}
 """
 
@@ -221,8 +271,9 @@ def export_turned(parts) -> list:
         marks = D.running_marks(p.name, segs)
         cells = "; ".join(f"Ø{od:.3f}{'★' * mo}" + (f" (bore Ø{bore:.3f}{'★' * mb})" if bore else " —")
                           + f" × {h:.3f}" for (od, bore, h), (mo, mb) in zip(segs, marks))
-        rows.append(f"| `{p.name}` | {p.qty} | {p.drawing['length']:.3f} | {cells} | {p.drawing['use']} |")
-        csv_rows.append(dict(part=p.name, qty=p.qty, length_mm=round(p.drawing["length"], 3),
+        make = "tube" if len(segs) == 1 and segs[0][1] else "lathe"
+        rows.append(f"| `{p.name}` | {make} | {p.qty} | {p.drawing['length']:.3f} | {cells} | {p.drawing['use']} |")
+        csv_rows.append(dict(part=p.name, make_as=make, qty=p.qty, length_mm=round(p.drawing["length"], 3),
                              segments=cells, use=p.drawing["use"]))
     (out / "README.md").write_text(TURNED_README.format(tol=D.TURNED_TOL, tol_run=D.TURNED_TOL_RUNNING, cap=D.CROWN_CAP_D,
                                                         rows="\n".join(rows)), encoding="utf-8")
@@ -395,6 +446,9 @@ def main() -> int:
     log("manufacturability: " + ("OK" if not notes else ""))
     for n in notes:
         log("  ! " + n)
+    bend_warn = bend_zone_warnings(parts)
+    for n in bend_warn:
+        log("  ~ " + n)
 
     t1 = time.time()
     angles = [*range(0, math.ceil(D.LID_OPEN_ANGLE), 5), D.LID_OPEN_ANGLE]
@@ -431,7 +485,7 @@ def main() -> int:
         w.writerows(sorted(rows, key=lambda r: -r["grams"]))
     report = dict(summary=D.summary(), weight_g=round(grams), interference=problems,
                   lid_check_angles=angles,
-                  manufacturability=notes, sendcutsend_files=len(order), gear_mesh=gear_mesh,
+                  manufacturability=notes, bend_zone=bend_warn, sendcutsend_files=len(order), gear_mesh=gear_mesh,
                   turned_parts=sum(p.qty for p in turned))
     (OUT / "build_report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     log(f"exported {len(order)} SendCutSend files")
