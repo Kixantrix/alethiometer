@@ -114,6 +114,7 @@ KNOB_GEAR_SPEC = ("Misumi GEAHB0.8-25-5-A-5: spur gear, module 0.8, 20° PA, fre
 X27_SHAFT = L.X27_SHAFT                    # 19.95, 0
 X27_BODY_D, X27_BODY_H, X27_SHAFT_OFFSET = L.X27_BODY_D, 9.6, L.X27_SHAFT_OFFSET
 X27_CENTER = L.X27_CENTER
+X27_HOLE_CLEAR, X27_RING_W = 0.5, 2.8   # P1's X27 opening: radial clearance, ring width round it
 X27_BODY_BOTTOM = Z_CARRIER_TOP + L.X27_SOCKET_H   # rear pins (4.4 mm) plug into 5 mm sockets
 X27_BODY_TOP = X27_BODY_BOTTOM + X27_BODY_H  # motor gear rides on the Ø1 shaft above the collar
 SENSOR_MAGNET_H = 2.5                      # Ø6×2.5 diametric (the usual AS5600 magnet)
@@ -517,7 +518,7 @@ def p1_plate() -> Part:
     p = Profile(outline)
     bearings = [(0.0, 0.0)] + [sensor_xy(t) for t in TRAINS] + [knob_xy(t) for t in TRAINS]
     keep = [circle(x, y, 4.6) for x, y in bearings] + [circle(x, y, 4.4) for x, y in POSTS]
-    keep.append(circle(*X27_CENTER, X27_BODY_D / 2 + 2.6))
+    keep.append(circle(*X27_CENTER, X27_BODY_D / 2 + X27_HOLE_CLEAR + X27_RING_W))
     keep.append(circle(*SPEAKER["c"], SPEAKER["d"] / 2 + 1.0))            # speaker seat
     ribs = []
     for tr in TRAINS:
@@ -532,7 +533,7 @@ def p1_plate() -> Part:
         p.hole(*knob_xy(tr), TUBE_316 + BUSH_FIT)    # 3/16" tube bushings for the 5/32" knob shafts
     for x, y in POSTS:
         p.hole(x, y, POST_HOLE_PLATE)
-    p.cut(slot(X27_CENTER[0] - 1.0, 0, X27_CENTER[0] + 1.0, 0, X27_BODY_D + 0.6))  # slide to set gear mesh
+    p.cut(circle(*X27_CENTER, X27_BODY_D / 2 + X27_HOLE_CLEAR))   # the carrier's sockets locate the X27
     # Open the speaker seat: its back vents into the bay (more back volume, better sound)
     # and its leads drop straight through to J5
     p.cut(circle(*SPEAKER["c"], SPK_SEAT_OPEN / 2))
