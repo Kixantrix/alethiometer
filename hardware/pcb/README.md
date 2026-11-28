@@ -140,7 +140,7 @@ modules flat.
 **Off-board connections.** The mic and speaker plug into **J4** and **J5**, vertical PicoBlade
 headers: header and mated plug stand about 6.5 mm, well under P1 (12 mm). Solder pre-crimped
 pigtails to the INMP441 and the speaker; they plug in before the movement frame goes down
-(ASSEMBLY.md §6.4) and unplug when it is lifted out. J1 and J2 take ordinary vertical male headers
+(ASSEMBLY.md §6.3) and unplug when it is lifted out. J1 and J2 take ordinary vertical male headers
 (8.5 mm fits under P1); you only plug into J1 on the bench, with the movement lifted off.
 
 | Ref | Pins (silkscreen) | Goes to |
@@ -171,7 +171,7 @@ sockets as the jig) and 7 (screwing down U7 and the J7 cable) are left.
    stubs flush. The MAX98357A's two speaker pins are single header pins fitted the same way.
    Every module now unplugs and drops back in at exactly the right height.
 5. **Power switch and J8.** Solder SW2 and J8 flat on the board. The battery itself goes in later,
-   once the board is in the case ([ASSEMBLY.md §6.3](../ASSEMBLY.md#63-battery)); before plugging it
+   just before the bench test ([ASSEMBLY.md §4.3](../ASSEMBLY.md#43-battery)); before plugging it
    in, check with a meter that its red wire meets J8's **+** pin, and if not, swap the two crimps in
    its plug (lift the tabs with a pin).
 6. **X27 sockets, J4 and J5.** Solder the X27's two 1×4 sockets (plug the motor in as a jig so they

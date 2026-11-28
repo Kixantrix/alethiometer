@@ -31,7 +31,7 @@ groups:
                        standoff_hand, dial_sticker, *hands]
   carrier: &carrier [pcb_carrier, module_sockets, crown_switch, switch_power, battery_socket, conn_mic,
                      conn_speaker, mcu_ProS3, driver_DRV8833, amp_MAX98357A, "sensor_AS5600_*", usb_c_breakout,
-                     spacer_usb, screw_usb, nut_usb, wire_usb]
+                     spacer_usb, screw_usb, nut_usb, wire_usb, battery, battery_plug, wire_battery]
   x27: &x27 [motor_X27_168, gear_motor_34T]
   pins: &pins [align_pin_1_8, align_pin_5_32]
   shell: &shell [case_upper_shell, crystal, magnet_body]
@@ -559,6 +559,24 @@ sections:
         apply:
           - {what: solder, at: wire_usb, anchor: bottom, time: 2.6, note: USB-C cable into J7}
 
+      - id: battery
+        title: Battery
+        text: |
+          Check with a meter that the cell's red wire lands on J8's **+** mark (JST-PH polarity isn't
+          standardised; if it's reversed, swap the two crimps in its plug by lifting their tabs with a
+          pin). Stick the cell to the carrier's `BATTERY` area with thin double-sided foam tape, lead end
+          toward the top, and plug it into J8. The power switch disconnects it from everything past J8:
+          leave it **off** (slider away from the USB port) except while testing.
+        only: [*carrier]
+        tools: [multimeter]
+        checks: ["Red lead on J8's + mark (measure before plugging in)"]
+        view: [0.2, -0.9, 0.55]
+        motions:
+          - {parts: [battery, wire_battery], from: {up: 59}, to: {up: 45}, dur: 1.0, nocheck: true}
+          - {parts: battery_plug, from: {t: [0, 6, 45]}, to: {up: 45}, dur: 0.8}
+        apply:
+          - {what: foam, at: battery, anchor: bottom, offset: [0, 0, 45], note: under the cell}
+
       - id: bench-test
         title: Bench test
         test: true
@@ -570,6 +588,10 @@ sections:
           each AS5600 and turning it should walk through all 36 symbols (the magnets aren't glued until
           §5.3). Plug the X27 into its sockets for `home` and `sweep`, then take it out
           again: it goes in through P1 in §6.
+
+          Then unplug USB and switch the power on: it should run on the battery (`status` over Wi-Fi
+          or the crown waking it), and switching off should drop `BAT+` and `VBAT` (bring-up step 7).
+          **Switch it off again** before going on.
 
           Run `wifi` and **write down the setup-portal password** it prints. Once the board is
           inside the case you'll need it.
@@ -676,7 +698,7 @@ sections:
         title: Carrier into the lower tray
         text: |
           Line the floor with one layer of Kapton. Put the three nylon spacers over the floor holes and
-          lower the populated carrier straight in: U7's receptacle lines up with the wall opening, the
+          lower the populated carrier, battery and all (power switch off), straight in: U7's receptacle lines up with the wall opening, the
           crown switch goes into the top-right corner, and the power switch's slider lines up behind its
           slot in the back wall. Fit the crown afterwards: its stem reaches about 1 mm over the board's
           edge, so the carrier can't be lowered past it.
@@ -706,22 +728,6 @@ sections:
           - {parts: crown_eclip, from: {up: 9}, dur: 0.9}
           - {parts: crown_turned, by: {t: [-0.2, -0.2, 0]}, dur: 0.25, nocheck: true}
           - {parts: crown_turned, by: {t: [0.2, 0.2, 0]}, dur: 0.25, nocheck: true}
-
-      - id: battery
-        title: Battery
-        text: |
-          Stick the cell down with thin double-sided foam tape and plug it into J8. Check with a meter
-          first that its red wire lands on the **+** mark: JST-PH polarity isn't standardised.
-        only: [case_lower_tray, spacer_carrier, *carrier, crown_turned, crown_eclip, battery, battery_plug,
-               wire_battery]
-        tools: [multimeter]
-        checks: ["Red lead on J8's + mark (measure before plugging in)"]
-        view: [0.2, -0.9, 0.55]
-        motions:
-          - {parts: [battery, wire_battery], from: {up: 14}, dur: 1.0, nocheck: true}
-          - {parts: battery_plug, from: {t: [0, 6, 0]}, dur: 0.8}
-        apply:
-          - {what: foam, at: battery, anchor: bottom, note: under the cell}
 
       - id: plug-leads
         title: Plug in the speaker and mic leads
@@ -1136,7 +1142,7 @@ sections:
           - "A hand reads the neighbouring symbol at one place only: the AS5600 isn't level or the magnet is off-centre; check §5.3, then recalibrate"
           - "A hand reads off by the same amount everywhere: recalibrate (five clicks)"
           - "The needle is off by the same amount everywhere: recalibrate the needle offset"
-          - "The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.6)"
+          - "The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.5)"
         view: top
         motions:
           - {parts: [hand_needle, arbor_needle, gear_needle_17T], pivot: arbor_needle, spin: 0.75, dur: 3.0}
@@ -1151,9 +1157,9 @@ sections:
       | §1.2 | Measure the gears | Tip Ø within +0.06 / −0.10 mm of 27.2 (32T), 15.2 (17T), 28.8 (34T) | Thin cut: try the `_T` alternates on the dry run |
       | §1.6 | Bushing pairs | Each drill blank slides through its pair | Release the 638 with heat, redo the pair |
       | §3.1 | Dry run | Two full turns each way, even feel, ~1° rock, no cross-talk | Binding: find the burr; sloppy: that hand's `_T` gear |
-      | §4.3 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
-      | §6.6 | Motor mesh | `sweep` smooth both ways, a little rock | Sloppy: `gear_needle_17T_T` |
-      | §6.8 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; as the dry run |
+      | §4.4 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
+      | §6.5 | Motor mesh | `sweep` smooth both ways, a little rock | Sloppy: `gear_needle_17T_T` |
+      | §6.7 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; as the dry run |
       | §7.3 | Hand clearances | Paper passes between hands; nothing on the dial | Re-press with the setting tool |
       | §8.7 | In the case | Wheels clear the notches, hands clear the crystal, crown corner stiff | Re-centre the shell; re-press a hand |
       | §9.1 | Lid | Full travel, flush heads, magnets close it | Countersink more; flip the magnet |
@@ -1233,7 +1239,7 @@ findings:
     resolution: |
       The X27 sockets are soldered in §4.1; the jig steps are gone. The motor pair has the same
       backlash as the other gear-to-gear pairs: its needle gear is cut loose enough to run at a
-      worst-case cut, with a tight `_T` alternate if it is sloppy (§6.6 test).
+      worst-case cut, with a tight `_T` alternate if it is sloppy (§6.5 test).
 
   - id: F4
     title: P2 had to find seven shaft tips at once
@@ -1263,7 +1269,7 @@ findings:
     resolution: |
       J4 and J5 are Molex PicoBlade 53047 vertical headers (5 and 2 pins) on the carrier, at the same
       places, rerouted with 0 DRC violations. The leads are pre-crimped pigtails soldered at the mic and
-      speaker on the bench, and plug in before the frame goes down (§6.4).
+      speaker on the bench, and plug in before the frame goes down (§6.3).
 
   - id: F6
     title: Six hinge holes were hand-drilled through the finished case

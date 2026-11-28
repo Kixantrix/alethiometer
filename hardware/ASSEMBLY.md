@@ -460,7 +460,21 @@ two **M2×10** cheese-head screws from the top and M2 nuts under the carrier.
 - slotted screwdriver 1.5–2.5 mm
 - 4 mm nut driver
 
-### 4.3 Test: Bench test
+### 4.3 Battery
+
+Check with a meter that the cell's red wire lands on J8's **+** mark (JST-PH polarity isn't
+standardised; if it's reversed, swap the two crimps in its plug by lifting their tabs with a
+pin). Stick the cell to the carrier's `BATTERY` area with thin double-sided foam tape, lead end
+toward the top, and plug it into J8. The power switch disconnects it from everything past J8:
+leave it **off** (slider away from the USB port) except while testing.
+
+*Apply:* Double-sided foam tape: under the cell
+
+*Tools:* multimeter
+
+*Check:* Red lead on J8's + mark (measure before plugging in)
+
+### 4.4 Test: Bench test
 
 Work through the [bring-up checklist](pcb/README.md#bring-up-checklist) one module at a
 time. Flash the firmware (see [`../firmware/README.md`](../firmware/README.md)) once the
@@ -469,6 +483,10 @@ probing the test pads if anything misbehaves. Holding one of the three Ø6 senso
 each AS5600 and turning it should walk through all 36 symbols (the magnets aren't glued until
 §5.3). Plug the X27 into its sockets for `home` and `sweep`, then take it out
 again: it goes in through P1 in §6.
+
+Then unplug USB and switch the power on: it should run on the battery (`status` over Wi-Fi
+or the crown waking it), and switching off should drop `BAT+` and `VBAT` (bring-up step 7).
+**Switch it off again** before going on.
 
 Run `wifi` and **write down the setup-portal password** it prints. Once the board is
 inside the case you'll need it.
@@ -554,7 +572,7 @@ hole over the port. Its lead hangs down through P1's open lattice once P2 goes o
 ### 6.1 Carrier into the lower tray
 
 Line the floor with one layer of Kapton. Put the three nylon spacers over the floor holes and
-lower the populated carrier straight in: U7's receptacle lines up with the wall opening, the
+lower the populated carrier, battery and all (power switch off), straight in: U7's receptacle lines up with the wall opening, the
 crown switch goes into the top-right corner, and the power switch's slider lines up behind its
 slot in the back wall. Fit the crown afterwards: its stem reaches about 1 mm over the board's
 edge, so the carrier can't be lowered past it.
@@ -575,18 +593,7 @@ between the wall and the crown switch. The groove's position gives the 0.3 mm of
 
 *Design review:* [F10: The crown stem blocks the carrier if the crown goes in first](assembly/FINDINGS.md#f10)
 
-### 6.3 Battery
-
-Stick the cell down with thin double-sided foam tape and plug it into J8. Check with a meter
-first that its red wire lands on the **+** mark: JST-PH polarity isn't standardised.
-
-*Apply:* Double-sided foam tape: under the cell
-
-*Tools:* multimeter
-
-*Check:* Red lead on J8's + mark (measure before plugging in)
-
-### 6.4 Plug in the speaker and mic leads
+### 6.3 Plug in the speaker and mic leads
 
 With P1's frame and P2 standing beside the tray, plug the speaker lead into **J5** and the mic
 lead into **J4**: both headers sit right under their pass-throughs (see WIRING.md, *Where
@@ -600,7 +607,7 @@ the movement out again and unplug them.
 
 *Design review:* [F5: Speaker and mic leads were soldered in with the movement dangling beside the tray](assembly/FINDINGS.md#f5)
 
-### 6.5 Lower the movement frame onto the carrier
+### 6.4 Lower the movement frame onto the carrier
 
 Lower P1's frame straight down onto the carrier, threading the mic lead through P1's lattice.
 The magnet cups come to rest just above the AS5600 chips. Fix it with three **M2×8
@@ -611,7 +618,7 @@ spacer slides off its hole, a dot of Blu-Tack under it on the Kapton holds it in
 
 *Tools:* slotted screwdriver 2.5 mm
 
-### 6.6 Test: X27 in through P1's opening
+### 6.5 Test: X27 in through P1's opening
 
 Lower the X27 (motor gear on) through P1's opening into its sockets. The motor gear slides into
 mesh with the needle gear (rock the needle arbor a hair if the teeth butt). Then, with USB
@@ -637,7 +644,7 @@ directions. Gently rock the needle arbor with tweezers: you should feel a little
 - [F3: The motor mesh was set by solder-joint play, using the carrier as a jig](assembly/FINDINGS.md#f3)
 - [F9: The motor gear can't pass P1's opening, so the movement can't be finished on the bench](assembly/FINDINGS.md#f9)
 
-### 6.7 Lower P2 onto the shaft tips
+### 6.6 Lower P2 onto the shaft tips
 
 Lower P2 (its cannon already glued in) over arbor I's top and onto the shaft tips. The three knob shafts stand 0.6 mm taller
 than the rest and every tip is chamfered, so P2 drops onto the knob shafts first; they hold it
@@ -651,7 +658,7 @@ four **M2×8 M-F** hand standoffs through P2 into the gear standoffs.
 
 *Design review:* [F4: P2 had to find seven shaft tips at once](assembly/FINDINGS.md#f4)
 
-### 6.8 Test: The whole movement, then oil
+### 6.7 Test: The whole movement, then oil
 
 Repeat the dry run's feel test on the finished movement: two full turns of each thumbwheel
 each way, a rock between each pair, and no cross-talk between trains. Then with USB connected
@@ -918,7 +925,7 @@ stops.
 - A hand reads the neighbouring symbol at one place only: the AS5600 isn't level or the magnet is off-centre; check §5.3, then recalibrate
 - A hand reads off by the same amount everywhere: recalibrate (five clicks)
 - The needle is off by the same amount everywhere: recalibrate the needle offset
-- The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.6)
+- The needle lands differently from each side by more than 2.5°: too much backlash in the motor pair; fit `gear_needle_17T_T` (§6.5)
 
 ## 11. Tests and adjustments at a glance
 
@@ -927,9 +934,9 @@ stops.
 | §1.2 | Measure the gears | Tip Ø within +0.06 / −0.10 mm of 27.2 (32T), 15.2 (17T), 28.8 (34T) | Thin cut: try the `_T` alternates on the dry run |
 | §1.6 | Bushing pairs | Each drill blank slides through its pair | Release the 638 with heat, redo the pair |
 | §3.1 | Dry run | Two full turns each way, even feel, ~1° rock, no cross-talk | Binding: find the burr; sloppy: that hand's `_T` gear |
-| §4.3 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
-| §6.6 | Motor mesh | `sweep` smooth both ways, a little rock | Sloppy: `gear_needle_17T_T` |
-| §6.8 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; as the dry run |
+| §4.4 | Bench test | `hands`, `home`, `sweep`, `tone`, `rec` | pcb/README.md bring-up checklist |
+| §6.5 | Motor mesh | `sweep` smooth both ways, a little rock | Sloppy: `gear_needle_17T_T` |
+| §6.7 | Whole movement | As the dry run; `hands` tracks each knob alone | Even out the hand standoffs; as the dry run |
 | §7.3 | Hand clearances | Paper passes between hands; nothing on the dial | Re-press with the setting tool |
 | §8.7 | In the case | Wheels clear the notches, hands clear the crystal, crown corner stiff | Re-centre the shell; re-press a hand |
 | §9.1 | Lid | Full travel, flush heads, magnets close it | Countersink more; flip the magnet |

@@ -248,7 +248,7 @@ sites and walked the assembly guide. What it found and what changed:
 | Factory carrier assembly couldn't be ordered: no assembly BOM or placement file, no 5 mm socket at LCSC | `pcb/assembly_files.py` writes `fab/assembly_bom.csv` and `fab/assembly_cpl.csv`; PCBWay turnkey with Adafruit #3008 sockets (DigiKey 1528-3008-ND) |
 | Crown switch B3F-3150 out of stock until 2027 | B3F-3152: same footprint and plunger, slightly firmer |
 | MAX98357A now ships with a terminal block soldered on | Removal step in ASSEMBLY.md §4.1 and pcb/README |
-| X27 #2424 and speaker #1890 out of stock; #1890 only 0.25 W | X27 from multi-packs (tested at §4.3); Same Sky CMS-28468N speaker (0.5 W, 4.6 mm) |
+| X27 #2424 and speaker #1890 out of stock; #1890 only 0.25 W | X27 from multi-packs (tested at §4.4); Same Sky CMS-28468N speaker (0.5 W, 4.6 mm) |
 | Turned kit below most shops' minimum wall | Drawing splits "lathe" and "tube" rows; PCBWay or a Swiss shop |
 | Misumi has no brass 26T thumbwheel with a 4 mm bore | 25T GEAHB0.8-25-5-A-5 (5 mm bore); knob shaft gets a 5 mm seat; wheels protrude 2.9 mm instead of 3.7 |
 | "Upload everything" ordered the case twice; held files weren't separated | One file per part in `out/sendcutsend/`; reference flats in `out/flat_patterns/`; hinge-dependent files in `out/sendcutsend_on_hold/` |

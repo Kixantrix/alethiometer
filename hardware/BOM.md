@@ -99,7 +99,7 @@ which can leave a pair tight: check that each tube slides on the next before cut
 | M1.6 × 4 DIN 963 countersunk screw, 90°, Ø3.0 mm head, brass | 2 | see note | Flush in the lid hinge leaf, so visible. Brass M1.6 is hard to buy in small numbers: ask Model Fixings (they take requests for other sizes) or buy Aspen's box of 300 (ME193, about $170); A2 stainless (Accu SFK-M1.6-4-A2) fits but shows as two small silver heads |
 | M1.6 hex nut, 3.2 mm AF × 1.3 mm (brass, Accu HPN-M1.6-BR), and M1.6 DIN 125 washer, Ø4 × 0.3 (A2 stainless: hidden) | 2 each | 3 | Inside the lid wall |
 | DIN 6799 retaining washer (E-clip), **size 1.5** (for Ø2–2.5 shafts), stainless | 1 (+ spares) | 2 | Holds the crown in, inside the wall. They fly: buy a pack |
-| Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick), e.g. Radial Magnet 8995 | 3 | 5 | Sensor-shaft magnets for the AS5600s; the §4.3 bench test borrows them before they're glued |
+| Ø6 × 2.5 mm **diametrically magnetised** NdFeB magnet (the standard AS5600 magnet; ≤ 2.5 mm thick), e.g. Radial Magnet 8995 | 3 | 5 | Sensor-shaft magnets for the AS5600s; the §4.4 bench test borrows them before they're glued |
 | Ø5 × 4 mm N52 axial magnet, e.g. JC Magnetics JCN52-DSC5-4 | 2 | 2 | Lid closure pair |
 
 The external screws use nominal Ø3.8 mm heads
@@ -128,7 +128,7 @@ header with part numbers. Summary:
 | **Adafruit AS5600** magnetic angle sensor, STEMMA QT (**#6357**) | 3 | 15 | Header included |
 | **Adafruit DRV8833** dual H-bridge breakout (#3297) | 1 | 5 | Header included |
 | **Adafruit MAX98357A** I2S class-D amp (#3006) | 1 | 6 | Header included. Now ships with a screw terminal soldered on: remove it (ASSEMBLY.md §4.1) |
-| **Juken/Switec X27.168** gauge stepper (with internal stop and 4 rear pins; *don't* remove the stop) | 1 | 4–10 | Adafruit #2424 when in stock; otherwise a 4–6 pack from Amazon (uxcell) or eBay gauge-repair sellers. Listings rarely say whether they have the stop: the §4.3 `home` test shows it (the needle stops dead at one end), and a multi-pack covers a dud |
+| **Juken/Switec X27.168** gauge stepper (with internal stop and 4 rear pins; *don't* remove the stop) | 1 | 4–10 | Adafruit #2424 when in stock; otherwise a 4–6 pack from Amazon (uxcell) or eBay gauge-repair sellers. Listings rarely say whether they have the stop: the §4.4 `home` test shows it (the needle stops dead at one end), and a multi-pack covers a dud |
 | Short female headers, 5 mm body (**Adafruit #3008**, 5 × 36-pin; DigiKey 1528-3008-ND) | 1 pack | 8 | Every module socket, including the X27. Exactly 5 mm: LCSC's single-row sockets are 8.5 mm and would lift the sensors into their magnets. Bought by the PCB assembler if you order assembly |
 | Male header strip 0.1", 1×40 | 1 | 1 | Speaker pins, J1/J2 |
 | Resistors ¼ W metal film: **10 kΩ × 3, 47 kΩ × 3** | 6 | 1 | Hand-sensor dividers |

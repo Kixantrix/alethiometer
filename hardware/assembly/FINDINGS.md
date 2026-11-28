@@ -12,11 +12,11 @@ followed as written, and the guide now shows an order that works.
 |---|---|---|---|---|
 | [F1](#f1) | high | done | Bushing alignment procedure can't be followed as written | 1.5 Glue the bushings into P1 and P2; 1.6 Line up the bushing pairs with drill blanks |
 | [F2](#f2) | high | done | Nothing held the crystal and spiders while the shell was turned over and lowered | 8.1 Upper shell, upside down; 8.2 Turn the shell back over |
-| [F3](#f3) | high | done | The motor mesh was set by solder-joint play, using the carrier as a jig | 4.1 Populate the carrier; 6.6 X27 in through P1's opening |
-| [F9](#f9) | high | guide updated | The motor gear can't pass P1's opening, so the movement can't be finished on the bench | 6.6 X27 in through P1's opening |
+| [F3](#f3) | high | done | The motor mesh was set by solder-joint play, using the carrier as a jig | 4.1 Populate the carrier; 6.5 X27 in through P1's opening |
+| [F9](#f9) | high | guide updated | The motor gear can't pass P1's opening, so the movement can't be finished on the bench | 6.5 X27 in through P1's opening |
 | [F10](#f10) | medium | guide updated | The crown stem blocks the carrier if the crown goes in first | 6.1 Carrier into the lower tray; 6.2 Crown |
-| [F4](#f4) | medium | done | P2 had to find seven shaft tips at once | 6.7 Lower P2 onto the shaft tips |
-| [F5](#f5) | medium | done | Speaker and mic leads were soldered in with the movement dangling beside the tray | 4.1 Populate the carrier; 5.4 Speaker; 5.5 Microphone under P2; 6.4 Plug in the speaker and mic leads |
+| [F4](#f4) | medium | done | P2 had to find seven shaft tips at once | 6.6 Lower P2 onto the shaft tips |
+| [F5](#f5) | medium | done | Speaker and mic leads were soldered in with the movement dangling beside the tray | 4.1 Populate the carrier; 5.4 Speaker; 5.5 Microphone under P2; 6.3 Plug in the speaker and mic leads |
 | [F6](#f6) | medium | done | Six hinge holes were hand-drilled through the finished case | 3.7 Hinge: check it and drill the leaves |
 | [F7](#f7) | low | done | The hinge was cut from 72-inch stock by hand | 3.7 Hinge: check it and drill the leaves |
 | [F8](#f8) | low | done | The crown corner was held by a loose nut | 1.6 Line up the bushing pairs with drill blanks |
@@ -74,9 +74,9 @@ pins' play in their holes.
 
 **Resolution.** The X27 sockets are soldered in §4.1; the jig steps are gone. The motor pair has the same
 backlash as the other gear-to-gear pairs: its needle gear is cut loose enough to run at a
-worst-case cut, with a tight `_T` alternate if it is sloppy (§6.6 test).
+worst-case cut, with a tight `_T` alternate if it is sloppy (§6.5 test).
 
-Seen in: 4.1 Populate the carrier; 6.6 X27 in through P1's opening
+Seen in: 4.1 Populate the carrier; 6.5 X27 in through P1's opening
 
 ## F9
 
@@ -93,7 +93,7 @@ slot, and the hand gears have to pass the motor gear's level.
 **Resolution.** That is the order in §6 and §7. With F3 there is no jig to pull the X27 out of; the X27 is only
 lifted out for servicing.
 
-Seen in: 6.6 X27 in through P1's opening
+Seen in: 6.5 X27 in through P1's opening
 
 ## F10
 
@@ -125,7 +125,7 @@ coaxed onto all of them together.
 bore (fitted chamfer down), and the knob shafts stand 0.6 mm proud of P2 so it picks them up first.
 Sensor shafts stay flush: the needle sweeps 0.45 mm above them.
 
-Seen in: 6.7 Lower P2 onto the shaft tips
+Seen in: 6.6 Lower P2 onto the shaft tips
 
 ## F5
 
@@ -140,9 +140,9 @@ desoldered to lift the movement out.
 
 **Resolution.** J4 and J5 are Molex PicoBlade 53047 vertical headers (5 and 2 pins) on the carrier, at the same
 places, rerouted with 0 DRC violations. The leads are pre-crimped pigtails soldered at the mic and
-speaker on the bench, and plug in before the frame goes down (§6.4).
+speaker on the bench, and plug in before the frame goes down (§6.3).
 
-Seen in: 4.1 Populate the carrier; 5.4 Speaker; 5.5 Microphone under P2; 6.4 Plug in the speaker and mic leads
+Seen in: 4.1 Populate the carrier; 5.4 Speaker; 5.5 Microphone under P2; 6.3 Plug in the speaker and mic leads
 
 ## F6
 
