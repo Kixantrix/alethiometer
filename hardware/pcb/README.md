@@ -5,7 +5,7 @@ point-to-point wiring. **Every module plugs into sockets**, so you can pull any 
 reflash, probe or replace it without desoldering anything. The crown switch and the wall USB-C
 port are mounted on the board too, so their push and plug forces go into the screwed-down
 carrier rather than a glue joint. So are the power slide switch and the battery's
-JST-PH socket. The two off-board parts (mic, speaker) plug into PicoBlade headers J4 and J5. Every signal also has a labelled test pad. The underside carries an alethiometer dial in the silkscreen (`emblem()` in `make_pcb.py`).
+JST-PH socket. The two off-board parts (mic, speaker) plug into PicoBlade headers J4 and J5. Every signal also has a labelled test pad. The underside carries a line drawing of the finished instrument in the silkscreen, drawn from the CAD by [`emblem_art.py`](emblem_art.py) (re-run it after a CAD change, then `make_pcb.py`).
 
 ![top](fab/render_top.png)
 

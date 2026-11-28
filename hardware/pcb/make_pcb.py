@@ -80,61 +80,23 @@ def _text(parent, text, pos, size, layer, angle=0.0):
 
 
 # =============================================================================
-# Art: an alethiometer dial on the bottom silkscreen
+# Art: a line drawing of the finished instrument on the bottom silkscreen
 # =============================================================================
-EMBLEM = dict(c=(12.0, 0.0), r=14.0)     # pad-free on the bottom, between the X27's two socket rows
+EMBLEM = dict(c=(12.0, 0.0), file=HERE / "emblem_iso.json", width=0.15)   # pad-free, between the X27 rows
 
 
-def emblem(board, cx: float, cy: float, R: float, layer=pcbnew.B_SilkS):
-    """A dial in the spirit of the instrument: a ring of 36 ticks, a compass star, three framing
-    hands and the answering needle. Drawn in CAD coordinates (y up); silkscreen only."""
-    def shape(kind, w, filled=False):
-        sh = pcbnew.PCB_SHAPE(board, kind)
-        sh.SetLayer(layer)
-        sh.SetWidth(mm(w))
-        sh.SetFilled(filled)
-        board.Add(sh)
-        return sh
-
-    def seg(a, b, w):
-        sh = shape(pcbnew.SHAPE_T_SEGMENT, w)
-        sh.SetStart(P(cx + a[0], cy + a[1]))
-        sh.SetEnd(P(cx + b[0], cy + b[1]))
-
-    def circ(c, r, w, filled=False):
-        sh = shape(pcbnew.SHAPE_T_CIRCLE, w, filled)
-        sh.SetCenter(P(cx + c[0], cy + c[1]))
-        sh.SetEnd(P(cx + c[0] + r, cy + c[1]))
-
-    def poly(pts, filled=True, w=0.1):
-        sh = shape(pcbnew.SHAPE_T_POLY, w, filled)
-        sh.SetPolyPoints([P(cx + x, cy + y) for x, y in pts])
-
-    def pol(r, deg, base=(0.0, 0.0)):
-        a = math.radians(deg)
-        return (base[0] + r * math.cos(a), base[1] + r * math.sin(a))
-
-    circ((0, 0), R, 0.35)
-    circ((0, 0), R * 0.90, 0.15)
-    circ((0, 0), R * 0.66, 0.15)
-    for k in range(36):                                   # 36 symbols round the dial
-        a = 90 - 10 * k
-        seg(pol(R * (0.80 if k % 9 == 0 else 0.84), a), pol(R * 0.90, a), 0.3 if k % 9 == 0 else 0.18)
-    for k in range(12):                                   # beads between the two outer circles
-        circ(pol(R * 0.95, 95 - 30 * k), 0.28, 0.15, filled=True)
-    poly([pol(R * (0.60 if k % 4 == 0 else 0.38 if k % 2 == 0 else 0.13), 90 - 22.5 * k)   # compass star
-          for k in range(16)], filled=False, w=0.15)
-    for deg in (35.0, 155.0, 265.0):                     # three framing hands: a lozenge with a ring
-        mid = pol(R * 0.45, deg)
-        poly([(0.0, 0.0), pol(R * 0.075, deg + 90, mid), pol(R * 0.80, deg), pol(R * 0.075, deg - 90, mid)])
-        circ(pol(R * 0.56, deg), R * 0.07, 0.15)
-    deg = 100.0                                           # the answering needle, with a weighted tail
-    seg(pol(-R * 0.22, deg), pol(R * 0.86, deg), 0.22)
-    barb = pol(R * 0.70, deg)
-    poly([pol(R * 0.86, deg), pol(0.45, deg + 90, barb), pol(0.45, deg - 90, barb)])
-    circ(pol(-R * 0.22, deg), 0.6, 0.15, filled=True)
-    circ((0, 0), R * 0.13, 0.2)                           # arbor and cap
-    circ((0, 0), R * 0.06, 0.15, filled=True)
+def emblem(board, cx: float, cy: float, layer=pcbnew.B_SilkS):
+    """The instrument, lid open, as drawn by emblem_art.py from the CAD (hidden lines removed).
+    Mirrored in x so it reads the right way round when the board is turned over."""
+    data = json.loads(EMBLEM["file"].read_text(encoding="utf-8"))
+    for line in data["lines"]:
+        for (x0, y0), (x1, y1) in zip(line, line[1:]):
+            sh = pcbnew.PCB_SHAPE(board, pcbnew.SHAPE_T_SEGMENT)
+            sh.SetStart(P(cx - x0, cy + y0))
+            sh.SetEnd(P(cx - x1, cy + y1))
+            sh.SetLayer(layer)
+            sh.SetWidth(mm(EMBLEM["width"]))
+            board.Add(sh)
 
 # =============================================================================
 # Footprints
@@ -579,7 +541,7 @@ def build() -> pcbnew.BOARD:
                        ("solder side faces the case floor:", -25.4, 0.8),
                        ("Kapton on the floor + 2.5 mm nylon spacers", -27.0, 0.8)):
         text(s, (-25.0, y), size, pcbnew.B_SilkS)
-    emblem(board, *EMBLEM["c"], EMBLEM["r"])
+    emblem(board, *EMBLEM["c"])
 
     # ---- ground pours (both layers) ----
     wi, ci = L.octagon_inset(L.CASE_W, L.CASE_CHAMFER, L.T040 + L.CARRIER_CLEAR + 0.6)
